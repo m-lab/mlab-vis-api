@@ -10,6 +10,8 @@ import logging
 from flask import Flask, request, jsonify
 from api.data.data import Data
 from api.data.table_config import read_table_configs
+from api.url_utils import get_time_window
+from api.url_utils import format_search_query
 
 
 app = Flask(__name__) #pylint: disable=C0103
@@ -19,20 +21,6 @@ TABLE_CONFIGS = read_table_configs(app.config)
 DATA = Data(app.config, TABLE_CONFIGS)
 
 
-def get_time_window(args, time_aggregation, defaults):
-    '''
-    Returns starttime and endtime specified by args.
-    If no value supplied, finds default value from defaults
-    '''
-    starttime = args.get('starttime', '')
-    if (len(starttime) == 0) and (time_aggregation in defaults):
-        starttime = defaults[time_aggregation]['starttime']
-
-    endtime = args.get('endtime', '')
-    if (len(endtime) == 0) and (time_aggregation in defaults):
-        endtime = defaults[time_aggregation]['endtime']
-
-    return (starttime, endtime)
 
 
 @app.route('/')
@@ -69,7 +57,7 @@ def get_matching_locations(location_query):
     Return all location data matching the location_query
     '''
 
-    location_query = location_query.lower().replace(" ", "")
+    location_query = format_search_query(location_query)
 
     try:
         results = DATA.get_location_search(location_query)
