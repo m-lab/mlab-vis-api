@@ -25,7 +25,22 @@ class TableConfig(object):
         self.columns = get_column_configs(config)
 
     def __getitem__(self, key):
+        '''
+        Implement [] operator
+        '''
         return self.config[key]
+
+    def __contains__(self, key):
+        '''
+        Implement in operator
+        '''
+        return key in self.config
+
+    def __str__(self):
+        '''
+        Print representation
+        '''
+        return str(self.config)
 
 def read_table_configs(app_config):
     '''
