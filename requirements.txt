@@ -1,0 +1,4 @@
+Flask>=0.11.1
+gcloud>=0.18.1
+google-api-python-client>=1.5.1
+gunicorn==19.6.0
