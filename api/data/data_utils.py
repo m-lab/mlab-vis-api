@@ -114,12 +114,11 @@ def get_client_isp_fields(client_isp_id, table_config):
     return client_isp_fields
 
 
-def decode(value, col_config):
+def decode_value(value, col_type):
     '''
-    TODO
+    Decode a given value, based on its given type
     '''
     new_value = value
-    col_type = col_config['type']
     if col_type == 'double':
         try:
             new_value = round(struct.unpack('>d', value)[0], 3)
@@ -143,14 +142,19 @@ def decode(value, col_config):
             new_value = None
     return new_value
 
-def parse_data(data, col_configs):
+def parse_row(row, col_configs):
     '''
-    TODO
+    Convert Hbase results back to sane dict
     '''
     parsed = {'data':{}, 'meta':{}}
-    for key, value in data.iteritems():
+    for key, value in row.iteritems():
         (family, name) = key.split(":")
-        decoded_value = decode(value, col_configs[name])
+
+        col_type = 'string'
+        if name in col_configs:
+            col_type = col_configs[name]['type']
+
+        decoded_value = decode_value(value, col_type)
         parsed[family][name] = decoded_value
 
     return parsed

@@ -42,3 +42,40 @@ def test_get_location_type():
 
     country_type = du.get_location_type(URL_DELIM.join(["NA", "US", "KS", "KS", "KS","KS"]))
     assert country_type == 'unknown'
+
+
+def test_decode():
+    '''
+    test decode
+    '''
+
+    value = du.decode('this is a string', 'string')
+    assert isinstance(value, str)
+    assert value == 'this is a string'
+
+    value = du.decode('?u\xB7\xD7vZT\xEC', 'double')
+    assert isinstance(value, float)
+    assert value == 0.005
+
+    value = du.decode('12', 'integer')
+    assert isinstance(value, int)
+    assert value == 12
+
+
+def test_parse_data():
+    '''
+    test parse_data
+    '''
+
+    config = {'client_city': {'name':'client_city', 'type':'string'}, 'median_download': {'type':'double'}}
+    data = {'data:median_download': '@:\xADQ\x83\xBE\x02O', 'meta:client_city': b'New York'}
+
+    result = du.parse_data(data, config)
+
+    assert len(result.keys()) > 1
+
+    assert 'data' in result
+    assert 'meta' in result
+    assert 'median_download' in result['data']
+
+    assert isinstance(result['data']['median_download'], float)

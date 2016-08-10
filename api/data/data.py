@@ -2,20 +2,14 @@
 Data class for accessing data for API calls.
 '''
 from __future__ import print_function
-
+import logging
 
 from table_config import get_table_config
-
-# from data_utils import init_connection, get_location_type
-
 import data_utils as du
-
-
-
 
 class Data(object):
     '''
-    Deal with data things
+    Connect to BigTable and pull down data.
     '''
 
     def __init__(self, app_config, table_configs):
@@ -63,14 +57,14 @@ class Data(object):
         table_id = table_config['bigtable_table_name']
         table = self.connection.table(table_id)
 
-        print("querying: {0}".format(table_id))
-        print("start_key: {0}".format(start_key))
-        print("end_key: {0}".format(end_key))
+        logging.info("querying: %s", table_id)
+        logging.info("start_key: %s", start_key)
+        logging.info("end_key: %s", end_key)
 
         # HERE IS THE BIGTABLE QUERY
         results = []
         for _, data in table.scan(row_start=start_key, row_stop=end_key):
-            results.append(du.parse_data(data, table_config.columns))
+            results.append(du.parse_row(data, table_config.columns))
         return du.format_metrics(results)
 
 
@@ -84,7 +78,6 @@ class Data(object):
         TODO: currently only works for cities
         '''
         # Create Row Key
-
         location_type = du.get_location_type(location_id)
         agg_name = 'client_asn_number' + '_' + location_type
 
@@ -112,15 +105,15 @@ class Data(object):
         table_id = table_config['bigtable_table_name']
         table = self.connection.table(table_id)
 
-        print("querying: {0}".format(table_id))
-        print("start_key: {0}".format(start_key))
-        print("end_key: {0}".format(end_key))
+        logging.info("querying: %s", table_id)
+        logging.info("start_key: %s", start_key)
+        logging.info("end_key: %s", end_key)
 
 
         # HERE IS THE BIGTABLE QUERY
         results = []
         for _, data in table.scan(row_start=start_key, row_stop=end_key):
-            results.append(du.parse_data(data, table_config.columns))
+            results.append(du.parse_row(data, table_config.columns))
         # format output for API
         return du.format_metrics(results)
 
@@ -134,15 +127,16 @@ class Data(object):
 
         table_id = table_config['bigtable_table_name']
         table = self.connection.table(table_id)
-        print("querying: {0}".format(table_id))
-        print("start_key: {0}".format(location_query))
+
+        logging.info("querying: %s", table_id)
+        logging.info("prefex: %s", location_query)
 
         key_prefix = location_query
 
         # HERE IS THE BIGTABLE QUERY
         results = []
         for _, data in table.scan(row_prefix=key_prefix):
-            results.append(du.parse_data(data, table_config.columns))
+            results.append(du.parse_row(data, table_config.columns))
         # sort based on test_count
         sorted_results = sorted(results, key=lambda k: k['data']['test_count'], reverse=True)
         return sorted_results
