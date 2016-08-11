@@ -49,15 +49,15 @@ def test_decode():
     test decode
     '''
 
-    value = du.decode('this is a string', 'string')
+    value = du.decode_value('this is a string', 'string')
     assert isinstance(value, str)
     assert value == 'this is a string'
 
-    value = du.decode('?u\xB7\xD7vZT\xEC', 'double')
+    value = du.decode_value('?u\xB7\xD7vZT\xEC', 'double')
     assert isinstance(value, float)
     assert value == 0.005
 
-    value = du.decode('12', 'integer')
+    value = du.decode_value('12', 'integer')
     assert isinstance(value, int)
     assert value == 12
 
@@ -70,7 +70,7 @@ def test_parse_data():
     config = {'client_city': {'name':'client_city', 'type':'string'}, 'median_download': {'type':'double'}}
     data = {'data:median_download': '@:\xADQ\x83\xBE\x02O', 'meta:client_city': b'New York'}
 
-    result = du.parse_data(data, config)
+    result = du.parse_row(data, config)
 
     assert len(result.keys()) > 1
 
