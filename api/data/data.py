@@ -4,8 +4,8 @@ Data class for accessing data for API calls.
 from __future__ import print_function
 import logging
 
-from table_config import get_table_config
-import data_utils as du
+from api.data.table_config import get_table_config
+import api.data.data_utils as du
 
 class Data(object):
     '''
@@ -62,8 +62,10 @@ class Data(object):
         logging.info("end_key: %s", end_key)
 
         # HERE IS THE BIGTABLE QUERY
+        # Note that we must encode utf-8 to handle unicode characters in location names
         results = []
-        for _, data in table.scan(row_start=start_key, row_stop=end_key):
+        for _, data in table.scan(row_start=start_key.encode('utf-8'),
+                                  row_stop=end_key.encode('utf-8')):
             results.append(du.parse_row(data, table_config.columns))
         return du.format_metrics(results)
 
@@ -112,7 +114,8 @@ class Data(object):
 
         # HERE IS THE BIGTABLE QUERY
         results = []
-        for _, data in table.scan(row_start=start_key, row_stop=end_key):
+        for _, data in table.scan(row_start=start_key.encode('utf-8'),
+                                  row_stop=end_key.encode('utf-8')):
             results.append(du.parse_row(data, table_config.columns))
         # format output for API
         return du.format_metrics(results)
@@ -135,7 +138,7 @@ class Data(object):
 
         # HERE IS THE BIGTABLE QUERY
         results = []
-        for _, data in table.scan(row_prefix=key_prefix):
+        for _, data in table.scan(row_prefix=key_prefix.encode('utf-8')):
             results.append(du.parse_row(data, table_config.columns))
         # sort based on test_count
         sorted_results = sorted(results, key=lambda k: k['data']['test_count'], reverse=True)
