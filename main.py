@@ -8,6 +8,8 @@ import atexit
 import logging
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 from api.data.data import Data
 from api.data.table_config import read_table_configs
 from api.url_utils import get_time_window
@@ -15,6 +17,7 @@ from api.url_utils import format_search_query
 
 
 app = Flask(__name__) #pylint: disable=C0103
+CORS(app)
 app.config.from_object('config')
 
 TABLE_CONFIGS = read_table_configs(app.config)
