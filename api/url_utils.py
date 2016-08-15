@@ -4,15 +4,15 @@ def get_time_window(args, time_aggregation, defaults):
     Returns starttime and endtime specified by args.
     If no value supplied, finds default value from defaults
     '''
-    starttime = args.get('starttime', '')
-    if (len(starttime) == 0) and (time_aggregation in defaults):
-        starttime = defaults[time_aggregation]['starttime']
+    startdate = args.get('startdate')
+    if (not startdate) and (time_aggregation in defaults):
+        startdate = defaults[time_aggregation]['startdate']
 
-    endtime = args.get('endtime', '')
-    if (len(endtime) == 0) and (time_aggregation in defaults):
-        endtime = defaults[time_aggregation]['endtime']
+    enddate = args.get('enddate')
+    if (not enddate) and (time_aggregation in defaults):
+        enddate = defaults[time_aggregation]['enddate']
 
-    return (starttime, endtime)
+    return (startdate, enddate)
 
 def format_search_query(search_string):
     return search_string.lower().replace(" ", "")
