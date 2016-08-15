@@ -50,7 +50,7 @@ def get_location_type(location_id):
     elif len(location_fields) == 2:
         return 'client_country'
     elif len(location_fields) == 1:
-        return 'client_continent'
+        return 'client_cont'
     else:
         return 'unknown'
 

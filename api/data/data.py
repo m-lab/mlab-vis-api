@@ -79,7 +79,7 @@ class Data(object):
         '''
         # Create Row Key
         location_type = du.get_location_type(location_id)
-        agg_name = 'client_asn_number' + '_' + location_type
+        agg_name = 'client_asn' + '_' + location_type
 
         table_config = get_table_config(self.table_configs,
                                         time_aggregation,
@@ -123,7 +123,7 @@ class Data(object):
         '''
         table_config = get_table_config(self.table_configs,
                                         None,
-                                        'location_search')
+                                        'client_location_search')
 
         table_id = table_config['bigtable_table_name']
         table = self.connection.table(table_id)
