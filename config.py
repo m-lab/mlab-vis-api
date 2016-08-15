@@ -14,5 +14,5 @@ DEFAULT_TIME_WINDOWS = {
     'month': {'startdate': '2015-01', 'enddate': '2016-01'},
     'year': {'startdate': '2010', 'enddate': '2016'},
     'day_hour': {'startdate': '2015-10-01+0', 'enddate': '2015-11-01+0'},
-    'month_hour': {'startdate': '2015-01', 'endtime': '2015-10'}
+    'month_hour': {'startdate': '2015-01', 'enddate': '2015-10'}
 }
