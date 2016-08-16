@@ -1,7 +1,12 @@
-
+# -*- coding: utf-8 -*-
+'''
+Setup API instance.
+'''
 import logging
 from flask_restplus import Api
 
+# This is connected to the app in
+# main.py
 api = Api(version='0.1.0', doc='/', title='MLab API')
 
 @api.errorhandler

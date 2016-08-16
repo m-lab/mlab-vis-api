@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+'''
+Utilities for working with URL inputs
+'''
 
 def get_time_window(args, time_aggregation, defaults):
     '''
@@ -15,4 +19,7 @@ def get_time_window(args, time_aggregation, defaults):
     return (startdate, enddate)
 
 def format_search_query(search_string):
+    '''
+    Provides consistent search strings
+    '''
     return search_string.lower().replace(" ", "")

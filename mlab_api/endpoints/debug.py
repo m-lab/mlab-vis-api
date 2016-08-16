@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-
+'''
+Potentially helpful debugging routes. 
+'''
 from mlab_api.rest_api import api
 from mlab_api.app import DATA
 
