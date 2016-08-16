@@ -39,7 +39,7 @@ Well, its not really that simple. For this to work, it requires a few things:
 1 - access to your Google Service Account JSON file. It currently looks for it in:
 
 ```
-../../mlab_keys/mlab-oti-5235f008a07c.json
+../../mlab-keys/mlab-cred.json
 ```
 
 So ensure that directory and file is present.
@@ -47,7 +47,7 @@ So ensure that directory and file is present.
 2 - copies of the bigtable config files. It looks for them in:
 
 ```
-../pipeline/dataflow/data/bigtable/
+../mlab-vis-pipeline/dataflow/data/bigtable/
 ```
 
 So make sure they are present and up-to-date
@@ -61,16 +61,15 @@ The app will be deployed and accessible from:
 
 [https://mlab-api-dot-mlab-oti.appspot.com/](https://mlab-api-dot-mlab-oti.appspot.com/)
 
-Right now there is a `connection` API call so you can see that the bigtable connection was made succesfully.
+Right now there is a `debug/connection` API call so you can see that the bigtable connection was made succesfully.
 
-[https://mlab-api-dot-mlab-oti.appspot.com/connection](https://mlab-api-dot-mlab-oti.appspot.com/connection)
+[https://mlab-api-dot-mlab-oti.appspot.com/debug/connection](https://mlab-api-dot-mlab-oti.appspot.com/debug/connection)
 
 Example Queries:
 
 [https://mlab-api-dot-mlab-oti.appspot.com/locations/AF+EG+11+Garden%20City/time/month/clientisps/AS24863/metrics](https://mlab-api-dot-mlab-oti.appspot.com/locations/AF+EG+11+Garden%20City/time/month/clientisps/AS24863/metrics)
 
 [https://mlab-api-dot-mlab-oti.appspot.com/locations/NA+US+NY+New%20York/time/month/metrics](https://mlab-api-dot-mlab-oti.appspot.com/locations/NA+US+NY+New%20York/time/month/metrics)
-
 
 
 ## Configuration
