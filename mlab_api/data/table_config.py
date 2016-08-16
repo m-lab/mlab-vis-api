@@ -23,6 +23,7 @@ class TableConfig(object):
 
         # create the column configs object
         self.columns = get_column_configs(config)
+        self.keys = get_keys_configs(config)
 
     def __getitem__(self, key):
         '''
@@ -105,3 +106,13 @@ def get_column_configs(config):
     for col in config['columns']:
         col_configs[col['name']] = col
     return col_configs
+
+def get_keys_configs(config):
+    '''
+    Gets keys configs
+    '''
+
+    key_configs = {}
+    for key in config['row_keys']:
+        key_configs[key['name']] = key
+    return key_configs

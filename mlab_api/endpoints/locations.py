@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+Routes focused on locations.
+'''
 
 from flask import request
 from flask_restplus import Resource
@@ -12,13 +15,15 @@ from mlab_api.url_utils import get_time_window
 from mlab_api.url_utils import format_search_query
 
 from mlab_api.rest_api import api
+
+# this is the namespace that gets included elsewhere.
 locations_ns = api.namespace('locations', description='Location specific API')
 
 
 @locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/metrics')
 class LocationTimeMetric(Resource):
     '''
-    Location Time Resource
+    Location Time Metrics
     '''
 
     @api.expect(date_arguments)
@@ -76,4 +81,20 @@ class LocationSearch(Resource):
         location_query = format_search_query(location_query)
 
         results = DATA.get_location_search(location_query)
+        return results
+
+@locations_ns.route('/<string:location_id>/children')
+class LocationChildren(Resource):
+    '''
+    Location Children List
+    '''
+    # @api.marshal_with(location_search_model)
+    def get(self, location_id):
+        """
+        Location Search
+        Get all location data matching the location_query
+        """
+
+
+        results = DATA.get_location_children(location_id)
         return results

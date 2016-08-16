@@ -70,6 +70,14 @@ def get_location_key_fields(location_id, table_config):
 
     return location_key_fields
 
+def get_location_key(location_id, table_config):
+    '''
+    '''
+    location_fields = location_id.lower().replace(' ', '').split(URL_KEY_DELIM)
+    key_length = table_config.keys['parent_location_id']['length']
+    return ''.join(location_fields).ljust(key_length)
+
+
 def get_time_key_fields(time_value, time_aggregation, table_config):
     '''
     Returns an array of strings representing the portions of the  row

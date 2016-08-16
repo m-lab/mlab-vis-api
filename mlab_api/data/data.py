@@ -143,3 +143,19 @@ class Data(object):
         # sort based on test_count
         sorted_results = sorted(results, key=lambda k: k['data']['test_count'], reverse=True)
         return {"results": sorted_results}
+
+    def get_location_children(self, location_query):
+        # location_type = du.get_location_type(location_id)
+        table_config = get_table_config(self.table_configs,
+                                        None,
+                                        'client_location_list')
+        table_id = table_config['bigtable_table_name']
+        table = self.connection.table(table_id)
+        location_prefix = du.get_location_key(location_query, table_config)
+
+        logging.info("querying: %s", table_id)
+        logging.info("prefex: %s", location_prefix)
+        results = []
+        for _, data in table.scan(row_prefix=location_prefix):
+            results.append(du.parse_row(data, table_config.columns))
+        return {"results": results}
