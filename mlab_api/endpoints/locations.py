@@ -5,7 +5,8 @@ from flask_restplus import Resource
 
 from mlab_api.app import app, DATA
 from mlab_api.parsers import date_arguments
-from mlab_api.models import location_search_model, location_metric_model
+from mlab_api.models.location_search_models import location_search_model
+from mlab_api.models.location_metric_models import location_metric_model
 
 from mlab_api.url_utils import get_time_window
 from mlab_api.url_utils import format_search_query
