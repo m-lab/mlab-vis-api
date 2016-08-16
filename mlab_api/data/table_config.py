@@ -42,15 +42,15 @@ class TableConfig(object):
         '''
         return str(self.config)
 
-def read_table_configs(app_config):
+def read_table_configs(config_dir):
     '''
     Reads in a collection of bigtable configs based on the BIGTABLE_CONFIG_DIR
     and returns them as a keyed list, mapping key to TableConfig object
     '''
 
     configs = None
-    if 'BIGTABLE_CONFIG_DIR' in app_config:
-        configs = read_configs(app_config['BIGTABLE_CONFIG_DIR'])
+    if config_dir:
+        configs = read_configs(config_dir)
     else:
         print('WARNING: no BIGTABLE_CONFIG_DIR provided')
         configs = {}
