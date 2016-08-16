@@ -3,10 +3,15 @@
 App Entry Point
 '''
 from __future__ import print_function
+import logging
+
 from flask_restplus import cors
 
 # Import Configured Flask App
 from mlab_api.app import app
+
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
 
 # Import namespaces
 from mlab_api.endpoints.locations import locations_ns
