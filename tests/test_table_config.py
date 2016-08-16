@@ -1,10 +1,10 @@
 '''
 Test Table Config Module
 '''
-from api.data.table_config import TableConfig
-from api.data.table_config import read_configs
-from api.data.table_config import make_config_key
-from api.data.table_config import get_column_configs
+from mlab_api.data.table_config import TableConfig
+from mlab_api.data.table_config import read_configs
+from mlab_api.data.table_config import make_config_key
+from mlab_api.data.table_config import get_column_configs
 
 from utils import read_json
 

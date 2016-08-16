@@ -1,7 +1,7 @@
 '''
 Test Data Module
 '''
-import api.data.data_utils as du
+import mlab_api.data.data_utils as du
 
 from tests.utils import read_json
 
