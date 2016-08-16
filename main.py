@@ -4,33 +4,33 @@ App Entry Point
 '''
 from __future__ import print_function
 
-import traceback
 import atexit
 import logging
 
-from flask import Flask, request, jsonify
-from flask_restplus import Resource, Api
-from flask_cors import CORS
+from flask import Flask, request
 
+from flask_restplus import Resource, cors
 
-from api.data.data import Data
-from api.data.table_config import read_table_configs
-from api.url_utils import get_time_window
-from api.url_utils import format_search_query
+from mlab_api.data.data import Data
+from mlab_api.data.table_config import read_table_configs
+from mlab_api.url_utils import get_time_window
+from mlab_api.url_utils import format_search_query
+from mlab_api.rest_api import api
 
-from api.parsers import date_arguments
-
+from mlab_api.parsers import date_arguments
+from mlab_api.models import location_search_model, location_metric_model
 
 app = Flask(__name__) #pylint: disable=C0103
-CORS(app)
 app.config.from_object('config')
+app.config.SWAGGER_UI_DOC_EXPANSION = 'full'
+app.config['RESTPLUS_VALIDATE'] = True
 
-api = Api(app)
+api.decorators = [cors.crossdomain(origin='*')]
+
 locations_ns = api.namespace('locations', description='Location specific API')
 
 TABLE_CONFIGS = read_table_configs(app.config)
 DATA = Data(app.config, TABLE_CONFIGS)
-
 
 @api.route('/connection')
 class Connection(Resource):
@@ -43,14 +43,12 @@ class Connection(Resource):
         Indicate if a BigTable connection has been made \
         and if so, what tables are accessible to the API.
         ---
-        tags:
-        - debug
         """
         connection = DATA.get_connection()
         if connection:
-            return jsonify({"message": "Connection", "tables": connection.tables()})
+            return {"message": "Connection", "tables": connection.tables()}
         else:
-            return jsonify({"message":'No Connection', "tables": []})
+            return {"message":'No Connection', "tables": []}
 
 @locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/metrics')
 class LocationTimeMetric(Resource):
@@ -58,6 +56,8 @@ class LocationTimeMetric(Resource):
     Location Time Resource
     '''
 
+    @api.expect(date_arguments)
+    @api.marshal_with(location_metric_model)
     def get(self, location_id, time_aggregation):
         """
         Get Location Metrics Over Time
@@ -70,19 +70,16 @@ class LocationTimeMetric(Resource):
                                                time_aggregation,
                                                app.config['DEFAULT_TIME_WINDOWS'])
 
-        try:
-            results = DATA.get_location_metrics(location_id, time_aggregation, startdate, enddate)
-            return jsonify(results)
-        except Exception as err: #pylint: disable=W0703
-            logging.exception(str(err))
-            traceback.print_exc()
-            return jsonify({'error': str(err)})
+        results = DATA.get_location_metrics(location_id, time_aggregation, startdate, enddate)
+        return results
 
 @locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/clientisps/<string:client_isp_id>/metrics')
-class LocationTimeIspMetric(Resource):
+class LocationTimeClientIspMetric(Resource):
     '''
     Location Time ISP Resource
     '''
+
+    @api.expect(date_arguments)
     def get(self, location_id, time_aggregation, client_isp_id):
         """
         Get Location Metrics for ISP Over Time
@@ -94,21 +91,17 @@ class LocationTimeIspMetric(Resource):
                                                time_aggregation,
                                                app.config['DEFAULT_TIME_WINDOWS'])
 
-        try:
-            results = DATA.get_location_client_isp_metrics(location_id, client_isp_id,
-                                                           time_aggregation, startdate, enddate)
+        results = DATA.get_location_client_isp_metrics(location_id, client_isp_id,
+                                                       time_aggregation, startdate, enddate)
 
-            return jsonify(results)
-        except Exception as err: #pylint: disable=W0703
-            print(str(err))
-            traceback.print_exc()
-            return jsonify({'error': str(err)})
+        return results
 
 @locations_ns.route('/search/<string:location_query>')
 class LocationSearch(Resource):
     '''
     Location Search Resource
     '''
+    @api.marshal_with(location_search_model)
     def get(self, location_query):
         """
         Location Search
@@ -117,25 +110,9 @@ class LocationSearch(Resource):
 
         location_query = format_search_query(location_query)
 
-        try:
-            results = DATA.get_location_search(location_query)
-            return jsonify({'results': results})
-        except Exception as err: #pylint: disable=W0703
-            print(str(err))
-            traceback.print_exc()
-            return jsonify({'error': str(err)})
+        results = DATA.get_location_search(location_query)
+        return results
 
-
-@app.errorhandler(500)
-def server_error(err):
-    """
-    Handle error during request.
-    """
-    logging.exception('An error occurred during a request.')
-    return """
-    An internal error occurred: <pre>{}</pre>
-    See logs for full stacktrace.
-    """.format(err), 500
 
 def exit_handler():
     """
@@ -148,5 +125,9 @@ def exit_handler():
 # TODO: may be a better Flask way to do this.
 atexit.register(exit_handler)
 
+# TODO: why in the world does this need to
+#  be at the bottom to work ?!?!
+api.init_app(app)
+
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(port=8080, debug=True)

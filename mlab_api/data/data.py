@@ -4,8 +4,8 @@ Data class for accessing data for API calls.
 from __future__ import print_function
 import logging
 
-from api.data.table_config import get_table_config
-import api.data.data_utils as du
+from mlab_api.data.table_config import get_table_config
+import mlab_api.data.data_utils as du
 
 class Data(object):
     '''
@@ -142,4 +142,4 @@ class Data(object):
             results.append(du.parse_row(data, table_config.columns))
         # sort based on test_count
         sorted_results = sorted(results, key=lambda k: k['data']['test_count'], reverse=True)
-        return sorted_results
+        return {"results": sorted_results}
