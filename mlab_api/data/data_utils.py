@@ -31,7 +31,7 @@ def init_connection(app_config):
             connection = happybase.Connection(instance=instance)
         except Exception as err:  #pylint: disable=W0703
             logging.exception("ERROR: Could not make connection")
-            print(err)
+            logging.exception(err)
     else:
         print('WARNING: no connection made')
     return connection
@@ -161,6 +161,8 @@ def parse_row(row, col_configs):
         col_type = 'string'
         if name in col_configs:
             col_type = col_configs[name]['type']
+        else:
+            logging.warning('WARNING: missing in col configs: ' + name)
 
         decoded_value = decode_value(value, col_type)
         parsed[family][name] = decoded_value
