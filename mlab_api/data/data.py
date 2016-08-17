@@ -26,13 +26,6 @@ class Data(object):
     def get_pool(self):
         return self.connection_pool
 
-    def close(self):
-        '''
-        Close connection
-        '''
-        if self.connection:
-            self.connection.close()
-
     def query_table(self, table_config, prefix="", start_key="", end_key=""):
         table_id = table_config['bigtable_table_name']
 

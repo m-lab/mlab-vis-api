@@ -20,17 +20,3 @@ app.config['RESTPLUS_VALIDATE'] = True
 # TODO: move this DATA out and rename it.
 TABLE_CONFIGS = read_table_configs(app.config['BIGTABLE_CONFIG_DIR'])
 DATA = Data(app.config, TABLE_CONFIGS)
-
-
-# We need a way to close the BigTable connection
-# This might be the way to do it - i don't know.
-def exit_handler():
-    """
-    Called at program exit
-    """
-    logging.info('Closing Connection')
-    DATA.close()
-
-# register exit handler
-# TODO: may be a better Flask way to do this.
-atexit.register(exit_handler)
