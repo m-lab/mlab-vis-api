@@ -9,7 +9,7 @@ from oauth2client.client import GoogleCredentials
 URL_KEY_DELIM = "+"
 BIGTABLE_KEY_DELIM = "|"
 
-def init_connection(app_config):
+def init_pool(app_config):
     '''
     Setup Connection
     From the documentation:
@@ -19,7 +19,7 @@ def init_connection(app_config):
     '''
 
     credentials = GoogleCredentials.get_application_default()
-    connection = None
+    connection_pool = None
 
     if 'GOOGLE_PROJECT_ID' and 'BIGTABLE_INSTANCE' in app_config:
         try:
@@ -28,14 +28,17 @@ def init_connection(app_config):
 
             instance = client.instance(app_config['BIGTABLE_INSTANCE'])
 
-            connection = happybase.Connection(instance=instance)
+            size = 10
+            if 'BIGTABLE_POOL_SIZE' in app_config:
+                size = app_config['BIGTABLE_POOL_SIZE']
+
+            connection_pool = happybase.pool.ConnectionPool(size, instance=instance)
         except Exception as err:  #pylint: disable=W0703
             logging.exception("ERROR: Could not make connection")
             logging.exception(err)
     else:
         print('WARNING: no connection made')
-    return connection
-
+    return connection_pool
 
 def get_location_key_fields(location_id, table_config):
     '''
@@ -56,7 +59,7 @@ def get_location_key(location_id, table_config):
     '''
     '''
     location_fields = location_id.lower().replace(' ', '').split(URL_KEY_DELIM)
-    key_length = table_config.keys['parent_location_id']['length']
+    key_length = table_config.keys['parent_location_key']['length']
     return ''.join(location_fields).ljust(key_length)
 
 
@@ -132,11 +135,16 @@ def decode_value(value, col_type):
             new_value = None
     return new_value
 
-def parse_row(row, col_configs):
+def parse_row(row, col_configs, keep_family=True):
     '''
     Convert Hbase results back to sane dict
     '''
-    parsed = {'data':{}, 'meta':{}}
+    parsed = {}
+
+    # TODO: use family names from the actual data.
+    if keep_family:
+        parsed = {'meta':{}, 'data':{}}
+
     for key, value in row.iteritems():
         (family, name) = key.split(":")
 
@@ -147,15 +155,18 @@ def parse_row(row, col_configs):
             logging.warning('WARNING: missing in col configs: ' + name)
 
         decoded_value = decode_value(value, col_type)
-        parsed[family][name] = decoded_value
+        if keep_family:
+            parsed[family][name] = decoded_value
+        else:
+            parsed[name] = decoded_value
 
     return parsed
 
-def format_metrics(raw_data):
+def format_metric_data(raw_data):
     '''
     Convert metric raw data list into format to send back to client
     '''
-    results = {"metrics": [], "meta":{}}
+    results = {"results": [], "meta":{}}
     # Meta can be taken from first result
 
     formated_metrics = []
@@ -166,7 +177,7 @@ def format_metrics(raw_data):
         if 'hour' in metric['meta']:
             metric['data']['hour'] = metric['meta']['hour']
         formated_metrics.append(metric['data'])
-    results["metrics"] = formated_metrics
+    results["results"] = formated_metrics
 
     if len(raw_data) > 0:
         meta = raw_data[0]["meta"]

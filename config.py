@@ -5,6 +5,7 @@ Configurations for Flask App
 DEBUG = True
 GOOGLE_PROJECT_ID = 'mlab-oti'
 BIGTABLE_INSTANCE = 'mlab-ndt-agg'
+BIGTABLE_POOL_SIZE = 10
 
 # BIGTABLE_CONFIG_DIR = '../pipeline/dataflow/data/bigtable'
 BIGTABLE_CONFIG_DIR = 'bigtable_configs'

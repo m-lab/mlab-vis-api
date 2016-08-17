@@ -11,8 +11,7 @@ from mlab_api.parsers import date_arguments
 from mlab_api.models.location_search_models import location_search_model
 from mlab_api.models.location_metric_models import location_metric_model
 
-from mlab_api.url_utils import get_time_window
-from mlab_api.url_utils import normalize_location_key
+from mlab_api.url_utils import get_time_window, normalize_key
 
 from mlab_api.rest_api import api
 
@@ -35,7 +34,7 @@ class LocationTimeMetric(Resource):
         aggregation level.
         """
 
-        location_id = normalize_location_key(location_id)
+        location_id = normalize_key(location_id)
         args = date_arguments.parse_args(request)
         (startdate, enddate) = get_time_window(args,
                                                time_aggregation,
@@ -57,7 +56,7 @@ class LocationTimeClientIspMetric(Resource):
         Get metrics for specific location and specific client ISP
         """
 
-        location_id = normalize_location_key(location_id)
+        location_id = normalize_key(location_id)
 
         args = date_arguments.parse_args(request)
         (startdate, enddate) = get_time_window(args,
@@ -81,7 +80,7 @@ class LocationSearch(Resource):
         Get all location data matching the location_query
         """
 
-        location_query = normalize_location_key(location_query)
+        location_query = normalize_key(location_query)
 
         results = DATA.get_location_search(location_query)
         return results
@@ -98,7 +97,7 @@ class LocationChildren(Resource):
         Get all location data matching the location_query
         """
 
-        location_id = normalize_location_key(location_id)
+        location_id = normalize_key(location_id)
 
         results = DATA.get_location_children(location_id)
         return results

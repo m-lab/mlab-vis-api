@@ -7,6 +7,9 @@ import logging
 from mlab_api.data.table_config import get_table_config
 import mlab_api.data.data_utils as du
 
+CLIENT_LOCATION_KEY = 'client_loc'
+CLIENT_ASN_KEY = 'client_asn'
+
 class Data(object):
     '''
     Connect to BigTable and pull down data.
@@ -16,14 +19,12 @@ class Data(object):
         '''
         Constructor.
         '''
-        self.connection = du.init_connection(app_config)
+        self.connection_pool = du.init_pool(app_config)
         self.table_configs = table_configs
 
-    def get_connection(self):
-        '''
-        Returns current connection
-        '''
-        return self.connection
+
+    def get_pool(self):
+        return self.connection_pool
 
     def close(self):
         '''
@@ -32,6 +33,31 @@ class Data(object):
         if self.connection:
             self.connection.close()
 
+    def query_table(self, table_config, prefix="", start_key="", end_key=""):
+        table_id = table_config['bigtable_table_name']
+
+        # build table query parameters.
+        # if prefix is present, use that.
+        # else, use start / end key
+        params = {}
+        if len(prefix) > 0:
+            params = {"row_prefix": prefix.encode('utf-8')}
+        else:
+            params = {"row_start": start_key.encode('utf-8'), "row_stop": end_key.encode('utf-8')}
+
+        logging.info("querying: %s", table_id)
+        logging.info("start_key: %s", start_key)
+        logging.info("end_key: %s", end_key)
+        logging.info("prefix: %s", prefix)
+
+        results = []
+        with self.get_pool().connection() as connection:
+            table = connection.table(table_id)
+
+            # HERE IS THE BIGTABLE QUERY
+            for _, data in table.scan(**params):
+                results.append(du.parse_row(data, table_config.columns))
+        return results
 
     def get_location_metrics(self, location_id, time_aggregation, starttime, endtime):
         '''
@@ -41,7 +67,7 @@ class Data(object):
 
         table_config = get_table_config(self.table_configs,
                                         time_aggregation,
-                                        'client_location')
+                                        CLIENT_LOCATION_KEY)
 
 
         location_key_fields = du.get_location_key_fields(location_id, table_config)
@@ -52,20 +78,10 @@ class Data(object):
         start_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields + starttime_fields)
         end_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields + endtime_fields)
 
-        table_id = table_config['bigtable_table_name']
-        table = self.connection.table(table_id)
+        # BIGTABLE QUERY
+        results = self.query_table(table_config, start_key=start_key, end_key=end_key)
 
-        logging.info("querying: %s", table_id)
-        logging.info("start_key: %s", start_key)
-        logging.info("end_key: %s", end_key)
-
-        # HERE IS THE BIGTABLE QUERY
-        # Note that we must encode utf-8 to handle unicode characters in location names
-        results = []
-        for _, data in table.scan(row_start=start_key.encode('utf-8'),
-                                  row_stop=end_key.encode('utf-8')):
-            results.append(du.parse_row(data, table_config.columns))
-        return du.format_metrics(results)
+        return du.format_metric_data(results)
 
 
     def get_location_client_isp_metrics(self, location_id, client_isp_id,
@@ -78,7 +94,7 @@ class Data(object):
         TODO: currently only works for cities
         '''
         # Create Row Key
-        agg_name = 'client_asn' + '_' + 'client_location'
+        agg_name = CLIENT_ASN_KEY + '_' + CLIENT_LOCATION_KEY
 
         table_config = get_table_config(self.table_configs,
                                         time_aggregation,
@@ -101,21 +117,11 @@ class Data(object):
                                              endtime_fields)
 
         # Prepare to query the table
-        table_id = table_config['bigtable_table_name']
-        table = self.connection.table(table_id)
 
-        logging.info("querying: %s", table_id)
-        logging.info("start_key: %s", start_key)
-        logging.info("end_key: %s", end_key)
+        results = self.query_table(table_config, start_key=start_key, end_key=end_key)
 
-
-        # HERE IS THE BIGTABLE QUERY
-        results = []
-        for _, data in table.scan(row_start=start_key.encode('utf-8'),
-                                  row_stop=end_key.encode('utf-8')):
-            results.append(du.parse_row(data, table_config.columns))
         # format output for API
-        return du.format_metrics(results)
+        return du.format_metric_data(results)
 
     def get_location_search(self, location_query):
         '''
@@ -125,18 +131,9 @@ class Data(object):
                                         None,
                                         'client_location_search')
 
-        table_id = table_config['bigtable_table_name']
-        table = self.connection.table(table_id)
 
-        logging.info("querying: %s", table_id)
-        logging.info("prefex: %s", location_query)
+        results = self.query_table(table_config, prefix=location_query)
 
-        key_prefix = location_query
-
-        # HERE IS THE BIGTABLE QUERY
-        results = []
-        for _, data in table.scan(row_prefix=key_prefix.encode('utf-8')):
-            results.append(du.parse_row(data, table_config.columns))
         # sort based on test_count
         sorted_results = sorted(results, key=lambda k: k['data']['test_count'], reverse=True)
         return {"results": sorted_results}
@@ -145,13 +142,22 @@ class Data(object):
         table_config = get_table_config(self.table_configs,
                                         None,
                                         'client_location_list')
-        table_id = table_config['bigtable_table_name']
-        table = self.connection.table(table_id)
         location_prefix = du.get_location_key(location_query, table_config)
 
-        logging.info("querying: %s", table_id)
-        logging.info("prefex: %s", location_prefix)
-        results = []
-        for _, data in table.scan(row_prefix=location_prefix):
-            results.append(du.parse_row(data, table_config.columns))
+        results = self.query_table(table_config, prefix=location_prefix)
         return {"results": results}
+
+
+    def get_asn_search(self, asn_query):
+        '''
+        API for location search
+        '''
+        table_config = get_table_config(self.table_configs,
+                                        None,
+                                        'asn_search')
+
+        results = self.query_table(table_config, prefix=asn_query)
+
+        # sort based on test_count
+        sorted_results = sorted(results, key=lambda k: k['data']['test_count'], reverse=True)
+        return {"results": sorted_results}

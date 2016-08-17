@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask_restplus import fields
 from mlab_api.rest_api import api
 
@@ -25,5 +26,5 @@ metric_data_fields = api.model('Metric Data', {
 
 location_metric_model = api.model('Location Metric Model', {
     'meta': fields.Nested(metric_meta_fields, required=True),
-    'metrics': fields.List(fields.Nested(metric_data_fields), required=True)
+    'results': fields.List(fields.Nested(metric_data_fields), required=True)
 })

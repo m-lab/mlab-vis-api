@@ -16,6 +16,7 @@ root.setLevel(logging.DEBUG)
 # Import namespaces
 from mlab_api.endpoints.locations import locations_ns
 from mlab_api.endpoints.debug import debug_ns
+from mlab_api.endpoints.client_asns import client_asn_ns
 
 # API is defined here
 from mlab_api.rest_api import api
@@ -26,6 +27,7 @@ api.decorators = [cors.crossdomain(origin='*')]
 # Add namespaces defined in endpoints module
 api.add_namespace(locations_ns)
 api.add_namespace(debug_ns)
+api.add_namespace(client_asn_ns)
 
 # init api with Flask App
 api.init_app(app)

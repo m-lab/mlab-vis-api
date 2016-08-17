@@ -18,7 +18,7 @@ def get_time_window(args, time_aggregation, defaults):
 
     return (startdate, enddate)
 
-def normalize_location_key(location_key):
+def normalize_key(location_key):
     '''
     Provides consistent search strings
     '''
