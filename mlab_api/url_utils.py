@@ -18,8 +18,8 @@ def get_time_window(args, time_aggregation, defaults):
 
     return (startdate, enddate)
 
-def format_search_query(search_string):
+def normalize_location_key(location_key):
     '''
     Provides consistent search strings
     '''
-    return search_string.lower().replace(" ", "")
+    return location_key.lower().replace(" ", "")

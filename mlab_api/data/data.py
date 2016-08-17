@@ -39,11 +39,9 @@ class Data(object):
         frequency between start and stop times.
         '''
 
-        location_type = du.get_location_type(location_id)
-
         table_config = get_table_config(self.table_configs,
                                         time_aggregation,
-                                        location_type)
+                                        'client_location')
 
 
         location_key_fields = du.get_location_key_fields(location_id, table_config)
@@ -80,8 +78,7 @@ class Data(object):
         TODO: currently only works for cities
         '''
         # Create Row Key
-        location_type = du.get_location_type(location_id)
-        agg_name = 'client_asn' + '_' + location_type
+        agg_name = 'client_asn' + '_' + 'client_location'
 
         table_config = get_table_config(self.table_configs,
                                         time_aggregation,
@@ -145,7 +142,6 @@ class Data(object):
         return {"results": sorted_results}
 
     def get_location_children(self, location_query):
-        # location_type = du.get_location_type(location_id)
         table_config = get_table_config(self.table_configs,
                                         None,
                                         'client_location_list')

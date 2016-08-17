@@ -37,24 +37,6 @@ def init_connection(app_config):
     return connection
 
 
-def get_location_type(location_id):
-    '''
-    gets location type based on number of location fields
-    '''
-    location_fields = location_id.split(URL_KEY_DELIM)
-
-    if len(location_fields) == 4:
-        return 'client_city'
-    elif len(location_fields) == 3:
-        return 'client_region'
-    elif len(location_fields) == 2:
-        return 'client_country'
-    elif len(location_fields) == 1:
-        return 'client_cont'
-    else:
-        return 'unknown'
-
-
 def get_location_key_fields(location_id, table_config):
     '''
     Returns an array of strings representing the portions of the  row

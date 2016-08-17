@@ -49,7 +49,7 @@ def test_get_column_configs():
     test get_column_configs
     '''
 
-    configfilename = 'bigtable_configs/client_city_by_day.json'
+    configfilename = 'bigtable_configs/client_loc_by_day.json'
 
     config_json = read_json(configfilename)
 
