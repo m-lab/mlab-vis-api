@@ -1,9 +1,9 @@
 {
   "row_keys": [
     {
-      "length": 20, 
+      "length": 50, 
       "type": "string", 
-      "name": "location_id", 
+      "name": "location_key", 
       "family": "meta"
     }, 
     {
@@ -19,9 +19,9 @@
   "bigquery_table": "[mlab-oti:bocoup_prod.all_ip_by_day]", 
   "columns": [
     {
-      "length": 20, 
+      "length": 50, 
       "type": "string", 
-      "name": "location_id", 
+      "name": "location_key", 
       "family": "meta"
     }, 
     {
