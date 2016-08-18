@@ -15,6 +15,7 @@ def server_error(err):
     Handle error during request.
     """
     logging.exception('An error occurred during a request.')
+    logging.exception(err)
     return """
     An internal error occurred: <pre>{}</pre>
     See logs for full stacktrace.

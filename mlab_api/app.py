@@ -4,7 +4,6 @@ App Entry Point
 '''
 from __future__ import print_function
 
-import atexit
 import logging
 
 from flask import Flask

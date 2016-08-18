@@ -21,7 +21,9 @@ metric_data_fields = api.model('Metric Data', {
     'date': fields.String(description="Date Aggregation.", required=True),
     'hour': fields.String(description="Hour Aggregation, if requested by hour."),
     'download_speed_mbps_median': fields.Float,
-    'upload_speed_mbps_median': fields.Float
+    'upload_speed_mbps_median': fields.Float,
+    'rtt_avg': fields.Float,
+    'retransmit_avg': fields.Float
 })
 
 location_metric_model = api.model('Location Metric Model', {
