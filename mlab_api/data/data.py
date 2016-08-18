@@ -44,13 +44,23 @@ class Data(object):
         logging.info("prefix: %s", prefix)
 
         results = []
-        with self.get_pool().connection(timeout=5) as connection:
-            connection.open()
-            table = connection.table(table_id)
 
-            # HERE IS THE BIGTABLE QUERY
-            for _, data in table.scan(**params):
-                results.append(du.parse_row(data, table_config.columns))
+        # Hack to allow for reattempts
+        for attempt in range(10):
+            try:
+                with self.get_pool().connection(timeout=5) as connection:
+                    connection.open()
+                    table = connection.table(table_id)
+
+                    # HERE IS THE BIGTABLE QUERY
+                    for _, data in table.scan(**params):
+                        results.append(du.parse_row(data, table_config.columns))
+            except:
+                logging.warning("Failed query attempt %s", str(attempt))
+            else:
+                break
+        else:
+            results = []
         return results
 
     def get_location_metrics(self, location_id, time_aggregation, starttime, endtime):
