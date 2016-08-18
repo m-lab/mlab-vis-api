@@ -44,7 +44,8 @@ class Data(object):
         logging.info("prefix: %s", prefix)
 
         results = []
-        with self.get_pool().connection() as connection:
+        with self.get_pool().connection(timeout=5) as connection:
+            connection.open()
             table = connection.table(table_id)
 
             # HERE IS THE BIGTABLE QUERY
