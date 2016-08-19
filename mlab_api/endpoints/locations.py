@@ -7,7 +7,7 @@ from flask import request
 from flask_restplus import Resource
 
 from mlab_api.app import app, DATA
-from mlab_api.parsers import date_arguments
+from mlab_api.parsers import date_arguments, type_arguments
 from mlab_api.models.location_search_models import location_search_model
 from mlab_api.models.location_metric_models import location_metric_model
 
@@ -90,6 +90,7 @@ class LocationChildren(Resource):
     '''
     Location Children List
     '''
+    @api.expect(type_arguments)
     # @api.marshal_with(location_search_model)
     def get(self, location_id):
         """
@@ -97,7 +98,25 @@ class LocationChildren(Resource):
         Get all location data matching the location_query
         """
 
+        args = type_arguments.parse_args(request)
         location_id = normalize_key(location_id)
 
-        results = DATA.get_location_children(location_id)
+        results = DATA.get_location_children(location_id, args.get('type'))
+        return results
+
+@locations_ns.route('/<string:location_id>/info')
+class LocationInfo(Resource):
+    '''
+    Location Info
+    '''
+    # @api.marshal_with(location_search_model)
+    def get(self, location_id):
+        """
+        Location Info
+        Get all location data matching the location_query
+        """
+
+        location_id = normalize_key(location_id)
+
+        results = DATA.get_location_info(location_id)
         return results

@@ -56,6 +56,7 @@ class Data(object):
                     for _, data in table.scan(**params):
                         results.append(du.parse_row(data, table_config.columns))
             except:
+            # TODO: use specific exception catch.
                 logging.warning("Failed query attempt %s", str(attempt))
             else:
                 break
@@ -133,7 +134,7 @@ class Data(object):
         '''
         table_config = get_table_config(self.table_configs,
                                         None,
-                                        'client_location_search')
+                                        CLIENT_LOCATION_KEY + '_search')
 
 
         results = self.query_table(table_config, prefix=location_query)
@@ -142,15 +143,27 @@ class Data(object):
         sorted_results = sorted(results, key=lambda k: k['data']['test_count'], reverse=True)
         return {"results": sorted_results}
 
-    def get_location_children(self, location_query):
+
+    def get_location_children(self, location_query, type_filter=None):
+        '''
+        Return information about children regions of a location
+        '''
         table_config = get_table_config(self.table_configs,
                                         None,
-                                        'client_location_list')
+                                        CLIENT_LOCATION_KEY + '_list')
         location_prefix = du.get_location_key(location_query, table_config)
 
         results = self.query_table(table_config, prefix=location_prefix)
+        if type_filter:
+            results = [r for r in results if r['meta']['type'] == type_filter]
+
         return {"results": results}
 
+
+    # ----
+    # ASN Data methods
+    # ----
+    # TODO: breakup data methods.
 
     def get_asn_search(self, asn_query):
         '''
