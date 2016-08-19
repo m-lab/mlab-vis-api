@@ -47,21 +47,23 @@ def get_location_key_fields(location_id, table_config):
     '''
 
     location_fields = location_id.split(URL_KEY_DELIM)
-    location_key_fields = []
-    for index, field in enumerate(location_fields):
+    return get_key_fields(location_fields, table_config)
+
+def get_key_fields(field_ids, table_config):
+    '''
+    Given a list of key field ids,
+    return list of fields with appropriate padding and transformations.
+    matching between field id and table config's row_keys is done by
+    list position.
+    '''
+    key_fields = []
+    for index, field in enumerate(field_ids):
+        # TODO: should we check the names?
         field_config = table_config['row_keys'][index]
         key_length = field_config['length']
-        location_key_fields.append(field.ljust(key_length))
+        key_fields.append(field.ljust(key_length))
 
-    return location_key_fields
-
-def get_location_key(location_id, table_config):
-    '''
-    '''
-    location_fields = location_id.lower().replace(' ', '').split(URL_KEY_DELIM)
-    key_length = table_config.keys['parent_location_key']['length']
-    return ''.join(location_fields).ljust(key_length)
-
+    return key_fields
 
 def get_time_key_fields(time_value, time_aggregation, table_config):
     '''
@@ -130,9 +132,9 @@ def decode_value(value, col_type):
         try:
             new_value = value.encode('utf-8')
         except Exception as err:  #pylint: disable=W0703
-            logging.exception("String Conversion Error")
-            logging.exception(str(err))
-            new_value = None
+            logging.warning("String Conversion Error")
+            logging.warning(str(err))
+            new_value = value
     return new_value
 
 def parse_row(row, col_configs, keep_family=True):
@@ -141,12 +143,12 @@ def parse_row(row, col_configs, keep_family=True):
     '''
     parsed = {}
 
-    # TODO: use family names from the actual data.
-    if keep_family:
-        parsed = {'meta':{}, 'data':{}}
-
     for key, value in row.iteritems():
         (family, name) = key.split(":")
+
+        if keep_family:
+            if family not in parsed:
+                parsed[family] = {}
 
         col_type = 'string'
         if name in col_configs:
