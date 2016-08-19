@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import struct
 import logging
@@ -37,7 +38,7 @@ def init_pool(app_config):
             logging.exception("ERROR: Could not make connection")
             logging.exception(err)
     else:
-        print('WARNING: no connection made')
+        logging.warning('WARNING: no connection made')
     return connection_pool
 
 def get_location_key_fields(location_id, table_config):

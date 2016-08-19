@@ -1,12 +1,12 @@
+# -*- coding: utf-8 -*-
 '''
 Data class for accessing data for API calls.
 '''
-from __future__ import print_function
 import logging
 
 from mlab_api.data.table_config import get_table_config
 import mlab_api.data.data_utils as du
-from gcloud.bigtable.row_filters import FamilyNameRegexFilter
+# from gcloud.bigtable.row_filters import FamilyNameRegexFilter
 
 CLIENT_LOCATION_KEY = 'client_loc'
 CLIENT_ASN_KEY = 'client_asn'
