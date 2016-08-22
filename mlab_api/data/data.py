@@ -6,7 +6,7 @@ import logging
 
 from mlab_api.data.table_config import get_table_config
 import mlab_api.data.data_utils as du
-# from gcloud.bigtable.row_filters import FamilyNameRegexFilter
+from gcloud.bigtable.row_filters import FamilyNameRegexFilter
 
 CLIENT_LOCATION_KEY = 'client_loc'
 CLIENT_ASN_KEY = 'client_asn'
@@ -153,7 +153,7 @@ class Data(object):
 
         return du.format_metric_data(results)
 
-    def get_location_client_isps(self, location_id):
+    def get_location_client_isps(self, location_id, include_data):
         '''
         Get list and info of client isps for a location
         '''
@@ -166,11 +166,18 @@ class Data(object):
 
         location_key_field = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
 
+        params = {"prefix":location_key_field}
+        if not include_data:
+            print('EXCLUDING')
+            params["filter"] = FamilyNameRegexFilter('meta')
+
         # results = self.scan_table(table_config, prefix=location_key_field, limit=1000, filter=FamilyNameRegexFilter('meta'))
         # results = self.scan_table(table_config, prefix=location_key_field, limit=1000)
-        results = self.scan_table(table_config, prefix=location_key_field)
-        print(len(results))
-        return {"results": results}
+        results = self.scan_table(table_config, **params)
+
+        # NOTE: in this bigtable - 'last_year_test_count' is in `meta` - not `data`.
+        sorted_results = sorted(results, key=lambda k: k['meta']['last_year_test_count'])
+        return {"results": sorted_results}
 
     def get_location_client_isp_info(self, location_id, client_isp_id):
         '''

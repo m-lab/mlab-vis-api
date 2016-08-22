@@ -7,7 +7,7 @@ from flask import request
 from flask_restplus import Resource
 
 from mlab_api.app import app, DATA
-from mlab_api.parsers import date_arguments, type_arguments
+from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments
 from mlab_api.models.location_search_models import location_search_model
 from mlab_api.models.location_metric_models import location_metric_model
 from mlab_api.models.location_info_models import location_info_model, location_children_model
@@ -75,6 +75,7 @@ class LocationClientIspStats(Resource):
     Location ISP Resource
     '''
 
+    @api.expect(include_data_arguments)
     def get(self, location_id):
         """
         Get Location Metrics for ISP Over Time
@@ -83,8 +84,10 @@ class LocationClientIspStats(Resource):
 
         location_id = normalize_key(location_id)
 
+        args = include_data_arguments.parse_args(request)
 
-        results = DATA.get_location_client_isps(location_id)
+
+        results = DATA.get_location_client_isps(location_id, args.get('data'))
 
         return results
 

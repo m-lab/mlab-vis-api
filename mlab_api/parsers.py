@@ -14,3 +14,7 @@ type_arguments = reqparse.RequestParser()
 type_arguments.add_argument('type', type=str, required=False,
                             choices=['country', 'region', 'city'],
                             help='Limit results to a specific type')
+
+
+include_data_arguments = reqparse.RequestParser()
+include_data_arguments.add_argument('data', type=bool, required=False, default=False, help='Include data attributes in results')
