@@ -176,7 +176,7 @@ class Data(object):
         results = self.scan_table(table_config, **params)
 
         # NOTE: in this bigtable - 'last_year_test_count' is in `meta` - not `data`.
-        sorted_results = sorted(results, key=lambda k: k['meta']['last_year_test_count'])
+        sorted_results = sorted(results, key=lambda k: k['meta']['last_year_test_count'], reverse=True)
         return {"results": sorted_results}
 
     def get_location_client_isp_info(self, location_id, client_isp_id):
