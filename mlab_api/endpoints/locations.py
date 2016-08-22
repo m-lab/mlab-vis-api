@@ -157,7 +157,7 @@ class LocationInfo(Resource):
         Get all location data matching the location_query
         """
 
-        # location_id = normalize_key(location_id)
+        location_id = normalize_key(location_id)
 
         results = DATA.get_location_info(location_id)
         return results

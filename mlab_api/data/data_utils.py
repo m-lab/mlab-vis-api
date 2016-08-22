@@ -129,6 +129,14 @@ def decode_value(value, col_type):
             logging.exception("Integer Conversion Error")
             logging.exception(str(err))
             new_value = None
+    elif col_type == 'integer_list':
+        values = value.split(',')
+        try:
+            new_value = [int(value) for value in values]
+        except Exception as err:  #pylint: disable=W0703
+            logging.exception("Integer Conversion Error")
+            logging.exception(str(err))
+            new_value = []
     else:
         try:
             new_value = value.encode('utf-8')

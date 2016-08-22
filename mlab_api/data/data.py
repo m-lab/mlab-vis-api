@@ -105,11 +105,29 @@ class Data(object):
         table_config = get_table_config(self.table_configs,
                                         None,
                                         CLIENT_LOCATION_KEY + '_list')
-        location_key_fields = du.get_location_key_fields(location_id, table_config)
+        # add empty field to get child location in there
+        location_key_fields = du.get_key_fields([location_id, ""], table_config)
 
         row_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
         row = self.get_row(table_config, row_key)
         return row
+
+    def get_location_children(self, location_id, type_filter=None):
+        '''
+        Return information about children regions of a location
+        '''
+        table_config = get_table_config(self.table_configs,
+                                        None,
+                                        CLIENT_LOCATION_KEY + '_list')
+        location_key_fields = du.get_location_key_fields(location_id, table_config)
+
+        location_key_field = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
+
+        results = self.scan_table(table_config, prefix=location_key_field)
+        if type_filter:
+            results = [r for r in results if r['meta']['type'] == type_filter]
+
+        return {"results": results}
 
     def get_location_metrics(self, location_id, time_aggregation, starttime, endtime):
         '''
@@ -149,7 +167,9 @@ class Data(object):
         location_key_field = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
 
         # results = self.scan_table(table_config, prefix=location_key_field, limit=1000, filter=FamilyNameRegexFilter('meta'))
-        results = self.scan_table(table_config, prefix=location_key_field, limit=1000)
+        # results = self.scan_table(table_config, prefix=location_key_field, limit=1000)
+        results = self.scan_table(table_config, prefix=location_key_field)
+        print(len(results))
         return {"results": results}
 
     def get_location_client_isp_info(self, location_id, client_isp_id):
@@ -222,22 +242,6 @@ class Data(object):
         return {"results": sorted_results}
 
 
-    def get_location_children(self, location_id, type_filter=None):
-        '''
-        Return information about children regions of a location
-        '''
-        table_config = get_table_config(self.table_configs,
-                                        None,
-                                        CLIENT_LOCATION_KEY + '_list')
-        location_key_fields = du.get_location_key_fields(location_id, table_config)
-
-        location_key_field = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
-
-        results = self.scan_table(table_config, prefix=location_key_field)
-        if type_filter:
-            results = [r for r in results if r['meta']['type'] == type_filter]
-
-        return {"results": results}
 
 
     # ----
