@@ -106,7 +106,7 @@ class Data(object):
                                         None,
                                         CLIENT_LOCATION_KEY + '_list')
         # add empty field to get child location in there
-        location_key_fields = du.get_key_fields([location_id, ""], table_config)
+        location_key_fields = du.get_key_fields(["info", location_id], table_config)
 
         row_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
         row = self.get_row(table_config, row_key)
@@ -217,7 +217,9 @@ class Data(object):
         client_isp_fields = du.get_client_isp_fields(client_isp_id, table_config)
 
         starttime_fields = du.get_time_key_fields(starttime, time_aggregation, table_config)
-        endtime_fields = du.get_time_key_fields(endtime, time_aggregation, table_config)
+
+        inclusive_endtime = du.add_time(endtime, 1, time_aggregation)
+        endtime_fields = du.get_time_key_fields(inclusive_endtime, time_aggregation, table_config)
 
         # Start and End -- Row Keys
         start_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields +
