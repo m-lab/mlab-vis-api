@@ -191,6 +191,8 @@ def add_time(basetime_string, amount, time_aggregation):
 
     time_aggregation can be one of: day, month, year.
     '''
+    # HACK around hour times
+    basetime_string = basetime_string.split(URL_KEY_DELIM)[0]
     date_field = time_aggregation.split("_")[0]
     time_format = get_time_format(date_field)
 
@@ -284,6 +286,9 @@ def format_metric_data(raw_data, starttime, endtime, agg):
     '''
     Convert metric raw data list into format to send back to client
     '''
+
+    starttime = starttime.split(URL_KEY_DELIM)[0]
+    endtime = endtime.split(URL_KEY_DELIM)[0]
 
     # Put date and hour in data
     # create dictionary out of returned values.
