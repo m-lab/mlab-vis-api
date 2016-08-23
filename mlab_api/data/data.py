@@ -151,7 +151,7 @@ class Data(object):
         # BIGTABLE QUERY
         results = self.scan_table(table_config, start_key=start_key, end_key=end_key)
 
-        return du.format_metric_data(results)
+        return du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=time_aggregation)
 
     def get_location_client_isps(self, location_id, include_data):
         '''
@@ -231,7 +231,7 @@ class Data(object):
         results = self.scan_table(table_config, start_key=start_key, end_key=end_key)
 
         # format output for API
-        return du.format_metric_data(results)
+        return du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=time_aggregation)
 
     def get_location_search(self, location_query):
         '''

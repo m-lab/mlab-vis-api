@@ -13,8 +13,8 @@ def test_location_key_fields():
     test get_location_key_fields
     '''
 
-    CONFIG_FILENAME = 'bigtable_configs/client_loc_by_day.json'
-    config = read_json(CONFIG_FILENAME)
+    config_filename = 'bigtable_configs/client_loc_by_day.json'
+    config = read_json(config_filename)
     assert len(config) > 1
 
 
@@ -62,3 +62,70 @@ def test_parse_data():
     assert 'median_download' in result['data']
 
     assert isinstance(result['data']['median_download'], float)
+
+
+def test_date_range_generator():
+    '''
+    test create_date_range
+    '''
+
+    # DAYS
+    start = '2010-01-01'
+    end = '2010-01-30'
+    drange = du.create_date_range(start, end, 'day')
+    assert(len(drange) == 30)
+
+    assert(drange[1] == '2010-01-02')
+    assert(drange[-1] == end)
+
+    start = '2010-01-01'
+    end = '2010-12-31'
+    drange = du.create_date_range(start, end, 'day')
+    assert(len(drange) == 365)
+
+    start = '2015-06-05'
+    end = '2015-06-10'
+    drange = du.create_date_range(start, end, 'day')
+    assert(len(drange) == 6)
+
+    # MONTHS
+    start = '2010-01'
+    end = '2010-01'
+    drange = du.create_date_range(start, end, 'month')
+    assert(len(drange) == 1)
+
+
+    start = '2010-01'
+    end = '2010-12'
+    drange = du.create_date_range(start, end, 'month')
+    assert(len(drange) == 12)
+
+    assert(drange[1] == '2010-02')
+    assert(drange[-1] == end)
+
+    start = '2000-01'
+    end = '2016-12'
+    drange = du.create_date_range(start, end, 'month')
+    assert(len(drange) == 204)
+
+    assert(drange[1] == '2000-02')
+    assert(drange[-1] == end)
+
+    # YEARS
+    start = '2010'
+    end = '2015'
+    drange = du.create_date_range(start, end, 'year')
+    assert(len(drange) == 6)
+
+    start = '1910'
+    end = '2015'
+    drange = du.create_date_range(start, end, 'year')
+    assert(len(drange) == 106)
+    assert(drange[-1] == end)
+
+    # day_hour
+    start = '2010-01-01'
+    end = '2010-01-30'
+    drange = du.create_date_range(start, end, 'day_hour')
+    assert(len(drange) == 30 * 24)
+    assert(drange[-1] == end + '+23')

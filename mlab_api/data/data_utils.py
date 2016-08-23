@@ -7,6 +7,13 @@ from gcloud import bigtable
 from gcloud.bigtable import happybase
 from oauth2client.client import GoogleCredentials
 
+from datetime import timedelta, datetime
+from dateutil.relativedelta import relativedelta
+
+TIME_FORMATS = {"day": "%Y-%m-%d",
+                "month": "%Y-%m",
+                "year": "%Y"}
+
 URL_KEY_DELIM = "+"
 BIGTABLE_KEY_DELIM = "|"
 
@@ -173,21 +180,117 @@ def parse_row(row, col_configs, keep_family=True):
 
     return parsed
 
-def format_metric_data(raw_data):
+
+def create_date_range(starttime, endtime, time_aggregation):
+    '''
+    Return list of date strings in the format
+    appropriate for the `delta` input.
+    time_aggregation: one of day, month, year.
+    Date range list is inclusive of start and end time.
+    '''
+
+    def diff_month(d1, d2):
+        return ((d2.year - d1.year) * 12 + d2.month - d1.month) + 1
+
+    def diff_day(d1, d2):
+        return (d2 - d1).days + 1
+
+    def diff_year(d1, d2):
+        return (d2.year - d1.year) + 1
+
+    def create_hour_range():
+        hours = []
+        for n in range(24):
+            hours.append(str(n).zfill(2))
+        return hours
+
+    # HACK some insider knowledge to know the
+    # hour names are split by a _
+    time_fields = time_aggregation.split("_")
+    date_aggregation = time_fields[0]
+
+    hours = None
+    if len(time_fields) > 1 and time_fields[-1] == 'hour':
+        hours = create_hour_range()
+
+    time_format = TIME_FORMATS[date_aggregation]
+    start = datetime.strptime(starttime, time_format)
+    end = datetime.strptime(endtime, time_format)
+
+    diff_time = 0
+    relativename = 'days'
+
+    if date_aggregation == 'day':
+        diff_time = diff_day(start, end)
+    elif date_aggregation == 'month':
+        diff_time = diff_month(start, end)
+        relativename = 'months'
+    elif date_aggregation == 'year':
+        diff_time = diff_year(start, end)
+        relativename = 'years'
+
+    # HACK this should probably be a generator...
+    dates = []
+    for n in range(diff_time):
+        # use relativedelta to add appropriate amounts.
+        mid_date = start + relativedelta(**{relativename:n})
+        mid_date_str = mid_date.strftime(time_format)
+
+        new_dates = []
+
+        # add in hours if necessary
+        if hours:
+            new_dates = [mid_date_str + "+" + hour for hour in hours]
+        else:
+            new_dates = [mid_date_str]
+
+        # combine with previous dates
+        dates += new_dates
+
+    return dates
+
+
+def format_metric_data(raw_data, starttime, endtime, agg):
     '''
     Convert metric raw data list into format to send back to client
     '''
-    results = {"results": [], "meta":{}}
-    # Meta can be taken from first result
 
-    formated_metrics = []
+    # Put date and hour in data
+    # create dictionary out of returned values.
+    keyed_metrics = {}
     for metric in raw_data:
-        # special cases for date and hour
+        date_key = ""
         if 'date' in metric['meta']:
             metric['data']['date'] = metric['meta']['date']
+            date_key += metric['data']['date']
+
         if 'hour' in metric['meta']:
             metric['data']['hour'] = metric['meta']['hour']
-        formated_metrics.append(metric['data'])
+            date_key += "+" + metric['data']['hour']
+
+        # HACK: if we don't have date or hour,
+        # this mapping will fail.
+        keyed_metrics[date_key] = metric['data']
+
+    # Iterate through all dates that should be present
+    all_dates = create_date_range(starttime, endtime, agg)
+
+    formated_metrics = []
+    for date in all_dates:
+        # if the date is in the results,
+        # use that - else put in a blank.
+        if date in keyed_metrics:
+            formated_metrics.append(keyed_metrics[date])
+        else:
+            # HACK: this + split is using knowledge of how
+            # create_date_range makes its date + hour values.
+            key_fields = date.split('+')
+            blank = {'date': key_fields[0]}
+            if len(key_fields) > 1:
+                blank['hour'] = key_fields[1]
+            formated_metrics.append(blank)
+
+    results = {"results": [], "meta":{}}
     results["results"] = formated_metrics
 
     if len(raw_data) > 0:
