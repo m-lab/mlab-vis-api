@@ -129,3 +129,17 @@ def test_date_range_generator():
     drange = du.create_date_range(start, end, 'day_hour')
     assert(len(drange) == 30 * 24)
     assert(drange[-1] == end + '+23')
+
+def test_add_time():
+    '''
+    test add_time
+    '''
+
+    result = du.add_time('2010', 3, 'year')
+    assert(result == '2013')
+
+    result = du.add_time('2010-01', 3, 'month')
+    assert(result == '2010-04')
+
+    result = du.add_time('2010-01-30', 3,  'day')
+    assert(result == '2010-02-02')

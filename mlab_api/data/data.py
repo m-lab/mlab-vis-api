@@ -140,10 +140,12 @@ class Data(object):
                                         CLIENT_LOCATION_KEY)
 
 
+        # expect start and end to be inclusive
+        inclusive_endtime = du.add_time(endtime, 1, time_aggregation)
         location_key_fields = du.get_location_key_fields(location_id, table_config)
 
         starttime_fields = du.get_time_key_fields(starttime, time_aggregation, table_config)
-        endtime_fields = du.get_time_key_fields(endtime, time_aggregation, table_config)
+        endtime_fields = du.get_time_key_fields(inclusive_endtime, time_aggregation, table_config)
 
         start_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields + starttime_fields)
         end_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields + endtime_fields)

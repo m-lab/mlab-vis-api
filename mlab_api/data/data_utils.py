@@ -7,12 +7,14 @@ from gcloud import bigtable
 from gcloud.bigtable import happybase
 from oauth2client.client import GoogleCredentials
 
-from datetime import timedelta, datetime
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 TIME_FORMATS = {"day": "%Y-%m-%d",
                 "month": "%Y-%m",
                 "year": "%Y"}
+
+RELATIVE_NAMES = {"day": "days", "month": "months", "year": "years"}
 
 URL_KEY_DELIM = "+"
 BIGTABLE_KEY_DELIM = "|"
@@ -180,6 +182,36 @@ def parse_row(row, col_configs, keep_family=True):
 
     return parsed
 
+def add_time(basetime_string, amount, time_aggregation):
+    '''
+    Add amount of time to a base time.
+    Base time is expected to be a string.
+    time_aggregation indicates how to parse it, and
+    what the metric of 'amount' is.
+
+    time_aggregation can be one of: day, month, year.
+    '''
+    date_field = time_aggregation.split("_")[0]
+    time_format = get_time_format(date_field)
+
+    basetime = datetime.strptime(basetime_string, time_format)
+    relativename = get_relative_time_name(date_field)
+
+    new_time = basetime + relativedelta(**{relativename: amount})
+    return new_time.strftime(time_format)
+
+
+def get_time_format(date_field):
+    '''
+    Get time format for dates in day, month, or year format
+    '''
+    return TIME_FORMATS[date_field]
+
+def get_relative_time_name(date_field):
+    '''
+    Get name for day, month, year - for use with relativetime
+    '''
+    return RELATIVE_NAMES[date_field]
 
 def create_date_range(starttime, endtime, time_aggregation):
     '''
@@ -213,21 +245,19 @@ def create_date_range(starttime, endtime, time_aggregation):
     if len(time_fields) > 1 and time_fields[-1] == 'hour':
         hours = create_hour_range()
 
-    time_format = TIME_FORMATS[date_aggregation]
+    time_format = get_time_format(date_aggregation)
     start = datetime.strptime(starttime, time_format)
     end = datetime.strptime(endtime, time_format)
 
     diff_time = 0
-    relativename = 'days'
+    relativename = get_relative_time_name(date_aggregation)
 
     if date_aggregation == 'day':
         diff_time = diff_day(start, end)
     elif date_aggregation == 'month':
         diff_time = diff_month(start, end)
-        relativename = 'months'
     elif date_aggregation == 'year':
         diff_time = diff_year(start, end)
-        relativename = 'years'
 
     # HACK this should probably be a generator...
     dates = []
