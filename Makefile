@@ -3,7 +3,7 @@ test:
 	python -m pytest tests
 
 lint:
-	pylint --rcfile .pylint textkit/*/**.py
+	pylint --rcfile .pylintrc mlab_api/*/**.py
 
 prepare:
 	mkdir -p bigtable_configs
