@@ -3,7 +3,7 @@
 Data class for accessing data for API calls.
 '''
 from mlab_api.data.table_config import get_table_config
-from mlab_api.data.base_data import Data
+from mlab_api.data.base_data import Data, CONSTS
 import mlab_api.data.bigtable_utils as bt
 
 class AsnData(Data):
@@ -17,7 +17,7 @@ class AsnData(Data):
         '''
         table_config = get_table_config(self.table_configs,
                                         None,
-                                        'asn_search')
+                                        CONSTS["CLIENT_ASN_KEY"] + "_search")
 
         results = bt.scan_table(table_config, self.get_pool(), prefix=asn_query)
 

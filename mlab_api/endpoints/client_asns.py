@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+'''
+Endpoints for client asns
+'''
 
 from flask_restplus import Resource
 from flask import request
@@ -45,9 +49,7 @@ class ClientAsnSearch(Resource):
     @api.marshal_with(client_asn_search_model)
     def get(self, asn_query):
         """
-        Get Location Metrics Over Time
-        Get speed and other metrics for a particular location at a given time \
-        aggregation level.
+        Get ASN Metrics Over Time
         """
 
         asn_query = normalize_key(asn_query)
