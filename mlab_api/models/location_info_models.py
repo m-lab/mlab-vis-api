@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+Models for definging return value of location info api call
+'''
 from flask_restplus import fields
 from mlab_api.rest_api import api
 

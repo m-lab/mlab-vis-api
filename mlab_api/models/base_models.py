@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+Base models to sub-class or clone
+'''
 from flask_restplus import fields
 from mlab_api.rest_api import api
 

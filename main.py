@@ -10,9 +10,6 @@ from flask_restplus import cors
 # Import Configured Flask App
 from mlab_api.app import app
 
-root = logging.getLogger()
-root.setLevel(logging.DEBUG)
-
 # Import namespaces
 from mlab_api.endpoints.locations import locations_ns
 from mlab_api.endpoints.debug import debug_ns
@@ -20,6 +17,9 @@ from mlab_api.endpoints.client_asns import client_asn_ns
 
 # API is defined here
 from mlab_api.rest_api import api
+
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
 
 # This appears to provide CORS for all API Requests
 api.decorators = [cors.crossdomain(origin='*')]

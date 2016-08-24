@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+Models for definging return value of ASN specific calls
+'''
 
 from flask_restplus import fields
 from mlab_api.rest_api import api

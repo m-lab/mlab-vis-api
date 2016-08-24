@@ -27,7 +27,9 @@ persistent=yes
 # Disable the message, report, category or checker with the given id(s). You
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time.
-#disable=
+disable=C0103,R0201
+#disable=C0103 # invalid constant name
+#disable=R0201 # method could be a function - doesn't like restplus style
 
 
 [REPORTS]
@@ -129,7 +131,7 @@ notes=FIXME,XXX,TODO
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=150
 
 # Maximum number of lines in a module
 max-module-lines=1000

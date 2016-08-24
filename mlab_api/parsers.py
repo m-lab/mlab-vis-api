@@ -10,6 +10,7 @@ date_arguments = reqparse.RequestParser()
 date_arguments.add_argument('startdate', type=str, required=False, help='Start date of metrics')
 date_arguments.add_argument('enddate', type=str, required=False, help='End date of metrics')
 
+
 type_arguments = reqparse.RequestParser()
 type_arguments.add_argument('type', type=str, required=False,
                             choices=['country', 'region', 'city'],
