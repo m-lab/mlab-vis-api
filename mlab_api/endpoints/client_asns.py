@@ -2,7 +2,8 @@
 from flask_restplus import Resource
 from flask import request
 
-from mlab_api.app import app, DATA
+from mlab_api.app import app
+from mlab_api.data.data import ASN_DATA as DATA
 from mlab_api.rest_api import api
 from mlab_api.parsers import date_arguments
 
@@ -19,20 +20,20 @@ class ClientAsnTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
-    def get(self, location_id, time_aggregation):
+    def get(self, asn_id, time_aggregation):
         """
         Get Location Metrics Over Time
         Get speed and other metrics for a particular location at a given time \
         aggregation level.
         """
 
-        location_id = normalize_key(location_id)
+        asn_id = normalize_key(asn_id)
         args = date_arguments.parse_args(request)
         (startdate, enddate) = get_time_window(args,
                                                time_aggregation,
                                                app.config['DEFAULT_TIME_WINDOWS'])
 
-        results = DATA.get_location_metrics(location_id, time_aggregation, startdate, enddate)
+        results = DATA.get_client_asn_metrics(asn_id, time_aggregation, startdate, enddate)
         return results
 
 @client_asn_ns.route('/search/<string:asn_query>')

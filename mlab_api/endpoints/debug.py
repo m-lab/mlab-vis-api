@@ -3,7 +3,7 @@
 Potentially helpful debugging routes.
 '''
 from mlab_api.rest_api import api
-from mlab_api.app import DATA
+from mlab_api.data.data import LOCATION_DATA as DATA
 
 from flask_restplus import Resource
 
@@ -20,7 +20,6 @@ class Connection(Resource):
         Lists BigTable Connection Details
         Indicate if a BigTable connection has been made \
         and if so, what tables are accessible to the API.
-        ---
         """
         pool = DATA.get_pool()
 

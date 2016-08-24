@@ -6,7 +6,8 @@ Routes focused on locations.
 from flask import request
 from flask_restplus import Resource
 
-from mlab_api.app import app, DATA
+from mlab_api.app import app
+from mlab_api.data.data import LOCATION_DATA as DATA
 from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments
 from mlab_api.models.location_search_models import location_search_model
 from mlab_api.models.location_metric_models import location_metric_model
@@ -19,6 +20,60 @@ from mlab_api.rest_api import api
 # this is the namespace that gets included elsewhere.
 locations_ns = api.namespace('locations', description='Location specific API')
 
+@locations_ns.route('/<string:location_id>')
+@locations_ns.route('/<string:location_id>/info')
+class LocationInfo(Resource):
+    '''
+    Location Info
+    '''
+    # @api.marshal_with(location_search_model)
+    def get(self, location_id):
+        """
+        Location Info
+        Get all location data matching the location_query
+        """
+
+        location_id = normalize_key(location_id)
+
+        results = DATA.get_location_info(location_id)
+        return results
+
+
+@locations_ns.route('/<string:location_id>/children')
+class LocationChildren(Resource):
+    '''
+    Location Children List
+    '''
+    @api.expect(type_arguments)
+    @api.marshal_with(location_children_model)
+    def get(self, location_id):
+        """
+        Location Search
+        Get all location data matching the location_query
+        """
+
+        args = type_arguments.parse_args(request)
+        location_id = normalize_key(location_id)
+
+        results = DATA.get_location_children(location_id, args.get('type'))
+        return results
+
+@locations_ns.route('/search/<string:location_query>')
+class LocationSearch(Resource):
+    '''
+    Location Search Resource
+    '''
+    @api.marshal_with(location_search_model)
+    def get(self, location_query):
+        """
+        Location Search
+        Get all location data matching the location_query
+        """
+
+        location_query = normalize_key(location_query)
+
+        results = DATA.get_location_search(location_query)
+        return results
 
 @locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/metrics')
 class LocationTimeMetric(Resource):
@@ -109,58 +164,4 @@ class LocationClientIspInfo(Resource):
         results = DATA.get_location_client_isp_info(location_id, client_isp_id)
 
 
-        return results
-
-
-@locations_ns.route('/search/<string:location_query>')
-class LocationSearch(Resource):
-    '''
-    Location Search Resource
-    '''
-    @api.marshal_with(location_search_model)
-    def get(self, location_query):
-        """
-        Location Search
-        Get all location data matching the location_query
-        """
-
-        location_query = normalize_key(location_query)
-
-        results = DATA.get_location_search(location_query)
-        return results
-
-@locations_ns.route('/<string:location_id>/children')
-class LocationChildren(Resource):
-    '''
-    Location Children List
-    '''
-    @api.expect(type_arguments)
-    @api.marshal_with(location_children_model)
-    def get(self, location_id):
-        """
-        Location Search
-        Get all location data matching the location_query
-        """
-
-        args = type_arguments.parse_args(request)
-        location_id = normalize_key(location_id)
-
-        results = DATA.get_location_children(location_id, args.get('type'))
-        return results
-
-@locations_ns.route('/<string:location_id>/info')
-class LocationInfo(Resource):
-    '''
-    Location Info
-    '''
-    # @api.marshal_with(location_search_model)
-    def get(self, location_id):
-        """
-        Location Info
-        Get all location data matching the location_query
-        """
-
-        location_id = normalize_key(location_id)
-
-        results = DATA.get_location_info(location_id)
         return results

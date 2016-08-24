@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+'''
+Utilities to help with data transformations
+'''
 
 import struct
 import logging
 
-from gcloud import bigtable
-from gcloud.bigtable import happybase
-from oauth2client.client import GoogleCredentials
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -19,36 +19,6 @@ RELATIVE_NAMES = {"day": "days", "month": "months", "year": "years"}
 URL_KEY_DELIM = "+"
 BIGTABLE_KEY_DELIM = "|"
 
-def init_pool(app_config):
-    '''
-    Setup Connection
-    From the documentation:
-    Creating a Connection object is a heavyweight operation;
-     you should create a single Connection and
-     share it among threads in your application.
-    '''
-
-    credentials = GoogleCredentials.get_application_default()
-    connection_pool = None
-
-    if 'GOOGLE_PROJECT_ID' and 'BIGTABLE_INSTANCE' in app_config:
-        try:
-            client = bigtable.Client(project=app_config['GOOGLE_PROJECT_ID'],
-                                     admin=True, credentials=credentials)
-
-            instance = client.instance(app_config['BIGTABLE_INSTANCE'])
-
-            size = 10
-            if 'BIGTABLE_POOL_SIZE' in app_config:
-                size = app_config['BIGTABLE_POOL_SIZE']
-
-            connection_pool = happybase.pool.ConnectionPool(size, instance=instance)
-        except Exception as err:  #pylint: disable=W0703
-            logging.exception("ERROR: Could not make connection")
-            logging.exception(err)
-    else:
-        logging.warning('WARNING: no connection made')
-    return connection_pool
 
 def get_location_key_fields(location_id, table_config):
     '''
@@ -223,16 +193,28 @@ def create_date_range(starttime, endtime, time_aggregation):
     Date range list is inclusive of start and end time.
     '''
 
-    def diff_month(d1, d2):
-        return ((d2.year - d1.year) * 12 + d2.month - d1.month) + 1
-
     def diff_day(d1, d2):
+        '''
+        Returns integer representing number of days between d1 and d2
+        '''
         return (d2 - d1).days + 1
 
+    def diff_month(d1, d2):
+        '''
+        Returns integer representing number of months between d1 and d2
+        '''
+        return ((d2.year - d1.year) * 12 + d2.month - d1.month) + 1
+
     def diff_year(d1, d2):
+        '''
+        Returns integer representing number of years between d1 and d2
+        '''
         return (d2.year - d1.year) + 1
 
     def create_hour_range():
+        '''
+        Returns an array of strings from '00' to '23'
+        '''
         hours = []
         for n in range(24):
             hours.append(str(n).zfill(2))
