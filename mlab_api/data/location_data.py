@@ -128,9 +128,7 @@ class LocationData(Data):
                                         time_aggregation,
                                         agg_name)
 
-        location_key_fields = du.get_location_key_fields(location_id, table_config)
-
-        client_isp_fields = du.get_client_isp_fields(client_isp_id, table_config)
+        key_fields = du.get_key_fields([client_isp_id, location_id], table_config)
 
         starttime_fields = du.get_time_key_fields(starttime, time_aggregation, table_config)
 
@@ -138,13 +136,9 @@ class LocationData(Data):
         endtime_fields = du.get_time_key_fields(inclusive_endtime, time_aggregation, table_config)
 
         # Start and End -- Row Keys
-        start_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields +
-                                               client_isp_fields +
-                                               starttime_fields)
+        start_key = du.BIGTABLE_KEY_DELIM.join(key_fields + starttime_fields)
 
-        end_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields +
-                                             client_isp_fields +
-                                             endtime_fields)
+        end_key = du.BIGTABLE_KEY_DELIM.join(key_fields + endtime_fields)
 
         # Prepare to query the table
 
