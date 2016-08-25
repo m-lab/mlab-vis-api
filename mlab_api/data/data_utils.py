@@ -118,7 +118,7 @@ def decode_value(value, col_type):
             new_value = []
     else:
         try:
-            new_value = value.encode('utf-8')
+            new_value = value.decode('utf-8').encode('utf-8')
         except Exception as err:  #pylint: disable=W0703
             logging.warning("String Conversion Error")
             logging.warning(str(err))

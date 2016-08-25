@@ -15,7 +15,7 @@ base_meta_fields = api.model('Base Meta', {
     'client_country_code': fields.String(description="Country code of Location."),
     'client_region': fields.String(description="Region of Location."),
     'client_region_code': fields.String(description="Region code of Location."),
-    'client_city': fields.String(description="Name of city, if location is a city.")
+    'client_city': fields.Raw(description="Name of city, if location is a city.")
 })
 
 
