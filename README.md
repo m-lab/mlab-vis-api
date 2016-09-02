@@ -39,7 +39,7 @@ Well, its not really that simple. For this to work, it requires a few things:
 1 - access to your Google Service Account JSON file. It currently looks for it in:
 
 ```
-../../mlab-keys/mlab-cred.json
+../mlab-keys/mlab-cred.json
 ```
 
 So ensure that directory and file is present.
