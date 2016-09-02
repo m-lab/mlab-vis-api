@@ -17,7 +17,6 @@ location_info_meta_fields = base_meta_fields.extend('Location Info Meta', {
 api.models[location_info_meta_fields.name] = location_info_meta_fields
 
 location_info_data_fields = api.model('Location Info Data', {
-    'last_year_test_count': fields.Integer(description="Test counts in last year"),
     'last_year_download_speed_mbps_median': fields.Float,
     'last_year_download_speed_mbps_avg': fields.Float,
     'last_year_download_speed_mbps_min': fields.Float,
@@ -46,7 +45,8 @@ location_children_model = api.model('Location Children Info Model', {
 
 location_client_asn_meta_fields = location_info_meta_fields.extend('Location Client ASN Meta', {
     'client_asn_name': fields.String(description="Name of ASN."),
-    'client_asn_number': fields.String(description="ASN number.")
+    'client_asn_number': fields.String(description="ASN number."),
+    'last_year_test_count': fields.Integer(description="Test counts in last year"),
 })
 
 
