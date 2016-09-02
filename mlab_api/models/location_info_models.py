@@ -23,13 +23,15 @@ location_info_data_fields = api.model('Location Info Data', {
     'last_year_download_speed_mbps_min': fields.Float,
     'last_year_download_speed_mbps_max': fields.Float,
     'last_year_download_speed_mbps_stddev': fields.Float,
+    'last_year_download_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of download speeds"),
     'last_year_upload_speed_mbps_median': fields.Float,
     'last_year_upload_speed_mbps_avg': fields.Float,
     'last_year_upload_speed_mbps_min': fields.Float,
     'last_year_upload_speed_mbps_max': fields.Float,
     'last_year_upload_speed_mbps_stddev': fields.Float,
-    'rtt_avg': fields.Float,
-    'retransmit_avg': fields.Float
+    'last_year_upload_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of upload speeds"),
+    'last_year_rtt_avg': fields.Float,
+    'last_year_retransmit_avg': fields.Float,
 })
 
 location_info_model = api.model('Location Info Model', {
