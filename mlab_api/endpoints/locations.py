@@ -11,7 +11,7 @@ from mlab_api.data.data import LOCATION_DATA as DATA
 from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments
 from mlab_api.models.location_search_models import location_search_model
 from mlab_api.models.location_metric_models import location_metric_model
-from mlab_api.models.location_info_models import location_info_model, location_children_model
+from mlab_api.models.location_info_models import location_info_model, location_children_model, location_client_isp_info_model
 
 from mlab_api.url_utils import get_time_window, normalize_key
 
@@ -152,7 +152,7 @@ class LocationClientIspInfo(Resource):
     Location ISP Resource info
     '''
 
-    @api.marshal_with(location_info_model)
+    @api.marshal_with(location_client_isp_info_model)
     def get(self, location_id, client_isp_id):
         """
         Get ISP info for a specific location / isp combo

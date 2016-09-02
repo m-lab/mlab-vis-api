@@ -40,3 +40,15 @@ location_info_model = api.model('Location Info Model', {
 location_children_model = api.model('Location Children Info Model', {
     "results": fields.List(fields.Nested(location_info_model))
 })
+
+
+location_client_asn_meta_fields = location_info_meta_fields.extend('Location Client ASN Meta', {
+    'client_asn_name': fields.String(description="Name of ASN."),
+    'client_asn_number': fields.String(description="ASN number.")
+})
+
+
+location_client_isp_info_model = api.model('Location Client ASN Model', {
+    'meta': fields.Nested(location_client_asn_meta_fields, required=True),
+    'data': fields.Nested(location_info_data_fields, required=True)
+})
