@@ -49,6 +49,7 @@ location_client_asn_meta_fields = location_info_meta_fields.extend('Location Cli
     'last_year_test_count': fields.Integer(description="Test counts in last year"),
 })
 
+api.models[location_client_asn_meta_fields.name] = location_client_asn_meta_fields
 
 location_client_isp_info_model = api.model('Location Client ASN Model', {
     'meta': fields.Nested(location_client_asn_meta_fields, required=True),
