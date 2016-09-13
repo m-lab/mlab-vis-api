@@ -27,6 +27,8 @@ class LocationData(Data):
 
         row_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
         row = bt.get_row(table_config, self.get_pool(), row_key)
+        row["meta"]["id"] = location_id
+
         return row
 
     def get_location_children(self, location_id, type_filter=None):
@@ -69,8 +71,12 @@ class LocationData(Data):
 
         # BIGTABLE QUERY
         results = bt.scan_table(table_config, self.get_pool(), start_key=start_key, end_key=end_key)
+        formatted = du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=time_aggregation)
 
-        return du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=time_aggregation)
+        # set the ID to be the location ID
+        formatted["meta"]["id"] = location_id
+
+        return formatted
 
     def get_location_client_isps(self, location_id, include_data):
         '''
@@ -110,6 +116,7 @@ class LocationData(Data):
         row_key = du.BIGTABLE_KEY_DELIM.join(key_fields)
 
         results = bt.get_row(table_config, self.get_pool(), row_key)
+        results["meta"]["id"] = client_isp_id
         return results
 
 
@@ -145,7 +152,12 @@ class LocationData(Data):
         results = bt.scan_table(table_config, self.get_pool(), start_key=start_key, end_key=end_key)
 
         # format output for API
-        return du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=time_aggregation)
+        formatted = du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=time_aggregation)
+
+        # set the ID to be the Client ISP ID
+        formatted["meta"]["id"] = client_isp_id
+
+        return formatted
 
     def get_location_search(self, location_query):
         '''
