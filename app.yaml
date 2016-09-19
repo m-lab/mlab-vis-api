@@ -17,4 +17,5 @@ resources:
 #[START env]
 env_variables:
     GOOGLE_APPLICATION_CREDENTIALS: "./cred.json"
+    API_MODE: 'PROD'
 #[END env]
