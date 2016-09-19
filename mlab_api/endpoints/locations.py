@@ -17,6 +17,8 @@ from mlab_api.url_utils import get_time_window, normalize_key
 
 from mlab_api.rest_api import api
 
+from mlab_api.stats import statsd
+
 # this is the namespace that gets included elsewhere.
 locations_ns = api.namespace('locations', description='Location specific API')
 
@@ -27,6 +29,7 @@ class LocationInfo(Resource):
     Location Info
     '''
     # @api.marshal_with(location_search_model)
+    @statsd.timer('location.info.api')
     def get(self, location_id):
         """
         Location Info
@@ -46,6 +49,7 @@ class LocationChildren(Resource):
     '''
     @api.expect(type_arguments)
     @api.marshal_with(location_children_model)
+    @statsd.timer('location.children.api')
     def get(self, location_id):
         """
         Location Search
@@ -64,6 +68,7 @@ class LocationSearch(Resource):
     Location Search Resource
     '''
     @api.marshal_with(location_search_model)
+    @statsd.timer('location.search.api')
     def get(self, location_query):
         """
         Location Search
@@ -83,6 +88,7 @@ class LocationTimeMetric(Resource):
 
     @api.expect(date_arguments)
     @api.marshal_with(location_metric_model)
+    @statsd.timer('location.metrics.api')
     def get(self, location_id, time_aggregation):
         """
         Get Location Metrics Over Time
@@ -106,6 +112,7 @@ class LocationTimeClientIspMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @statsd.timer('location.clientisps_metrics.api')
     def get(self, location_id, time_aggregation, client_isp_id):
         """
         Get Location Metrics for ISP Over Time
@@ -131,6 +138,7 @@ class LocationClientIspStats(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @statsd.timer('location.clientisps_list.api')
     def get(self, location_id):
         """
         Get Location Metrics for ISP Over Time
@@ -153,6 +161,7 @@ class LocationClientIspInfo(Resource):
     '''
 
     @api.marshal_with(location_client_isp_info_model)
+    @statsd.timer('location.clientisps_info.api')
     def get(self, location_id, client_isp_id):
         """
         Get ISP info for a specific location / isp combo
