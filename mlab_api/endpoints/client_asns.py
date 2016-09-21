@@ -7,7 +7,7 @@ from flask_restplus import Resource
 from flask import request
 
 from mlab_api.app import app
-from mlab_api.data.data import ASN_DATA as DATA
+from mlab_api.data.data import CLIENT_ASN_DATA as DATA
 from mlab_api.rest_api import api
 from mlab_api.parsers import date_arguments
 
@@ -53,5 +53,5 @@ class ClientAsnSearch(Resource):
         """
 
         asn_query = normalize_key(asn_query)
-        results = DATA.get_asn_search(asn_query)
+        results = DATA.get_client_asn_search(asn_query)
         return results

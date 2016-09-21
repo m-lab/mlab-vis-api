@@ -14,6 +14,7 @@ from mlab_api.app import app
 from mlab_api.endpoints.locations import locations_ns
 from mlab_api.endpoints.debug import debug_ns
 from mlab_api.endpoints.client_asns import client_asn_ns
+from mlab_api.endpoints.server_asns import server_asn_ns
 
 # API is defined here
 from mlab_api.rest_api import api
@@ -28,6 +29,7 @@ api.decorators = [cors.crossdomain(origin='*')]
 api.add_namespace(locations_ns)
 api.add_namespace(debug_ns)
 api.add_namespace(client_asn_ns)
+api.add_namespace(server_asn_ns)
 
 # init api with Flask App
 api.init_app(app)
