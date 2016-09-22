@@ -3,6 +3,8 @@
 Utilities for working with URL inputs
 '''
 
+import re
+
 def get_time_window(args, time_aggregation, defaults):
     '''
     Returns starttime and endtime specified by args.
@@ -22,4 +24,13 @@ def normalize_key(location_key):
     '''
     Provides consistent search strings
     '''
-    return location_key.lower().replace(" ", "")
+
+    return re.sub('[\W|_]', '', location_key.lower())
+
+def get_filter(args):
+    ftype = args.get('filtertype')
+    fvalue = args.get('filtervalue')
+
+    if( ftype and fvalue):
+        return {ftype: fvalue}
+    return {}
