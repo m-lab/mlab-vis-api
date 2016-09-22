@@ -8,12 +8,13 @@ from flask_restplus import Resource
 
 from mlab_api.app import app
 from mlab_api.data.data import LOCATION_DATA as DATA
-from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments
+from mlab_api.data.data import SEARCH_DATA as SEARCH
+from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments, search_arguments
 from mlab_api.models.location_search_models import location_search_model
 from mlab_api.models.location_metric_models import location_metric_model
 from mlab_api.models.location_info_models import location_info_model, location_children_model, location_client_isp_info_model
 
-from mlab_api.url_utils import get_time_window, normalize_key
+from mlab_api.url_utils import get_time_window, normalize_key, get_filter
 
 from mlab_api.rest_api import api
 
@@ -67,6 +68,7 @@ class LocationSearch(Resource):
     '''
     Location Search Resource
     '''
+    @api.expect(search_arguments)
     @api.marshal_with(location_search_model)
     @statsd.timer('locations.search.api')
     def get(self, location_query):
@@ -76,8 +78,10 @@ class LocationSearch(Resource):
         """
 
         location_query = normalize_key(location_query)
+        args = search_arguments.parse_args(request)
+        search_filter = get_filter(args)
+        results = SEARCH.get_search_results('locations', location_query, search_filter)
 
-        results = DATA.get_location_search(location_query)
         return results
 
 @locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/metrics')
@@ -105,7 +109,7 @@ class LocationTimeMetric(Resource):
         results = DATA.get_location_metrics(location_id, time_aggregation, startdate, enddate)
         return results
 
-@locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/clientisps/<string:client_isp_id>/metrics')
+@locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/clients/<string:client_isp_id>/metrics')
 class LocationTimeClientIspMetric(Resource):
     '''
     Location Time ISP Resource
@@ -131,7 +135,7 @@ class LocationTimeClientIspMetric(Resource):
 
         return results
 
-@locations_ns.route('/<string:location_id>/clientisps')
+@locations_ns.route('/<string:location_id>/clients')
 class LocationClientIspStats(Resource):
     '''
     Location ISP Resource
@@ -154,7 +158,7 @@ class LocationClientIspStats(Resource):
 
         return results
 
-@locations_ns.route('/<string:location_id>/clientisps/<string:client_isp_id>/info')
+@locations_ns.route('/<string:location_id>/clients/<string:client_isp_id>/info')
 class LocationClientIspInfo(Resource):
     '''
     Location ISP Resource info

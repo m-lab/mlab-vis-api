@@ -26,16 +26,6 @@ class TestApp(TestCase):
         response = self.client.get("/debug/connection")
         self.assertIsNotNone(response.json['tables'])
 
-    def test_locations_search(self):
-        location_key = 'kansascity'
-        response = self.client.get("/locations/search/{0}".format(location_key))
-        self.assertIsNotNone(response.json['results'])
-        assert(len(response.json['results']) > 0)
-        # check for some fields
-        result = response.json['results'][0]
-        expected_fields = [('meta', 'location_key'), ('data', 'test_count')]
-        for family, key in expected_fields:
-            self.assertIsNotNone(result[family][key])
 
     def test_locations_children(self):
         location_key = 'nausma'
@@ -54,7 +44,7 @@ class TestApp(TestCase):
         self.assertIsNotNone(response.json['data'])
 
         result = response.json
-        expected_fields = [('meta', 'client_region'), ('data', 'last_year_test_count')]
+        expected_fields = [('meta', 'client_region'), ('data', 'test_count')]
         for family, key in expected_fields:
             self.assertIsNotNone(result[family][key])
 
@@ -74,7 +64,7 @@ class TestApp(TestCase):
 
     def test_locations_clientisps(self):
         location_key = 'nausmaboston'
-        response = self.client.get("/locations/{0}/clientisps".format(location_key))
+        response = self.client.get("/locations/{0}/clients".format(location_key))
         self.assertIsNotNone(response.json['results'])
         isp_nums = [r['meta']['client_asn_number'] for r in response.json['results']]
         assert('AS7922' in isp_nums)
@@ -84,7 +74,7 @@ class TestApp(TestCase):
         client_isp = 'AS7922'
         time_aggs = ['day', 'month', 'year', 'day_hour', 'month_hour', 'year_hour']
         for time_agg in time_aggs:
-            response = self.client.get("/locations/{0}/time/{1}/clientisps/{2}/metrics".format(location_key, time_agg, client_isp))
+            response = self.client.get("/locations/{0}/time/{1}/clients/{2}/metrics".format(location_key, time_agg, client_isp))
             self.assertIsNotNone(response.json['results'])
             self.assertIsNotNone(response.json['meta'])
             assert(len(response.json['results']) > 0)
@@ -98,11 +88,34 @@ class TestApp(TestCase):
     def test_locations_clientisps_info(self):
         location_key = 'nausmaboston'
         client_isp = 'AS7922'
-        response = self.client.get("/locations/{0}/clientisps/{1}/info".format(location_key, client_isp))
+        response = self.client.get("/locations/{0}/clients/{1}/info".format(location_key, client_isp))
         self.assertIsNotNone(response.json['data'])
 
         result = response.json
         expected_fields = [('meta', 'client_region'), ('data', 'last_year_test_count')]
+        for family, key in expected_fields:
+            self.assertIsNotNone(result[family][key])
+
+    def test_locations_search(self):
+        location_key = 'kansascity'
+        response = self.client.get("/locations/search/{0}".format(location_key))
+        self.assertIsNotNone(response.json['results'])
+        assert(len(response.json['results']) > 0)
+        # check for some fields
+        result = response.json['results'][0]
+        expected_fields = [('meta', 'location_key'), ('data', 'test_count')]
+        for family, key in expected_fields:
+            self.assertIsNotNone(result[family][key])
+
+    def test_servers_search(self):
+        search_key = 'x'
+        response = self.client.get("/servers/search/{0}".format(search_key))
+        self.assertIsNotNone(response.json['results'])
+        assert(len(response.json['results']) > 0)
+
+        # check for some fields
+        result = response.json['results'][0]
+        expected_fields = [('meta', 'server_asn_name'), ('data', 'test_count')]
         for family, key in expected_fields:
             self.assertIsNotNone(result[family][key])
 

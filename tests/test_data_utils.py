@@ -143,3 +143,22 @@ def test_add_time():
 
     result = du.add_time('2010-01-30', 3,  'day')
     assert(result == '2010-02-02')
+
+def test_search_table():
+    '''
+    test search_table()
+    '''
+
+    result = du.search_table('locations')
+    assert(result == 'client_loc_search')
+
+def test_list_table():
+    '''
+    test list_table()
+    '''
+
+    result = du.list_table('locations')
+    assert(result == 'client_loc_list')
+
+    result = du.list_table('locations', 'clients')
+    assert(result == 'client_asn_client_loc_list')

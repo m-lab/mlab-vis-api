@@ -2,12 +2,12 @@
 '''
 Data class for accessing data for API calls.
 '''
-from mlab_api.data.base_data import Data, CONSTS
+from gcloud.bigtable.row_filters import FamilyNameRegexFilter
+from mlab_api.data.base_data import Data
+from mlab_api.constants import TABLE_KEYS
 from mlab_api.data.table_config import get_table_config
 import mlab_api.data.data_utils as du
 import mlab_api.data.bigtable_utils as bt
-from gcloud.bigtable.row_filters import FamilyNameRegexFilter
-
 from mlab_api.stats import statsd
 
 class LocationData(Data):
@@ -22,7 +22,7 @@ class LocationData(Data):
 
         table_config = get_table_config(self.table_configs,
                                         None,
-                                        CONSTS["CLIENT_LOCATION_KEY"] + '_list')
+                                        du.list_table('locations'))
         # add empty field to get child location in there
         location_key_fields = du.get_key_fields(["info", location_id], table_config)
 
@@ -40,7 +40,7 @@ class LocationData(Data):
         '''
         table_config = get_table_config(self.table_configs,
                                         None,
-                                        CONSTS["CLIENT_LOCATION_KEY"] + '_list')
+                                        du.list_table('locations'))
         location_key_fields = du.get_location_key_fields(location_id, table_config)
 
         location_key_field = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
@@ -61,7 +61,8 @@ class LocationData(Data):
 
         table_config = get_table_config(self.table_configs,
                                         time_aggregation,
-                                        CONSTS["CLIENT_LOCATION_KEY"])
+
+                                        TABLE_KEYS["locations"])
 
 
         # expect start and end to be inclusive
@@ -94,7 +95,9 @@ class LocationData(Data):
         Get list and info of client isps for a location
         '''
 
-        config_id = CONSTS["CLIENT_LOCATION_KEY"] + '_' + CONSTS["CLIENT_ASN_KEY"] + '_list'
+        # config_id = TABLE_KEYS["CLIENT_LOCATION_KEY"] + '_' + TABLE_KEYS["CLIENT_ASN_KEY"] + '_list'
+
+        config_id = du.list_table('clients', 'locations')
 
         table_config = get_table_config(self.table_configs, None, config_id)
 
@@ -121,7 +124,8 @@ class LocationData(Data):
         Get static information about
         '''
 
-        config_id = CONSTS["CLIENT_LOCATION_KEY"] + '_' + CONSTS["CLIENT_ASN_KEY"] + '_list'
+        # config_id = TABLE_KEYS["CLIENT_LOCATION_KEY"] + '_' + TABLE_KEYS["CLIENT_ASN_KEY"] + '_list'
+        config_id = du.list_table('clients', 'locations')
         table_config = get_table_config(self.table_configs, None, config_id)
 
         key_fields = du.get_key_fields([location_id, client_isp_id], table_config)
@@ -144,7 +148,7 @@ class LocationData(Data):
         specific client ISP.
         '''
         # Create Row Key
-        agg_name = CONSTS["CLIENT_ASN_KEY"] + '_' + CONSTS["CLIENT_LOCATION_KEY"]
+        agg_name = TABLE_KEYS["clients"] + '_' + TABLE_KEYS["locations"]
 
         table_config = get_table_config(self.table_configs,
                                         time_aggregation,
@@ -185,7 +189,7 @@ class LocationData(Data):
         '''
         table_config = get_table_config(self.table_configs,
                                         None,
-                                        CONSTS["CLIENT_LOCATION_KEY"] + '_search')
+                                        du.search_table('locations'))
 
 
         results = []

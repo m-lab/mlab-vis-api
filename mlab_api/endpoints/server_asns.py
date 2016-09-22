@@ -6,16 +6,16 @@ Endpoints for server asns
 from flask_restplus import Resource
 from flask import request
 
-from mlab_api.app import app
-from mlab_api.data.data import SERVER_ASN_DATA as DATA
+# from mlab_api.data.data import SERVER_ASN_DATA as DATA
+from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.rest_api import api
-from mlab_api.parsers import date_arguments
+from mlab_api.parsers import search_arguments
 
-from mlab_api.url_utils import get_time_window, normalize_key
+from mlab_api.url_utils import get_filter, normalize_key
 
 from mlab_api.models.asn_models import server_asn_search_model
 
-server_asn_ns = api.namespace('server_asns', description='Server ASN specific API')
+server_asn_ns = api.namespace('servers', description='Server ASN specific API')
 
 # @server_asn_ns.route('/<string:asn_id>/time/<string:time_aggregation>/metrics')
 # class ServerAsnTimeMetric(Resource):
@@ -46,12 +46,15 @@ class ServerAsnSearch(Resource):
     Location Time Metrics
     '''
 
+    @api.expect(search_arguments)
     @api.marshal_with(server_asn_search_model)
     def get(self, asn_query):
         """
         Get ASN Metrics Over Time
         """
 
+        args = search_arguments.parse_args(request)
+        search_filter = get_filter(args)
         asn_query = normalize_key(asn_query)
-        results = DATA.get_server_asn_search(asn_query)
+        results = SEARCH.get_search_results('servers', asn_query, search_filter)
         return results

@@ -2,11 +2,6 @@
 '''
 Base Data Class
 '''
-CONSTS = {
-    "CLIENT_LOCATION_KEY": 'client_loc',
-    "CLIENT_ASN_KEY": 'client_asn',
-    "SERVER_ASN_KEY": 'server_asn'
-}
 
 class Data(object):
     '''

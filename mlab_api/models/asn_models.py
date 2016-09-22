@@ -13,7 +13,8 @@ from mlab_api.models.base_models import search_data_fields
 client_asn_search_meta_fields = api.model('Client ASN Search Meta', {
     'client_asn_name': fields.Raw(description="Name of ASN."),
     'client_asn_name_lookup': fields.Raw(description="Key used to look up ASN."),
-    'client_asn_number': fields.String(description="ASN number.")
+    'client_asn_number': fields.String(description="ASN number."),
+    'id': fields.String(description="ID for ASN", attribute='client_asn_number')
 })
 
 client_asn_search_result_fields = api.model('Client ASN Search Result', {
@@ -26,13 +27,13 @@ client_asn_search_model = api.model('Client ASN Search Results', {
 })
 
 
-
 # ---
 # Models for Server ASN
 # ---
 server_asn_search_meta_fields = api.model('Server ASN Search Meta', {
     'server_asn_name': fields.Raw(description="Name of ASN."),
-    'server_asn_name_lookup': fields.Raw(description="Key used to look up ASN."),
+    'server_asn_number': fields.Raw(description="ASN for server"),
+    'id': fields.Raw(description="Key used to look up ASN.", attribute='server_asn_number'),
 })
 
 server_asn_search_result_fields = api.model('Server ASN Search Result', {

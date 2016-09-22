@@ -15,7 +15,7 @@ from mlab_api.url_utils import get_time_window, normalize_key
 
 from mlab_api.models.asn_models import client_asn_search_model
 
-client_asn_ns = api.namespace('client_asns', description='Client ASN specific API')
+client_asn_ns = api.namespace('clients', description='Client ASN specific API')
 
 @client_asn_ns.route('/<string:asn_id>/time/<string:time_aggregation>/metrics')
 class ClientAsnTimeMetric(Resource):

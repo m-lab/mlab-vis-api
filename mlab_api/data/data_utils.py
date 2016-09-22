@@ -6,7 +6,7 @@ Utilities to help with data transformations
 import struct
 import logging
 
-
+from mlab_api.constants import TABLE_KEYS
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -19,6 +19,13 @@ RELATIVE_NAMES = {"day": "days", "month": "months", "year": "years"}
 URL_KEY_DELIM = "+"
 BIGTABLE_KEY_DELIM = "|"
 
+def list_table(target_id, scope_id = None):
+    names = [TABLE_KEYS[tid] for tid in [scope_id, target_id] if tid]
+    return "_".join(names) + "_list"
+
+def search_table(target_id):
+    return TABLE_KEYS[target_id] + "_search"
+
 
 def get_location_key_fields(location_id, table_config):
     '''
@@ -28,6 +35,12 @@ def get_location_key_fields(location_id, table_config):
 
     location_fields = location_id.split(URL_KEY_DELIM)
     return get_key_fields(location_fields, table_config)
+
+
+def get_key_field(field, index, table_config):
+    field_config = table_config['row_keys'][index]
+    key_length = field_config['length']
+    return field.ljust(key_length)
 
 def get_key_fields(field_ids, table_config):
     '''
@@ -39,10 +52,7 @@ def get_key_fields(field_ids, table_config):
     key_fields = []
     for index, field in enumerate(field_ids):
         # TODO: should we check the names?
-        field_config = table_config['row_keys'][index]
-        key_length = field_config['length']
-        key_fields.append(field.ljust(key_length))
-
+        key_fields.append(get_key_field(field, index, table_config))
     return key_fields
 
 def get_time_key_fields(time_value, time_aggregation, table_config):
