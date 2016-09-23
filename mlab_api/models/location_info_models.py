@@ -39,15 +39,13 @@ location_info_data_fields = location_info_data_base_fields.extend('Location Info
 })
 api.models[location_info_data_fields.name] = location_info_data_fields
 
-location_client_isp_meta_fields = base_meta_fields.extend('Location Client Info Meta', {
-    'last_year_test_count': fields.Integer(description="Test counts in last year")
-})
-api.models[location_client_isp_meta_fields.name] = location_client_isp_meta_fields
-
-# location_client_isp_data_meta_fields = location_info_data_fields.extend('Location Info Meta', {
+# location_client_isp_meta_fields = base_meta_fields.extend('Location Client Info Meta', {
 # })
-#
 # api.models[location_client_isp_meta_fields.name] = location_client_isp_meta_fields
+
+location_client_isp_data_fields = location_info_data_base_fields.extend('Location Info Meta', {
+})
+api.models[location_client_isp_data_fields.name] = location_client_isp_data_fields
 
 location_info_model = api.model('Location Info Model', {
     'meta': fields.Nested(location_info_meta_fields, required=True),
@@ -68,6 +66,6 @@ location_client_asn_meta_fields = location_info_meta_fields.extend('Location Cli
 api.models[location_client_asn_meta_fields.name] = location_client_asn_meta_fields
 
 location_client_isp_info_model = api.model('Location Client ASN Model', {
-    'meta': fields.Nested(location_client_isp_meta_fields, required=True),
-    'data': fields.Nested(location_info_data_fields, required=True)
+    'meta': fields.Nested(location_client_asn_meta_fields, required=True),
+    'data': fields.Nested(location_client_isp_data_fields, required=True)
 })

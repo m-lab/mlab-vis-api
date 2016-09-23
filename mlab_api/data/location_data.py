@@ -126,6 +126,7 @@ class LocationData(Data):
 
         # config_id = TABLE_KEYS["CLIENT_LOCATION_KEY"] + '_' + TABLE_KEYS["CLIENT_ASN_KEY"] + '_list'
         config_id = du.list_table('clients', 'locations')
+        print(config_id)
         table_config = get_table_config(self.table_configs, None, config_id)
 
         key_fields = du.get_key_fields([location_id, client_isp_id], table_config)
@@ -135,6 +136,7 @@ class LocationData(Data):
         results = []
         with statsd.timer('locations.clientisps_info.scan_table'):
             results = bt.get_row(table_config, self.get_pool(), row_key)
+        print(results)
         results["meta"]["id"] = client_isp_id
         return results
 
@@ -172,6 +174,8 @@ class LocationData(Data):
         with statsd.timer('locations.clientisps_metrics.scan_table'):
             results = bt.scan_table(table_config, self.get_pool(), start_key=start_key, end_key=end_key)
 
+
+        print(results)
         formatted = {}
 
         with statsd.timer('locations.clientisps_metrics.format_data'):
@@ -180,6 +184,7 @@ class LocationData(Data):
 
         # set the ID to be the Client ISP ID
         formatted["meta"]["id"] = client_isp_id
+        # formatted["meta"]["client_asn_number"] = client_isp_id
 
         return formatted
 
