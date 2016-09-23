@@ -44,7 +44,7 @@ class LocationSearch(Resource):
         return results
 
 
-# @locations_ns.route('/<string:location_id>')
+@locations_ns.route('/<string:location_id>')
 @locations_ns.route('/<string:location_id>/info')
 class LocationInfo(Resource):
     '''
