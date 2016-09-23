@@ -23,6 +23,8 @@ include_data_arguments.add_argument('data', type=bool, required=False, default=F
 
 
 search_arguments = reqparse.RequestParser()
+search_arguments.add_argument('q', type=str, required=True,
+                              help='Query String')
 search_arguments.add_argument('filtertype', type=str, required=False,
                               choices=FILTER_TYPES,
                               help='Filter type works in conjunction with filtervalue to specify search filter')

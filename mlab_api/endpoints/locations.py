@@ -23,7 +23,28 @@ from mlab_api.stats import statsd
 # this is the namespace that gets included elsewhere.
 locations_ns = api.namespace('locations', description='Location specific API')
 
-@locations_ns.route('/<string:location_id>')
+@locations_ns.route('/search')
+class LocationSearch(Resource):
+    '''
+    Location Search Resource
+    '''
+    @api.expect(search_arguments)
+    @api.marshal_with(location_search_model)
+    def get(self):
+        """
+        Location Search
+        Get all location data matching the location_query
+        """
+
+        args = search_arguments.parse_args(request)
+        location_query = normalize_key(args.get('q'))
+        search_filter = get_filter(args)
+        results = SEARCH.get_search_results('locations', location_query, search_filter)
+
+        return results
+
+
+# @locations_ns.route('/<string:location_id>')
 @locations_ns.route('/<string:location_id>/info')
 class LocationInfo(Resource):
     '''
@@ -63,26 +84,7 @@ class LocationChildren(Resource):
         results = DATA.get_location_children(location_id, args.get('type'))
         return results
 
-@locations_ns.route('/search/<string:location_query>')
-class LocationSearch(Resource):
-    '''
-    Location Search Resource
-    '''
-    @api.expect(search_arguments)
-    @api.marshal_with(location_search_model)
-    @statsd.timer('locations.search.api')
-    def get(self, location_query):
-        """
-        Location Search
-        Get all location data matching the location_query
-        """
 
-        location_query = normalize_key(location_query)
-        args = search_arguments.parse_args(request)
-        search_filter = get_filter(args)
-        results = SEARCH.get_search_results('locations', location_query, search_filter)
-
-        return results
 
 @locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/metrics')
 class LocationTimeMetric(Resource):

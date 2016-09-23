@@ -12,7 +12,6 @@ from mlab_api.models.base_models import search_data_fields
 # ---
 client_asn_search_meta_fields = api.model('Client ASN Search Meta', {
     'client_asn_name': fields.Raw(description="Name of ASN."),
-    'client_asn_name_lookup': fields.Raw(description="Key used to look up ASN."),
     'client_asn_number': fields.String(description="ASN number."),
     'id': fields.String(description="ID for ASN", attribute='client_asn_number')
 })

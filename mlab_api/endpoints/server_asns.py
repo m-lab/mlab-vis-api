@@ -17,6 +17,25 @@ from mlab_api.models.asn_models import server_asn_search_model
 
 server_asn_ns = api.namespace('servers', description='Server ASN specific API')
 
+@server_asn_ns.route('/search')
+class ServerAsnSearch(Resource):
+    '''
+    Server Search
+    '''
+
+    @api.expect(search_arguments)
+    @api.marshal_with(server_asn_search_model)
+    def get(self):
+        """
+        Get Server search
+        """
+
+        args = search_arguments.parse_args(request)
+        search_filter = get_filter(args)
+        asn_query = normalize_key(args.get('q'))
+        results = SEARCH.get_search_results('servers', asn_query, search_filter)
+        return results
+
 # @server_asn_ns.route('/<string:asn_id>/time/<string:time_aggregation>/metrics')
 # class ServerAsnTimeMetric(Resource):
 #     '''
@@ -39,22 +58,3 @@ server_asn_ns = api.namespace('servers', description='Server ASN specific API')
 #
 #         results = DATA.get_client_asn_metrics(asn_id, time_aggregation, startdate, enddate)
 #         return results
-
-@server_asn_ns.route('/search/<string:asn_query>')
-class ServerAsnSearch(Resource):
-    '''
-    Location Time Metrics
-    '''
-
-    @api.expect(search_arguments)
-    @api.marshal_with(server_asn_search_model)
-    def get(self, asn_query):
-        """
-        Get ASN Metrics Over Time
-        """
-
-        args = search_arguments.parse_args(request)
-        search_filter = get_filter(args)
-        asn_query = normalize_key(asn_query)
-        results = SEARCH.get_search_results('servers', asn_query, search_filter)
-        return results
