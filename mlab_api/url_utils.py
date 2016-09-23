@@ -24,7 +24,6 @@ def normalize_key(location_key):
     '''
     Provides consistent search strings
     '''
-
     return re.sub('[\W|_]', '', location_key.lower())
 
 def get_filter(args):
@@ -32,5 +31,6 @@ def get_filter(args):
     fvalue = args.get('filtervalue')
 
     if( ftype and fvalue):
-        return {'type': ftype, 'value':fvalue}
+        fvalues = fvalue.split(",")
+        return {'type': ftype, 'value':fvalues}
     return {'type': None, 'value': []}

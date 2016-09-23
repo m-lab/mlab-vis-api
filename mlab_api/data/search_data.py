@@ -55,8 +55,6 @@ class SearchData(Data):
             # we always want this filter value to be the first key
             key_prefix = du.get_key_field(filter_value, 0, table_config)
             key_prefix += du.BIGTABLE_KEY_DELIM
-            print('PREFIX')
-            print(key_prefix)
             tablefilter = FamilyNameRegexFilter('meta')
             results = bt.scan_table(table_config, self.get_pool(), prefix=key_prefix, filter=tablefilter)
             filtered_results = self.filter_results(search_type, results, search_query)
@@ -75,8 +73,6 @@ class SearchData(Data):
 
 
     def get_search_results(self, search_type, search_query, search_filter):
-        print("~~~~~~~SEARCH~~~~~~~")
-        print(search_filter)
         results = []
         if search_filter['type']:
             results = self.get_filtered_search_results(search_type, search_query, search_filter)

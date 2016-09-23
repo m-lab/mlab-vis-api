@@ -27,5 +27,5 @@ search_arguments.add_argument('filtertype', type=str, required=False,
                               choices=FILTER_TYPES,
                               help='Filter type works in conjunction with filtervalue to specify search filter')
 
-search_arguments.add_argument('filtervalue', action='append', required=False,
+search_arguments.add_argument('filtervalue', type=str, required=False,
                               help='Limit search to only results with associations with ids in filtervalue. Id type is specified in filtertype.')
