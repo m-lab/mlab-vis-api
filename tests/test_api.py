@@ -4,6 +4,7 @@ from flask_testing import TestCase
 from mlab_api.app import app
 from mlab_api.rest_api import api
 from mlab_api.endpoints.locations import locations_ns
+from mlab_api.endpoints.server_asns import server_asn_ns
 from mlab_api.endpoints.debug import debug_ns
 # from flask_testing import LiveServerTestCase
 
@@ -17,6 +18,7 @@ class TestApp(TestCase):
     def create_app(self):
         if not TestApp.init:
             api.add_namespace(locations_ns)
+            api.add_namespace(server_asn_ns)
             api.add_namespace(debug_ns)
             api.init_app(app)
             TestApp.init = True
@@ -28,13 +30,14 @@ class TestApp(TestCase):
 
 
     def test_locations_children(self):
-        location_key = 'nausma'
+        location_key = 'nausks'
         response = self.client.get("/locations/{0}/children".format(location_key))
         self.assertIsNotNone(response.json['results'])
         assert(len(response.json['results']) > 0)
 
         result = response.json['results'][0]
         expected_fields = [('meta', 'client_region'), ('data', 'last_year_test_count')]
+        print(result)
         for family, key in expected_fields:
             self.assertIsNotNone(result[family][key])
 
@@ -44,7 +47,7 @@ class TestApp(TestCase):
         self.assertIsNotNone(response.json['data'])
 
         result = response.json
-        expected_fields = [('meta', 'client_region'), ('data', 'test_count')]
+        expected_fields = [('meta', 'client_region'), ('data', 'last_year_test_count')]
         for family, key in expected_fields:
             self.assertIsNotNone(result[family][key])
 
@@ -92,7 +95,7 @@ class TestApp(TestCase):
         self.assertIsNotNone(response.json['data'])
 
         result = response.json
-        expected_fields = [('meta', 'client_region'), ('data', 'last_year_test_count')]
+        expected_fields = [('meta', 'client_region'), ('meta', 'last_year_test_count'), ('data', 'last_year_download_speed_mbps_median')]
         for family, key in expected_fields:
             self.assertIsNotNone(result[family][key])
 
