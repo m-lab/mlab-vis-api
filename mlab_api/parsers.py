@@ -3,13 +3,16 @@
 API input parameter parsers.
 '''
 from flask_restplus import reqparse
-from mlab_api.constants import FILTER_TYPES
+from mlab_api.constants import FILTER_TYPES, TIME_BINS
 
 # date arguments allow for start and end dates
 # defaults are provided in config
 date_arguments = reqparse.RequestParser()
 date_arguments.add_argument('startdate', type=str, required=False, help='Start date of metrics')
 date_arguments.add_argument('enddate', type=str, required=False, help='End date of metrics')
+date_arguments.add_argument('timebin', type=str, required=True,
+                            choices=TIME_BINS.keys(),
+                            help='Time binning to use for time metrics')
 
 
 type_arguments = reqparse.RequestParser()

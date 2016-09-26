@@ -6,7 +6,7 @@ Routes focused on locations.
 from flask import request
 from flask_restplus import Resource
 
-from mlab_api.app import app
+from mlab_api.constants import TIME_BINS
 from mlab_api.data.data import LOCATION_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments, search_arguments
@@ -86,56 +86,7 @@ class LocationChildren(Resource):
 
 
 
-@locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/metrics')
-class LocationTimeMetric(Resource):
-    '''
-    Location Time Metrics
-    '''
 
-    @api.expect(date_arguments)
-    @api.marshal_with(location_metric_model)
-    @statsd.timer('locations.metrics.api')
-    def get(self, location_id, time_aggregation):
-        """
-        Get Location Metrics Over Time
-        Get speed and other metrics for a particular location at a given time \
-        aggregation level.
-        """
-
-        location_id = normalize_key(location_id)
-        args = date_arguments.parse_args(request)
-        (startdate, enddate) = get_time_window(args,
-                                               time_aggregation,
-                                               app.config['DEFAULT_TIME_WINDOWS'])
-
-        results = DATA.get_location_metrics(location_id, time_aggregation, startdate, enddate)
-        return results
-
-@locations_ns.route('/<string:location_id>/time/<string:time_aggregation>/clients/<string:client_isp_id>/metrics')
-class LocationTimeClientIspMetric(Resource):
-    '''
-    Location Time ISP Resource
-    '''
-
-    @api.expect(date_arguments)
-    @statsd.timer('locations.clientisps_metrics.api')
-    def get(self, location_id, time_aggregation, client_isp_id):
-        """
-        Get Location Metrics for ISP Over Time
-        Get metrics for specific location and specific client ISP
-        """
-
-        location_id = normalize_key(location_id)
-
-        args = date_arguments.parse_args(request)
-        (startdate, enddate) = get_time_window(args,
-                                               time_aggregation,
-                                               app.config['DEFAULT_TIME_WINDOWS'])
-
-        results = DATA.get_location_client_isp_metrics(location_id, client_isp_id,
-                                                       time_aggregation, startdate, enddate)
-
-        return results
 
 @locations_ns.route('/<string:location_id>/clients')
 class LocationClientIspStats(Resource):
@@ -178,5 +129,54 @@ class LocationClientIspInfo(Resource):
 
         results = DATA.get_location_client_isp_info(location_id, client_isp_id)
 
+
+        return results
+
+@locations_ns.route('/<string:location_id>/metrics')
+class LocationTimeMetric(Resource):
+    '''
+    Location Time Metrics
+    '''
+
+    @api.expect(date_arguments)
+    @api.marshal_with(location_metric_model)
+    @statsd.timer('locations.metrics.api')
+    def get(self, location_id):
+        """
+        Get Location Metrics Over Time
+        Get speed and other metrics for a particular location at a given time \
+        aggregation level.
+        """
+
+        location_id = normalize_key(location_id)
+        args = date_arguments.parse_args(request)
+        (startdate, enddate) = get_time_window(args, TIME_BINS)
+
+        timebin = args.get('timebin')
+        results = DATA.get_location_metrics(location_id, timebin, startdate, enddate)
+        return results
+
+@locations_ns.route('/<string:location_id>/clients/<string:client_isp_id>/metrics')
+class LocationTimeClientIspMetric(Resource):
+    '''
+    Location Time Client ASN Resource
+    '''
+
+    @api.expect(date_arguments)
+    @statsd.timer('locations.clients_metrics.api')
+    def get(self, location_id, client_isp_id):
+        """
+        Get Location Metrics for ISP Over Time
+        Get metrics for specific location and specific client ISP
+        """
+
+        location_id = normalize_key(location_id)
+
+        args = date_arguments.parse_args(request)
+        (startdate, enddate) = get_time_window(args, TIME_BINS)
+
+        timebin = args.get('timebin')
+        results = DATA.get_location_client_isp_metrics(location_id, client_isp_id,
+                                                       timebin, startdate, enddate)
 
         return results

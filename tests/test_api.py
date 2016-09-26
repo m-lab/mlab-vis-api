@@ -4,7 +4,7 @@ from flask_testing import TestCase
 from mlab_api.app import app
 from mlab_api.rest_api import api
 from mlab_api.endpoints.locations import locations_ns
-from mlab_api.endpoints.server_asns import server_asn_ns
+from mlab_api.endpoints.servers import server_asn_ns
 from mlab_api.endpoints.debug import debug_ns
 # from flask_testing import LiveServerTestCase
 
@@ -55,7 +55,7 @@ class TestApp(TestCase):
         location_key = 'nausma'
         time_aggs = ['day', 'month', 'year', 'day_hour', 'month_hour', 'year_hour']
         for time_agg in time_aggs:
-            response = self.client.get("/locations/{0}/time/{1}/metrics".format(location_key, time_agg))
+            response = self.client.get("/locations/{0}/metrics?timebin={1}".format(location_key, time_agg))
             self.assertIsNotNone(response.json['results'])
             self.assertIsNotNone(response.json['meta'])
             assert(len(response.json['results']) > 0)
@@ -77,7 +77,7 @@ class TestApp(TestCase):
         client_isp = 'AS7922'
         time_aggs = ['day', 'month', 'year', 'day_hour', 'month_hour', 'year_hour']
         for time_agg in time_aggs:
-            response = self.client.get("/locations/{0}/time/{1}/clients/{2}/metrics".format(location_key, time_agg, client_isp))
+            response = self.client.get("/locations/{0}/clients/{1}/metrics?timebin={2}".format(location_key, client_isp, time_agg))
             self.assertIsNotNone(response.json['results'])
             self.assertIsNotNone(response.json['meta'])
             assert(len(response.json['results']) > 0)
@@ -101,7 +101,7 @@ class TestApp(TestCase):
 
     def test_locations_search(self):
         location_key = 'kansascity'
-        response = self.client.get("/locations/search/{0}".format(location_key))
+        response = self.client.get("/locations/search?q={0}".format(location_key))
         self.assertIsNotNone(response.json['results'])
         assert(len(response.json['results']) > 0)
         # check for some fields
@@ -112,7 +112,7 @@ class TestApp(TestCase):
 
     def test_servers_search(self):
         search_key = 'x'
-        response = self.client.get("/servers/search/{0}".format(search_key))
+        response = self.client.get("/servers/search?q={0}".format(search_key))
         self.assertIsNotNone(response.json['results'])
         assert(len(response.json['results']) > 0)
 
