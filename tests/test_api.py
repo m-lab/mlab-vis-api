@@ -111,7 +111,7 @@ class TestApp(TestCase):
             self.assertIsNotNone(result[family][key])
 
     def test_servers_search(self):
-        search_key = 'x'
+        search_key = 'a'
         response = self.client.get("/servers/search?q={0}".format(search_key))
         self.assertIsNotNone(response.json['results'])
         assert(len(response.json['results']) > 0)
