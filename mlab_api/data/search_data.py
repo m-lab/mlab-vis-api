@@ -15,6 +15,13 @@ SEARCH_KEYS = {
     'locations': ['client_continent', 'client_country', 'client_region', 'client_city']
 }
 
+def search_sort_key(row):
+    if 'test_count' in row['meta']:
+        return row['meta']['test_count']
+    elif 'last_year_test_count' in row['meta']:
+        return row['meta']['last_year_test_count']
+    else:
+        return 'a'
 
 class SearchData(Data):
 
@@ -80,6 +87,7 @@ class SearchData(Data):
         return results
 
 
+
     def get_search_results(self, search_type, search_query, search_filter):
         '''
         Root method
@@ -94,7 +102,7 @@ class SearchData(Data):
 
         # sort based on test_count
         if len(results) > 0 and 'meta' in results[0]:
-            sorted_results = sorted(results, key=lambda k: k['meta']['test_count'], reverse=True)
+            sorted_results = sorted(results, key=search_sort_key, reverse=True)
             return {"results": sorted_results}
         else:
             return {"results": results}
