@@ -30,6 +30,7 @@ class LocationData(Data):
         row = ""
         with statsd.timer('location.info.get_row'):
             row = bt.get_row(table_config, self.get_pool(), row_key)
+
         row["meta"]["id"] = location_id
 
         return row
@@ -99,7 +100,6 @@ class LocationData(Data):
         results = []
         with statsd.timer('locations.clientisps_info.scan_table'):
             results = bt.get_row(table_config, self.get_pool(), row_key)
-        print(results)
         results["meta"]["id"] = client_isp_id
         return results
 
@@ -136,7 +136,6 @@ class LocationData(Data):
 
         # set the ID to be the Client ISP ID
         formatted["meta"]["id"] = client_id
-        # formatted["meta"]["client_asn_number"] = client_isp_id
 
         return formatted
 
@@ -157,7 +156,6 @@ class LocationData(Data):
 
         # set the ID to be the Client ISP ID
         formatted["meta"]["id"] = server_id
-        # formatted["meta"]["client_asn_number"] = client_isp_id
 
         return formatted
 
@@ -178,6 +176,5 @@ class LocationData(Data):
 
         # set the ID to be the Client ISP ID
         formatted["meta"]["id"] = [client_id, server_id]
-        # formatted["meta"]["client_asn_number"] = client_isp_id
 
         return formatted

@@ -90,12 +90,11 @@ class SearchData(Data):
         else:
             results = self.get_basic_search_results(search_type, search_query)
 
+        print(results)
+
         # sort based on test_count
-        if len(results) > 0 and 'data' in results:
-            sorted_results = sorted(results, key=lambda k: k['data']['test_count'], reverse=True)
+        if len(results) > 0 and 'meta' in results[0]:
+            sorted_results = sorted(results, key=lambda k: k['meta']['test_count'], reverse=True)
             return {"results": sorted_results}
-        # elif len(results) > 0 and 'meta' in results:
-        #     sorted_results = sorted(results, key=lambda k: k['meta']['test_count'], reverse=True)
-        #     return {"results": sorted_results}
         else:
             return {"results": results}
