@@ -6,6 +6,7 @@ Endpoints for server asns
 from flask_restplus import Resource
 from flask import request
 
+from mlab_api.constants import TIME_BINS
 # from mlab_api.data.data import SERVER_ASN_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.rest_api import api
