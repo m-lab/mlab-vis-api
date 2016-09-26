@@ -156,18 +156,17 @@ class LocationTimeMetric(Resource):
         results = DATA.get_location_metrics(location_id, timebin, startdate, enddate)
         return results
 
-@locations_ns.route('/<string:location_id>/clients/<string:client_isp_id>/metrics')
-class LocationTimeClientIspMetric(Resource):
+@locations_ns.route('/<string:location_id>/clients/<string:client_id>/metrics')
+class LocationClientTimeMetric(Resource):
     '''
-    Location Time Client ASN Resource
+    Location + Client Time Resource
     '''
 
     @api.expect(date_arguments)
-    @statsd.timer('locations.clients_metrics.api')
-    def get(self, location_id, client_isp_id):
+    @statsd.timer('locations_clients.metrics.api')
+    def get(self, location_id, client_id):
         """
-        Get Location Metrics for ISP Over Time
-        Get metrics for specific location and specific client ISP
+        Get time metrics for a specific location + client
         """
 
         location_id = normalize_key(location_id)
@@ -176,7 +175,55 @@ class LocationTimeClientIspMetric(Resource):
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')
-        results = DATA.get_location_client_isp_metrics(location_id, client_isp_id,
-                                                       timebin, startdate, enddate)
+        results = DATA.get_location_client_metrics(location_id, client_id,
+                                                   timebin, startdate, enddate)
+
+        return results
+
+@locations_ns.route('/<string:location_id>/servers/<string:server_id>/metrics')
+class LocationServerTimeMetric(Resource):
+    '''
+    Location + Server Time Metric Resource
+    '''
+
+    @api.expect(date_arguments)
+    @statsd.timer('locations_servers.metrics.api')
+    def get(self, location_id, server_id):
+        """
+        Get time metrics for a specific location + server
+        """
+
+        location_id = normalize_key(location_id)
+
+        args = date_arguments.parse_args(request)
+        (startdate, enddate) = get_time_window(args, TIME_BINS)
+
+        timebin = args.get('timebin')
+        results = DATA.get_location_server_metrics(location_id, server_id,
+                                                   timebin, startdate, enddate)
+
+        return results
+
+@locations_ns.route('/<string:location_id>/clients/<string:client_id>/servers/<string:server_id>/metrics')
+class LocationClientServerTimeMetric(Resource):
+    '''
+    Location + Client + Server Time Resource
+    '''
+
+    @api.expect(date_arguments)
+    @statsd.timer('locations_servers.metrics.api')
+    def get(self, location_id, client_id, server_id):
+        """
+        Get time metrics for a specific location + client + server
+        """
+
+        location_id = normalize_key(location_id)
+
+        args = date_arguments.parse_args(request)
+        (startdate, enddate) = get_time_window(args, TIME_BINS)
+
+        timebin = args.get('timebin')
+        results = DATA.get_location_client_server_metrics(location_id, client_id, server_id,
+                                                          timebin, startdate, enddate)
 
         return results

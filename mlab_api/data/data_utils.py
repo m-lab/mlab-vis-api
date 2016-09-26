@@ -83,6 +83,19 @@ def get_time_key_fields(time_value, time_aggregation, table_config):
 
     return time_key_fields
 
+def get_full_time_keys(key_fields, timebin, starttime, endtime, table_config):
+
+    starttime_fields = get_time_key_fields(starttime, timebin, table_config)
+
+    inclusive_endtime = add_time(endtime, 1, timebin)
+    endtime_fields = get_time_key_fields(inclusive_endtime, timebin, table_config)
+
+    start_key = BIGTABLE_KEY_DELIM.join(key_fields + starttime_fields)
+
+    end_key = BIGTABLE_KEY_DELIM.join(key_fields + endtime_fields)
+
+    return (start_key, end_key)
+
 # def get_client_isp_fields(client_isp_id, table_config):
 #     '''
 #     Returns an array of strings representing portions of the row

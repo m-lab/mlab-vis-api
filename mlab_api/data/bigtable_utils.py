@@ -10,6 +10,7 @@ from gcloud.bigtable import happybase
 from oauth2client.client import GoogleCredentials
 
 import mlab_api.data.data_utils as du
+from mlab_api.stats import statsd
 
 def init_pool(app_config):
     '''
@@ -86,6 +87,7 @@ def scan_table(table_config, pool, prefix="", start_key="", end_key="", **kwargs
             break
     else:
         results = []
+    logging.info("result size %s", str(len(results)))
     return results
 
 def get_row(table_config, pool, row_key, **kwargs):
@@ -115,3 +117,18 @@ def get_row(table_config, pool, row_key, **kwargs):
     else:
         row = {}
     return row
+
+def get_time_metric_results(key_fields, pool, timebin, starttime, endtime, table_config, metric_name):
+    # get startkey and endkey prefixed with key_fields
+    start_key, end_key = du.get_full_time_keys(key_fields, timebin, starttime, endtime, table_config)
+
+    # Prepare to query the table
+    results = []
+    with statsd.timer('{0}.metric.scan_table'.format(metric_name)):
+        results = scan_table(table_config, pool, start_key=start_key, end_key=end_key)
+
+    formatted = {}
+    with statsd.timer('{0}.metric.format_data'.format(metric_name)):
+        # format output for API
+        formatted = du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=timebin)
+    return formatted

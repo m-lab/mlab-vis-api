@@ -50,10 +50,9 @@ class ClientAsnTimeMetric(Resource):
         Get speed and other metrics for a particular client at a given time bin level
         """
 
-        asn_id = normalize_key(asn_id)
         args = date_arguments.parse_args(request)
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')
-        results = DATA.get_client_asn_metrics(asn_id, timebin, startdate, enddate)
+        results = DATA.get_client_metrics(asn_id, timebin, startdate, enddate)
         return results

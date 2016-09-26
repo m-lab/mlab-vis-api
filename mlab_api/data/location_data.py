@@ -53,43 +53,6 @@ class LocationData(Data):
 
         return {"results": results}
 
-    def get_location_metrics(self, location_id, time_aggregation, starttime, endtime):
-        '''
-        Get data for specific location at a specific
-        frequency between start and stop times.
-        '''
-
-        table_config = get_table_config(self.table_configs,
-                                        time_aggregation,
-
-                                        TABLE_KEYS["locations"])
-
-
-        # expect start and end to be inclusive
-        inclusive_endtime = du.add_time(endtime, 1, time_aggregation)
-        location_key_fields = du.get_location_key_fields(location_id, table_config)
-
-        starttime_fields = du.get_time_key_fields(starttime, time_aggregation, table_config)
-        endtime_fields = du.get_time_key_fields(inclusive_endtime, time_aggregation, table_config)
-
-        start_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields + starttime_fields)
-        end_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields + endtime_fields)
-
-        # BIGTABLE QUERY
-        results = []
-        with statsd.timer('locations.metrics.scan_table'):
-            results = bt.scan_table(table_config, self.get_pool(), start_key=start_key, end_key=end_key)
-
-        formatted = {}
-
-        with statsd.timer('locations.metrics.format_data'):
-            formatted = du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=time_aggregation)
-
-        # set the ID to be the location ID
-        formatted["meta"]["id"] = location_id
-
-        return formatted
-
     def get_location_client_isps(self, location_id, include_data):
         '''
         Get list and info of client isps for a location
@@ -140,69 +103,81 @@ class LocationData(Data):
         results["meta"]["id"] = client_isp_id
         return results
 
-
-
-    def get_location_client_isp_metrics(self, location_id, client_isp_id,
-                                        time_aggregation, starttime, endtime):
+    def get_location_metrics(self, location_id, timebin, starttime, endtime):
         '''
         Get data for specific location at a specific
+        frequency between start and stop times.
+        '''
+
+        table_config = get_table_config(self.table_configs, timebin, TABLE_KEYS["locations"])
+
+        location_key_fields = du.get_location_key_fields(location_id, table_config)
+        formatted = bt.get_time_metric_results(location_key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations")
+
+        # set the ID to be the location ID
+        formatted["meta"]["id"] = location_id
+
+        return formatted
+
+    def get_location_client_metrics(self, location_id, client_id,
+                                        timebin, starttime, endtime):
+        '''
+        Get data for specific location + client at a specific
         frequency between start and stop times for a
         specific client ISP.
         '''
         # Create Row Key
         agg_name = TABLE_KEYS["clients"] + '_' + TABLE_KEYS["locations"]
 
-        table_config = get_table_config(self.table_configs,
-                                        time_aggregation,
-                                        agg_name)
+        table_config = get_table_config(self.table_configs, timebin, agg_name)
 
-        key_fields = du.get_key_fields([client_isp_id, location_id], table_config)
-
-        starttime_fields = du.get_time_key_fields(starttime, time_aggregation, table_config)
-
-        inclusive_endtime = du.add_time(endtime, 1, time_aggregation)
-        endtime_fields = du.get_time_key_fields(inclusive_endtime, time_aggregation, table_config)
-
-        # Start and End -- Row Keys
-        start_key = du.BIGTABLE_KEY_DELIM.join(key_fields + starttime_fields)
-
-        end_key = du.BIGTABLE_KEY_DELIM.join(key_fields + endtime_fields)
-
-        # Prepare to query the table
-
-        results = []
-        with statsd.timer('locations.clientisps_metrics.scan_table'):
-            results = bt.scan_table(table_config, self.get_pool(), start_key=start_key, end_key=end_key)
-
-
-        print(results)
-        formatted = {}
-
-        with statsd.timer('locations.clientisps_metrics.format_data'):
-            # format output for API
-            formatted = du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=time_aggregation)
+        key_fields = du.get_key_fields([client_id, location_id], table_config)
+        formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_clients")
 
         # set the ID to be the Client ISP ID
-        formatted["meta"]["id"] = client_isp_id
+        formatted["meta"]["id"] = client_id
         # formatted["meta"]["client_asn_number"] = client_isp_id
 
         return formatted
 
-    def get_location_search(self, location_query):
+    def get_location_server_metrics(self, location_id, server_id,
+                                        timebin, starttime, endtime):
         '''
-        API for location search
+        Get data for specific location + server at a specific
+        frequency between start and stop times for a
+        specific client ISP.
         '''
-        table_config = get_table_config(self.table_configs,
-                                        None,
-                                        du.search_table('locations'))
+        # Create Row Key
+        agg_name = TABLE_KEYS["servers"] + '_' + TABLE_KEYS["locations"]
 
+        table_config = get_table_config(self.table_configs, timebin, agg_name)
 
-        results = []
-        with statsd.timer('locations.search.scan_table'):
-            results = bt.scan_table(table_config, self.get_pool(), prefix=location_query)
+        key_fields = du.get_key_fields([server_id, location_id], table_config)
+        formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_clients")
 
-        sorted_results = []
-        with statsd.timer('locations.search.sort_results'):
-            # sort based on test_count
-            sorted_results = sorted(results, key=lambda k: k['data']['test_count'], reverse=True)
-        return {"results": sorted_results}
+        # set the ID to be the Client ISP ID
+        formatted["meta"]["id"] = server_id
+        # formatted["meta"]["client_asn_number"] = client_isp_id
+
+        return formatted
+
+    def get_location_client_server_metrics(self, location_id, client_id, server_id,
+                                        timebin, starttime, endtime):
+        '''
+        Get data for specific location + client + server at a specific
+        frequency between start and stop times for a
+        specific client ISP.
+        '''
+        # Create Row Key
+        agg_name = "{0}_{1}_{2}".format(TABLE_KEYS["servers"], TABLE_KEYS["clients"], TABLE_KEYS["locations"])
+
+        table_config = get_table_config(self.table_configs, timebin, agg_name)
+
+        key_fields = du.get_key_fields([server_id, client_id, location_id], table_config)
+        formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_clients_servers")
+
+        # set the ID to be the Client ISP ID
+        formatted["meta"]["id"] = [client_id, server_id]
+        # formatted["meta"]["client_asn_number"] = client_isp_id
+
+        return formatted
