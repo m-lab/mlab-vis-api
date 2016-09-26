@@ -13,8 +13,8 @@ from mlab_api.app import app
 # Import namespaces
 from mlab_api.endpoints.locations import locations_ns
 from mlab_api.endpoints.debug import debug_ns
-from mlab_api.endpoints.client_asns import client_asn_ns
-from mlab_api.endpoints.server_asns import server_asn_ns
+from mlab_api.endpoints.clients import client_asn_ns
+from mlab_api.endpoints.servers import server_asn_ns
 
 # API is defined here
 from mlab_api.rest_api import api
