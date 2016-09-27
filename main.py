@@ -27,7 +27,6 @@ api.decorators = [cors.crossdomain(origin='*')]
 
 # Add namespaces defined in endpoints module
 api.add_namespace(locations_ns)
-api.add_namespace(debug_ns)
 api.add_namespace(client_asn_ns)
 api.add_namespace(server_asn_ns)
 
@@ -42,6 +41,7 @@ if app.config['API_MODE'] == 'PROD':
     print('PRODUCTION MODE')
 else:
     debug_flag = True
+    api.add_namespace(debug_ns)
     print('DEBUG MODE')
 
 
