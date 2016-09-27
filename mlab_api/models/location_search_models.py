@@ -9,7 +9,8 @@ from mlab_api.models.base_models import base_meta_fields, search_data_fields
 
 search_meta_fields = base_meta_fields.extend('Search Meta', {
     'location': fields.Raw(description="Name of location."),
-    'location_key': fields.Raw(description="Reverse Location name key."),
+    'location_key': fields.Raw(description="Location name key."),
+    'id': fields.Raw(description="Location id", attribute='location_key'),
     'type': fields.String(description="Location type. city, region, country, or continent.")
 })
 
