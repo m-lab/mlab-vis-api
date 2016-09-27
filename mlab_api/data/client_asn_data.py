@@ -28,3 +28,22 @@ class ClientAsnData(Data):
         formatted["meta"]["id"] = client_id
 
         return formatted
+
+
+    def get_client_server_metrics(self, client_id, server_id, timebin, starttime, endtime):
+        '''
+        Get data for a specific client + server at a
+        timebin between start and stop times.
+        '''
+
+        agg_name = TABLE_KEYS["servers"] + '_' + TABLE_KEYS["clients"]
+
+        table_config = get_table_config(self.table_configs, timebin, agg_name)
+
+        location_key_fields = du.get_key_fields([client_id, server_id], table_config)
+        formatted = bt.get_time_metric_results(location_key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "clients")
+
+        # set the ID to be the location ID
+        formatted["meta"]["id"] = client_id
+
+        return formatted

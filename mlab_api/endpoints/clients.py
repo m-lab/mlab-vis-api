@@ -37,14 +37,14 @@ class ClientAsnSearch(Resource):
         results = SEARCH.get_search_results('clients', asn_query, search_filter)
         return results
 
-@client_asn_ns.route('/<string:asn_id>/metrics')
+@client_asn_ns.route('/<string:client_id>/metrics')
 class ClientAsnTimeMetric(Resource):
     '''
     Client Metrics
     '''
 
     @api.expect(date_arguments)
-    def get(self, asn_id):
+    def get(self, client_id):
         """
         Get Client Metrics Over Time
         Get speed and other metrics for a particular client at a given time bin level
@@ -54,5 +54,27 @@ class ClientAsnTimeMetric(Resource):
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')
-        results = DATA.get_client_metrics(asn_id, timebin, startdate, enddate)
+        results = DATA.get_client_metrics(client_id, timebin, startdate, enddate)
+        return results
+
+
+@client_asn_ns.route('/<string:client_id>/servers/<string:server_id>/metrics')
+class LocationServerTimeMetric(Resource):
+    '''
+    Location + Server Time Metric Resource
+    '''
+
+    @api.expect(date_arguments)
+    def get(self, client_id, server_id):
+        """
+        Get time metrics for a specific location + server
+        """
+
+        args = date_arguments.parse_args(request)
+        (startdate, enddate) = get_time_window(args, TIME_BINS)
+
+        timebin = args.get('timebin')
+        results = DATA.get_client_server_metrics(client_id, server_id,
+                                                   timebin, startdate, enddate)
+
         return results
