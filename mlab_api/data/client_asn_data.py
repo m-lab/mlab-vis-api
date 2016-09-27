@@ -40,7 +40,7 @@ class ClientAsnData(Data):
 
         table_config = get_table_config(self.table_configs, timebin, agg_name)
 
-        location_key_fields = du.get_key_fields([client_id, server_id], table_config)
+        location_key_fields = du.get_key_fields([server_id, client_id], table_config)
         formatted = bt.get_time_metric_results(location_key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "clients")
 
         # set the ID to be the location ID

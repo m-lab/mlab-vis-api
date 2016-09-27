@@ -151,7 +151,8 @@ class LocationData(Data):
 
         table_config = get_table_config(self.table_configs, timebin, agg_name)
 
-        key_fields = du.get_key_fields([server_id, location_id], table_config)
+        # TODO: the direction of the keys don't match the table name
+        key_fields = du.get_key_fields([location_id, server_id], table_config)
         formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_clients")
 
         # set the ID to be the Client ISP ID
@@ -171,7 +172,7 @@ class LocationData(Data):
 
         table_config = get_table_config(self.table_configs, timebin, agg_name)
 
-        key_fields = du.get_key_fields([server_id, client_id, location_id], table_config)
+        key_fields = du.get_key_fields([location_id, client_id, server_id], table_config)
         formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_clients_servers")
 
         # set the ID to be the Client ISP ID
