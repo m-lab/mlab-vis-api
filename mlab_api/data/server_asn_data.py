@@ -2,6 +2,7 @@
 '''
 Data class for accessing data for API calls.
 '''
+from gcloud.bigtable.row_filters import FamilyNameRegexFilter
 from mlab_api.data.table_config import get_table_config
 from mlab_api.constants import TABLE_KEYS
 from mlab_api.data.base_data import Data
@@ -12,6 +13,30 @@ class ServerAsnData(Data):
     '''
     Connect to BigTable and pull down data.
     '''
+
+    def get_server_info(self, server_id):
+        '''
+        Get info for a client
+        '''
+
+        # we are using a hack from list tables
+        # so grab the first match from a list table faceted by server ids'
+        table_name = du.list_table("clients", "servers")
+
+
+        table_config = get_table_config(self.table_configs, None, table_name)
+
+
+        key_fields = du.get_key_fields([server_id], table_config)
+        prefix_key = du.BIGTABLE_KEY_DELIM.join(key_fields)
+        results = bt.scan_table(table_config, self.get_pool(), prefix=prefix_key, limit=1, filter=FamilyNameRegexFilter('meta'))
+
+        result = {}
+
+        if len(results) > 0:
+            result = results[0]
+
+        return result
 
     def get_server_metrics(self, server_id, timebin, starttime, endtime):
         '''

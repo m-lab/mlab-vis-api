@@ -14,7 +14,7 @@ from mlab_api.parsers import date_arguments, search_arguments
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.asn_models import server_asn_search_model
+from mlab_api.models.asn_models import server_asn_search_model, server_asn_info_model
 from mlab_api.stats import statsd
 
 server_asn_ns = api.namespace('servers', description='Server ASN specific API')
@@ -37,6 +37,24 @@ class ServerSearch(Resource):
         asn_query = normalize_key(args.get('q'))
         results = SEARCH.get_search_results('servers', asn_query, search_filter)
         return results
+
+@server_asn_ns.route('/<string:server_id>')
+@server_asn_ns.route('/<string:server_id>/info')
+class ServerInfo(Resource):
+    '''
+    Server Info
+    '''
+    @api.marshal_with(server_asn_info_model)
+    def get(self, server_id):
+        """
+        Server Info
+        Get info for a particular server.
+        """
+
+
+        results = DATA.get_server_info(server_id)
+        return results
+
 
 @server_asn_ns.route('/<string:server_id>/metrics')
 class ServerTimeMetric(Resource):

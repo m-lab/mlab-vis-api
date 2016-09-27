@@ -90,7 +90,6 @@ class LocationData(Data):
 
         # config_id = TABLE_KEYS["CLIENT_LOCATION_KEY"] + '_' + TABLE_KEYS["CLIENT_ASN_KEY"] + '_list'
         config_id = du.list_table('clients', 'locations')
-        print(config_id)
         table_config = get_table_config(self.table_configs, None, config_id)
 
         key_fields = du.get_key_fields([location_id, client_isp_id], table_config)
@@ -135,7 +134,7 @@ class LocationData(Data):
         formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_clients")
 
         # set the ID to be the Client ISP ID
-        formatted["meta"]["id"] = client_id
+        formatted["meta"]["id"] = "_".join([location_id, client_id])
 
         return formatted
 
@@ -156,7 +155,7 @@ class LocationData(Data):
         formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_clients")
 
         # set the ID to be the Client ISP ID
-        formatted["meta"]["id"] = server_id
+        formatted["meta"]["id"] = "_".join([location_id, server_id])
 
         return formatted
 
@@ -176,6 +175,6 @@ class LocationData(Data):
         formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_clients_servers")
 
         # set the ID to be the Client ISP ID
-        formatted["meta"]["id"] = [client_id, server_id]
+        formatted["meta"]["id"] = "_".join([location_id, client_id, server_id])
 
         return formatted

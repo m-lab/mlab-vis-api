@@ -25,6 +25,10 @@ client_asn_search_model = api.model('Client ASN Search Results', {
     'results': fields.List(fields.Nested(client_asn_search_result_fields), required=True)
 })
 
+client_asn_info_model = api.model('Client Info Model', {
+    'meta': fields.Nested(client_asn_search_meta_fields, required=True),
+})
+
 
 # ---
 # Models for Server ASN
@@ -42,4 +46,8 @@ server_asn_search_result_fields = api.model('Server ASN Search Result', {
 
 server_asn_search_model = api.model('Server ASN Search Results', {
     'results': fields.List(fields.Nested(server_asn_search_result_fields), required=True)
+})
+
+server_asn_info_model = api.model('Server Info Model', {
+    'meta': fields.Nested(server_asn_search_meta_fields, required=True),
 })

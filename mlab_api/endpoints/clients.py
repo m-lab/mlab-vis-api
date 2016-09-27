@@ -14,7 +14,7 @@ from mlab_api.parsers import date_arguments, search_arguments
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.asn_models import client_asn_search_model
+from mlab_api.models.asn_models import client_asn_search_model, client_asn_info_model
 
 client_asn_ns = api.namespace('clients', description='Client ASN specific API')
 
@@ -36,6 +36,24 @@ class ClientAsnSearch(Resource):
         search_filter = get_filter(args)
         results = SEARCH.get_search_results('clients', asn_query, search_filter)
         return results
+
+@client_asn_ns.route('/<string:client_id>')
+@client_asn_ns.route('/<string:client_id>/info')
+class ClientInfo(Resource):
+    '''
+    Client Info
+    '''
+    @api.marshal_with(client_asn_info_model)
+    def get(self, client_id):
+        """
+        Cliet Info
+        Get info for a particular client.
+        """
+
+
+        results = DATA.get_client_info(client_id)
+        return results
+
 
 @client_asn_ns.route('/<string:client_id>/metrics')
 class ClientAsnTimeMetric(Resource):
