@@ -44,7 +44,5 @@ else:
     api.add_namespace(debug_ns)
     print('DEBUG MODE')
 
-
-
 if __name__ == '__main__':
     app.run(port=8080, debug=debug_flag)

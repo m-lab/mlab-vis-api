@@ -15,6 +15,8 @@ SEARCH_KEYS = {
     'locations': ['client_continent', 'client_country', 'client_region', 'client_city']
 }
 
+DATA_VALUES = ['test_count', 'last_three_month_test_count', 'last_year_test_count']
+
 def search_sort_key(row):
     if 'test_count' in row['meta']:
         return row['meta']['test_count']
@@ -38,20 +40,52 @@ class SearchData(Data):
             return du.search_table(search_type)
 
 
-    def filter_results(self, search_type, results, search_query, result_keys):
+    def filter_results(self, search_type, search_query, results, included_keys):
+        '''
+        Given a list of results and a query, filter matching results.
+        Also given a list of included keys, filter out duplicates
+        search_type: one of ['locations', 'servers', 'clients']
+        search_query: input query from api
+        results: raw unfiltered results
+        included_keys: list of existing keys already in the total results.
+        '''
+
+        # result_keys are the keys to search in the result rows for
+        # the `search_query`
         result_keys = SEARCH_KEYS[search_type]
         filtered_results = []
         for row in results:
+            # if result_keys is > 1, provides a merged string to search in
             row_key = self.get_row_search_key(row, result_keys)
-            if (row_key not in result_keys) and (search_query in row_key):
+            # only add if not already in the results.
+            if (row_key not in included_keys) and (search_query in row_key):
                 filtered_results.append(row)
-                result_keys.append(row_key)
+                included_keys.append(row_key)
         return filtered_results
+
+    def prepare_filtered_search_results(self, results):
+        '''
+        Augment raw results to make them ready for output.
+        '''
+        for row in results:
+            if 'data' not in row:
+                row['data'] = {}
+            if 'meta' not in row:
+                row['meta'] = {}
+            for key in DATA_VALUES:
+                if key in row['meta']:
+                    row['data'][key] = row['meta'][key]
+
+        return results
+
 
 
     def get_filtered_search_results(self, search_type, search_query, search_filter):
         '''
-        filter search
+        Filter search. Provides results for searches that are faceted.
+        search_type: one of ['locations', 'servers', 'clients']
+        search_query: input query from api
+        search_filter: {type: ['locations', 'servers', 'clients'], value:[id1, id2]}
         '''
         if not search_filter['type'] or search_filter['type'] == search_type:
             return []
@@ -62,16 +96,17 @@ class SearchData(Data):
                                         table_name)
 
         union_results = []
-        result_keys = []
+        included_keys = []
         for filter_value in search_filter['value']:
             # we always want this filter value to be the first key
             key_prefix = du.get_key_field(filter_value, 0, table_config)
             key_prefix += du.BIGTABLE_KEY_DELIM
+            # filter only the `meta` column family - for speed.
             tablefilter = FamilyNameRegexFilter('meta')
             results = bt.scan_table(table_config, self.get_pool(), prefix=key_prefix, filter=tablefilter)
-            filtered_results = self.filter_results(search_type, results, search_query, result_keys)
+            filtered_results = self.filter_results(search_type, search_query, results, included_keys)
             union_results += filtered_results
-        return union_results
+        return self.prepare_filtered_search_results(union_results)
 
 
     def get_basic_search_results(self, search_type, search_query):

@@ -23,5 +23,6 @@ base_meta_fields = api.model('Base Meta', {
 
 search_data_fields = api.model('Search Data', {
     'last_three_month_test_count': fields.Integer(description="Test counts over last 3 months."),
-    'test_count': fields.Integer(description="Test counts over entire MLab dataset")
+    'test_count': fields.Integer(description="Test counts over entire MLab dataset"),
+    'last_year_test_count': fields.Integer(description="Test counts over last year.")
 })
