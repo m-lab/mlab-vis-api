@@ -5,7 +5,7 @@ Models for location metrics
 from flask_restplus import fields
 from mlab_api.rest_api import api
 
-from mlab_api.models.base_models import base_meta_fields
+from mlab_api.models.base_models import base_meta_fields, metric_data_fields
 
 metric_meta_fields = base_meta_fields.extend('Metric Meta', {
     'client_continent_code': fields.String(description="Internal continent code."),
@@ -14,17 +14,6 @@ metric_meta_fields = base_meta_fields.extend('Metric Meta', {
 })
 
 api.models[metric_meta_fields.name] = metric_meta_fields
-
-
-metric_data_fields = api.model('Metric Data', {
-    'count': fields.Integer(description="Test counts for time period"),
-    'date': fields.String(description="Date Aggregation.", required=True),
-    'hour': fields.String(description="Hour Aggregation, if requested by hour."),
-    'download_speed_mbps_median': fields.Float,
-    'upload_speed_mbps_median': fields.Float,
-    'rtt_avg': fields.Float,
-    'retransmit_avg': fields.Float
-})
 
 location_metric_model = api.model('Location Metric Model', {
     'meta': fields.Nested(metric_meta_fields, required=True),

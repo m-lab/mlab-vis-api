@@ -10,11 +10,11 @@ from mlab_api.data.data import CLIENT_ASN_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.constants import TIME_BINS
 from mlab_api.rest_api import api
-from mlab_api.parsers import date_arguments, search_arguments
+from mlab_api.parsers import date_arguments, search_arguments, include_data_arguments
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.asn_models import client_asn_search_model, client_asn_info_model
+from mlab_api.models.asn_models import client_asn_search_model, client_asn_info_model, client_metric_model
 
 client_asn_ns = api.namespace('clients', description='Client ASN specific API')
 
@@ -62,6 +62,7 @@ class ClientAsnTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @api.marshal_with(client_metric_model)
     def get(self, client_id):
         """
         Get Client Metrics Over Time
@@ -77,7 +78,7 @@ class ClientAsnTimeMetric(Resource):
 
 
 @client_asn_ns.route('/<string:client_id>/servers/<string:server_id>/metrics')
-class LocationServerTimeMetric(Resource):
+class ClientServerTimeMetric(Resource):
     '''
     Location + Server Time Metric Resource
     '''
@@ -85,7 +86,7 @@ class LocationServerTimeMetric(Resource):
     @api.expect(date_arguments)
     def get(self, client_id, server_id):
         """
-        Get time metrics for a specific location + server
+        Get time metrics for a specific client + server
         """
 
         args = date_arguments.parse_args(request)
@@ -95,4 +96,22 @@ class LocationServerTimeMetric(Resource):
         results = DATA.get_client_server_metrics(client_id, server_id,
                                                    timebin, startdate, enddate)
 
+        return results
+
+@client_asn_ns.route('/<string:client_id>/servers')
+class ClientServers(Resource):
+    '''
+    Client Metrics
+    '''
+
+    @api.expect(include_data_arguments)
+    @api.marshal_with(client_metric_model)
+    def get(self, client_id):
+        """
+        Get Servers associated with a client
+        """
+
+        args = include_data_arguments.parse_args(request)
+        include_data = args.get('data')
+        results = DATA.get_client_servers(client_id, include_data)
         return results

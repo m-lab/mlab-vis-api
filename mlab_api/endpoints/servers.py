@@ -14,7 +14,7 @@ from mlab_api.parsers import date_arguments, search_arguments
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.asn_models import server_asn_search_model, server_asn_info_model
+from mlab_api.models.asn_models import server_asn_search_model, server_asn_info_model, server_metric_model
 from mlab_api.stats import statsd
 
 server_asn_ns = api.namespace('servers', description='Server ASN specific API')
@@ -63,7 +63,7 @@ class ServerTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
-    # @api.marshal_with(location_metric_model)
+    @api.marshal_with(server_metric_model)
     @statsd.timer('servers.metrics.api')
     def get(self, server_id):
         """

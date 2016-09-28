@@ -50,6 +50,6 @@ class ServerAsnData(Data):
         formatted = bt.get_time_metric_results(location_key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "servers")
 
         # set the ID to be the location ID
-        # formatted["meta"]["id"] = server_id
+        formatted["meta"]["id"] = server_id
 
         return formatted

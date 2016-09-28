@@ -70,6 +70,9 @@ class ClientAsnData(Data):
         formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "clients")
 
         # set the ID to be the location ID
-        formatted["meta"]["id"] = client_id
+        formatted["meta"]["id"] = "_".join([client_id, server_id])
 
         return formatted
+
+    def get_client_servers(self, client_id, include_data):
+        return [];

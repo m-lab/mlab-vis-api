@@ -5,7 +5,9 @@ Models for definging return value of ASN specific calls
 
 from flask_restplus import fields
 from mlab_api.rest_api import api
-from mlab_api.models.base_models import search_data_fields
+from mlab_api.models.base_models import search_data_fields, metric_data_fields
+
+
 
 # ---
 # Models for Client ASN
@@ -29,6 +31,24 @@ client_asn_info_model = api.model('Client Info Model', {
     'meta': fields.Nested(client_asn_search_meta_fields, required=True),
 })
 
+# --
+# Client Metrics
+# --
+
+client_metric_meta_fields = api.model('Client ASN Metric Meta', {
+    'local_zone_name': fields.String(description="Time zone name."),
+    'local_time_zone': fields.String(description="Time zone Id."),
+    'client_asn_number': fields.String(description="Client ASN Number"),
+    'client_asn_name': fields.Raw(description="Client ASN Name"),
+    'id': fields.String(description="Client ID")
+})
+
+client_metric_model = api.model('Client Metric Model', {
+    'meta': fields.Nested(client_metric_meta_fields, required=True),
+    'results': fields.List(fields.Nested(metric_data_fields), required=True)
+})
+
+# -----------------------------------
 
 # ---
 # Models for Server ASN
@@ -50,4 +70,20 @@ server_asn_search_model = api.model('Server ASN Search Results', {
 
 server_asn_info_model = api.model('Server Info Model', {
     'meta': fields.Nested(server_asn_search_meta_fields, required=True),
+})
+
+# --
+# Server Metrics
+# --
+server_metric_meta_fields = api.model('Server ASN Metric Meta', {
+    'local_zone_name': fields.String(description="Time zone name."),
+    'local_time_zone': fields.String(description="Time zone Id."),
+    'server_asn_number': fields.String(description="Server ASN Number"),
+    'server_asn_name': fields.Raw(description="Server ASN Name"),
+    'id': fields.String(description="Server ID")
+})
+
+server_metric_model = api.model('Server Metric Model', {
+    'meta': fields.Nested(server_metric_meta_fields, required=True),
+    'results': fields.List(fields.Nested(metric_data_fields), required=True)
 })

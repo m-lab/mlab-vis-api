@@ -26,3 +26,13 @@ search_data_fields = api.model('Search Data', {
     'test_count': fields.Integer(description="Test counts over entire MLab dataset"),
     'last_year_test_count': fields.Integer(description="Test counts over last year.")
 })
+
+metric_data_fields = api.model('Metric Data', {
+    'count': fields.Integer(description="Test counts for time period."),
+    'rtt_avg': fields.Float(description="Average round trip time"),
+    'retransmit_avg': fields.Integer(description="Average retransmit rate."),
+    'download_speed_mbps_median': fields.Integer(description="Median Download Speed."),
+    'upload_speed_mbps_median': fields.Integer(description="Median Upload Speed."),
+    'hour': fields.String(description="Hour Aggregation, if requested by hour."),
+    'date': fields.String(description="Date for time period")
+})
