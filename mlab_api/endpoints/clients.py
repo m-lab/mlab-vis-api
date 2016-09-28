@@ -54,6 +54,39 @@ class ClientInfo(Resource):
         results = DATA.get_client_info(client_id)
         return results
 
+@client_asn_ns.route('/<string:client_id>/servers')
+class ClientServers(Resource):
+    '''
+     Client  servers List
+    '''
+
+    @api.expect(include_data_arguments)
+    def get(self, client_id):
+        """
+        Get list of servers related to this client
+        """
+
+        args = include_data_arguments.parse_args(request)
+        results = DATA.get_client_servers(client_id, args.get('data'))
+
+        return results
+
+@client_asn_ns.route('/<string:client_id>/locations')
+class ClientLocations(Resource):
+    '''
+     Client  locations List
+    '''
+
+    @api.expect(include_data_arguments)
+    def get(self, client_id):
+        """
+        Get list of clients related to this server
+        """
+
+        args = include_data_arguments.parse_args(request)
+        results = DATA.get_client_locations(client_id, args.get('data'))
+
+        return results
 
 @client_asn_ns.route('/<string:client_id>/metrics')
 class ClientAsnTimeMetric(Resource):

@@ -58,34 +58,26 @@ class LocationData(Data):
         '''
         Get list and info of client isps for a location
         '''
+        return self.get_list_data(location_id, 'locations', 'clients', include_data)
 
-        # config_id = TABLE_KEYS["CLIENT_LOCATION_KEY"] + '_' + TABLE_KEYS["CLIENT_ASN_KEY"] + '_list'
-
-        config_id = du.list_table('clients', 'locations')
-
-        table_config = get_table_config(self.table_configs, None, config_id)
-
-        key_fields = du.get_location_key_fields(location_id, table_config)
-
-        results = bt.get_list_table_results(key_fields, self.get_pool(), include_data, table_config, 'locations_clients')
-        return {"results": results}
 
     def get_location_servers(self, location_id, include_data):
         '''
         Get list and info of server isps for a location
         '''
+        return self.get_list_data(location_id, 'locations', 'servers', include_data)
 
-        # config_id = TABLE_KEYS["CLIENT_LOCATION_KEY"] + '_' + TABLE_KEYS["CLIENT_ASN_KEY"] + '_list'
-
-        config_id = du.list_table('servers', 'locations')
-
-        table_config = get_table_config(self.table_configs, None, config_id)
-
-        key_fields = du.get_location_key_fields(location_id, table_config)
-
-        results = bt.get_list_table_results(key_fields, self.get_pool(), include_data, table_config, 'locations_servers')
-        return {"results": results}
-
+    # def get_location_client_servers(self, location_id, client_id, include_data):
+    #     '''
+    #     Get list and info of server isps for a location
+    #     '''
+    #     return self.get_list_data([location_id, client_id], ['locations', 'clients'], 'servers', include_data)
+    #
+    # def get_location_server_clients(self, location_id, server_id, include_data):
+    #     '''
+    #     Get list and info of server isps for a location
+    #     '''
+    #     return self.get_list_data([location_id, server_id], ['locations', 'servers'], 'clients', include_data)
 
     def get_location_client_isp_info(self, location_id, client_isp_id):
         '''

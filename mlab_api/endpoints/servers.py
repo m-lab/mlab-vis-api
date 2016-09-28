@@ -10,7 +10,7 @@ from mlab_api.constants import TIME_BINS
 from mlab_api.data.data import SERVER_ASN_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.rest_api import api
-from mlab_api.parsers import date_arguments, search_arguments
+from mlab_api.parsers import date_arguments, search_arguments, include_data_arguments
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
@@ -55,6 +55,41 @@ class ServerInfo(Resource):
         results = DATA.get_server_info(server_id)
         return results
 
+@server_asn_ns.route('/<string:server_id>/clients')
+class ServerClients(Resource):
+    '''
+     Server  clients List
+    '''
+
+    @api.expect(include_data_arguments)
+    @statsd.timer('servers_clients.list.api')
+    def get(self, server_id):
+        """
+        Get list of clients related to this server
+        """
+
+        args = include_data_arguments.parse_args(request)
+        results = DATA.get_server_clients(server_id, args.get('data'))
+
+        return results
+
+@server_asn_ns.route('/<string:server_id>/locations')
+class ServerLocations(Resource):
+    '''
+     Server  clients List
+    '''
+
+    @api.expect(include_data_arguments)
+    @statsd.timer('servers_locations.list.api')
+    def get(self, server_id):
+        """
+        Get list of clients related to this server
+        """
+
+        args = include_data_arguments.parse_args(request)
+        results = DATA.get_server_locations(server_id, args.get('data'))
+
+        return results
 
 @server_asn_ns.route('/<string:server_id>/metrics')
 class ServerTimeMetric(Resource):

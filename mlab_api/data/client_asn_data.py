@@ -38,6 +38,21 @@ class ClientAsnData(Data):
 
         return result
 
+    def get_client_servers(self, client_id, include_data):
+        '''
+        Get list and info of server isps for a client
+        '''
+
+        return self.get_list_data(client_id, 'clients', 'servers', include_data)
+
+
+    def get_client_locations(self, client_id, include_data):
+        '''
+        Get list and info of locations for a client
+        '''
+
+        return self.get_list_data(client_id, 'clients', 'locations', include_data)
+
     def get_client_metrics(self, client_id, timebin, starttime, endtime):
         '''
         Get data for client location at a specific
@@ -73,6 +88,3 @@ class ClientAsnData(Data):
         formatted["meta"]["id"] = "_".join([client_id, server_id])
 
         return formatted
-
-    def get_client_servers(self, client_id, include_data):
-        return [];

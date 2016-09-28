@@ -38,6 +38,20 @@ class ServerAsnData(Data):
 
         return result
 
+    def get_server_clients(self, server_id, include_data):
+        '''
+        Get list and info of client isps for a server
+        '''
+        return self.get_list_data(server_id, 'servers', 'clients', include_data)
+
+
+    def get_server_locations(self, server_id, include_data):
+        '''
+        Get list and info of locations for a server
+        '''
+        return self.get_list_data(server_id, 'servers', 'locations', include_data)
+
+
     def get_server_metrics(self, server_id, timebin, starttime, endtime):
         '''
         Get data for specific location at a specific
