@@ -54,7 +54,7 @@ class LocationData(Data):
 
         return {"results": results}
 
-    def get_location_client_isps(self, location_id, include_data):
+    def get_location_clients(self, location_id, include_data):
         '''
         Get list and info of client isps for a location
         '''
@@ -65,23 +65,27 @@ class LocationData(Data):
 
         table_config = get_table_config(self.table_configs, None, config_id)
 
-        location_key_fields = du.get_location_key_fields(location_id, table_config)
+        key_fields = du.get_location_key_fields(location_id, table_config)
 
-        location_key_field = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
+        results = bt.get_list_table_results(key_fields, self.get_pool(), include_data, table_config, 'locations_clients')
+        return {"results": results}
 
-        params = {"prefix":location_key_field}
-        if not include_data:
-            params["filter"] = FamilyNameRegexFilter('meta')
+    def get_location_servers(self, location_id, include_data):
+        '''
+        Get list and info of server isps for a location
+        '''
 
-        results = []
-        with statsd.timer('locations.clientisps_list.scan_table'):
-            results = bt.scan_table(table_config, self.get_pool(), **params)
+        # config_id = TABLE_KEYS["CLIENT_LOCATION_KEY"] + '_' + TABLE_KEYS["CLIENT_ASN_KEY"] + '_list'
 
-        sorted_results = []
-        with statsd.timer('locations.clientisps_list.sort_results'):
-            # NOTE: in this bigtable - 'last_year_test_count' is in `meta` - not `data`.
-            sorted_results = sorted(results, key=lambda k: k['meta']['last_year_test_count'], reverse=True)
-        return {"results": sorted_results}
+        config_id = du.list_table('servers', 'locations')
+
+        table_config = get_table_config(self.table_configs, None, config_id)
+
+        key_fields = du.get_location_key_fields(location_id, table_config)
+
+        results = bt.get_list_table_results(key_fields, self.get_pool(), include_data, table_config, 'locations_servers')
+        return {"results": results}
+
 
     def get_location_client_isp_info(self, location_id, client_isp_id):
         '''
@@ -152,7 +156,7 @@ class LocationData(Data):
 
         # TODO: the direction of the keys don't match the table name
         key_fields = du.get_key_fields([location_id, server_id], table_config)
-        formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_clients")
+        formatted = bt.get_time_metric_results(key_fields, self.get_pool(), timebin, starttime, endtime, table_config, "locations_servers")
 
         # set the ID to be the Client ISP ID
         formatted["meta"]["id"] = "_".join([location_id, server_id])

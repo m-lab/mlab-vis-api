@@ -7,10 +7,12 @@ import logging
 
 from gcloud import bigtable
 from gcloud.bigtable import happybase
+from gcloud.bigtable.row_filters import FamilyNameRegexFilter
 from oauth2client.client import GoogleCredentials
 
 import mlab_api.data.data_utils as du
 from mlab_api.stats import statsd
+from mlab_api.sort_utils import sort_by_count
 
 def init_pool(app_config):
     '''
@@ -132,3 +134,20 @@ def get_time_metric_results(key_fields, pool, timebin, starttime, endtime, table
         # format output for API
         formatted = du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=timebin)
     return formatted
+
+def get_list_table_results(key_fields, pool, include_data, table_config, metric_name):
+
+    key_fields = du.BIGTABLE_KEY_DELIM.join(key_fields)
+
+    params = {"prefix":key_fields}
+    if not include_data:
+        params["filter"] = FamilyNameRegexFilter('meta')
+
+    results = []
+    with statsd.timer('{0}.listtable.scan_table'.format(metric_name)):
+        results = scan_table(table_config, pool, **params)
+
+    sorted_results = []
+    with statsd.timer('{0}.listtable.sort_results'):
+        sorted_results = sorted(results, key=sort_by_count, reverse=True)
+    return sorted_results

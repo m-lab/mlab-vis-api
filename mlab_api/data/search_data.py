@@ -6,6 +6,7 @@ from gcloud.bigtable.row_filters import FamilyNameRegexFilter
 from mlab_api.data.table_config import get_table_config
 from mlab_api.data.base_data import Data
 from mlab_api.url_utils import normalize_key
+from mlab_api.sort_utils import sort_by_count
 import mlab_api.data.bigtable_utils as bt
 import mlab_api.data.data_utils as du
 
@@ -17,13 +18,6 @@ SEARCH_KEYS = {
 
 DATA_VALUES = ['test_count', 'last_three_month_test_count', 'last_year_test_count']
 
-def search_sort_key(row):
-    if 'test_count' in row['meta']:
-        return row['meta']['test_count']
-    elif 'last_year_test_count' in row['meta']:
-        return row['meta']['last_year_test_count']
-    else:
-        return 'a'
 
 class SearchData(Data):
 
@@ -135,7 +129,7 @@ class SearchData(Data):
 
         # sort based on test_count
         if len(results) > 0 and 'meta' in results[0]:
-            sorted_results = sorted(results, key=search_sort_key, reverse=True)
+            sorted_results = sorted(results, key=sort_by_count, reverse=True)
             return {"results": sorted_results}
         else:
             return {"results": results}

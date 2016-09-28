@@ -84,32 +84,46 @@ class LocationChildren(Resource):
         results = DATA.get_location_children(location_id, args.get('type'))
         return results
 
-
-
-
-
 @locations_ns.route('/<string:location_id>/clients')
-class LocationClientIspStats(Resource):
+class LocationClients(Resource):
     '''
-    Location ISP Resource
+    Location Clients Resource
     '''
 
     @api.expect(include_data_arguments)
-    @statsd.timer('locations.clientisps_list.api')
+    @statsd.timer('locations_clients.list.api')
     def get(self, location_id):
         """
-        Get Location Metrics for ISP Over Time
-        Get metrics for specific location and specific client ISP
+        Get list of clients related to this location
         """
 
         location_id = normalize_key(location_id)
 
         args = include_data_arguments.parse_args(request)
-
-
-        results = DATA.get_location_client_isps(location_id, args.get('data'))
+        results = DATA.get_location_clients(location_id, args.get('data'))
 
         return results
+
+@locations_ns.route('/<string:location_id>/servers')
+class LocationServers(Resource):
+    '''
+     Location + Server List
+    '''
+
+    @api.expect(include_data_arguments)
+    @statsd.timer('locations_servers.list.api')
+    def get(self, location_id):
+        """
+        Get list of servers related to this location
+        """
+
+        location_id = normalize_key(location_id)
+
+        args = include_data_arguments.parse_args(request)
+        results = DATA.get_location_servers(location_id, args.get('data'))
+
+        return results
+
 
 @locations_ns.route('/<string:location_id>/clients/<string:client_isp_id>/info')
 class LocationClientIspInfo(Resource):
