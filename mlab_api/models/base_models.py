@@ -8,8 +8,9 @@ from mlab_api.rest_api import api
 # ---
 # Base Models
 # ---
-base_meta_fields = api.model('Base Meta', {
-    'id': fields.String(description="ID"),
+location_base_meta_fields = api.model('Base Meta', {
+    'id': fields.Raw(description="Location id", attribute='location_key'),
+    'type': fields.String(description="Location type. city, region, country, or continent."),
     'client_location_key': fields.String(description="Location ID."),
     'client_continent': fields.String(description="Continent of Location."),
     'client_continent_code': fields.String(description="Continent code of Location."),

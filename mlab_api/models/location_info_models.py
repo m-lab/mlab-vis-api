@@ -6,14 +6,11 @@ from flask_restplus import fields
 from mlab_api.rest_api import api
 
 
-from mlab_api.models.base_models import base_meta_fields
+from mlab_api.models.base_models import location_base_meta_fields
 
-location_info_meta_fields = base_meta_fields.extend('Location Info Meta', {
-    'client_continent_code': fields.String(description="Internal continent code.", required=False),
-    'client_country_code': fields.String(description="Internal country code.", required=False),
-    'client_region_code': fields.String(description="Internal region code.", required=False)
+location_info_meta_fields = location_base_meta_fields.extend('Location Info Meta', {
+    'id': fields.String(description="Location Id"),
 })
-
 api.models[location_info_meta_fields.name] = location_info_meta_fields
 
 location_info_data_base_fields = api.model('Base Location Info Data', {
@@ -29,6 +26,7 @@ location_info_data_base_fields = api.model('Base Location Info Data', {
     'last_year_upload_speed_mbps_max': fields.Float,
     'last_year_upload_speed_mbps_stddev': fields.Float,
     'last_year_upload_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of upload speeds"),
+    'last_year_test_count': fields.Integer,
     'last_year_rtt_avg': fields.Float,
     'last_year_retransmit_avg': fields.Float,
 })
