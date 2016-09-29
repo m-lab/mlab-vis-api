@@ -25,8 +25,6 @@ def test_location_key_fields():
     # TODO: get this value from config directly instead of hard coded.
     assert len(fields[0]) == 50
 
-
-
 def test_decode():
     '''
     test decode

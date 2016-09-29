@@ -67,24 +67,10 @@ class LocationData(Data):
         '''
         return self.get_list_data(location_id, 'locations', 'servers', include_data)
 
-    # def get_location_client_servers(self, location_id, client_id, include_data):
-    #     '''
-    #     Get list and info of server isps for a location
-    #     '''
-    #     return self.get_list_data([location_id, client_id], ['locations', 'clients'], 'servers', include_data)
-    #
-    # def get_location_server_clients(self, location_id, server_id, include_data):
-    #     '''
-    #     Get list and info of server isps for a location
-    #     '''
-    #     return self.get_list_data([location_id, server_id], ['locations', 'servers'], 'clients', include_data)
-
     def get_location_client_isp_info(self, location_id, client_isp_id):
         '''
         Get static information about
         '''
-
-        # config_id = TABLE_KEYS["CLIENT_LOCATION_KEY"] + '_' + TABLE_KEYS["CLIENT_ASN_KEY"] + '_list'
         config_id = du.list_table('clients', 'locations')
         table_config = get_table_config(self.table_configs, None, config_id)
 

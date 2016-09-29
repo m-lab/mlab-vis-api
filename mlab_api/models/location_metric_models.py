@@ -12,7 +12,6 @@ metric_meta_fields = base_meta_fields.extend('Metric Meta', {
     'client_country_code': fields.String(description="Internal country code."),
     'client_region_code': fields.String(description="Internal region code.")
 })
-
 api.models[metric_meta_fields.name] = metric_meta_fields
 
 location_metric_model = api.model('Location Metric Model', {

@@ -36,8 +36,6 @@ client_asn_info_model = api.model('Client Info Model', {
 # --
 
 client_metric_meta_fields = api.model('Client ASN Metric Meta', {
-    'local_zone_name': fields.String(description="Time zone name."),
-    'local_time_zone': fields.String(description="Time zone Id."),
     'client_asn_number': fields.String(description="Client ASN Number"),
     'client_asn_name': fields.Raw(description="Client ASN Name"),
     'id': fields.String(description="Client ID")
@@ -76,8 +74,6 @@ server_asn_info_model = api.model('Server Info Model', {
 # Server Metrics
 # --
 server_metric_meta_fields = api.model('Server ASN Metric Meta', {
-    'local_zone_name': fields.String(description="Time zone name."),
-    'local_time_zone': fields.String(description="Time zone Id."),
     'server_asn_number': fields.String(description="Server ASN Number"),
     'server_asn_name': fields.Raw(description="Server ASN Name"),
     'id': fields.String(description="Server ID")
