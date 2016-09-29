@@ -9,7 +9,7 @@ from flask_restplus import Resource
 from mlab_api.constants import TIME_BINS
 from mlab_api.data.data import LOCATION_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
-from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments, search_arguments
+from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments, search_arguments, top_arguments
 from mlab_api.models.location_search_models import location_search_model
 from mlab_api.models.location_metric_models import location_metric_model
 from mlab_api.models.location_info_models import location_info_model, location_children_model, location_client_isp_info_model
@@ -43,6 +43,23 @@ class LocationSearch(Resource):
 
         return results
 
+@locations_ns.route('/top')
+class LocationTop(Resource):
+    '''
+    Provide Top Locations with given filters
+    '''
+
+    @api.expect(top_arguments)
+    @api.marshal_with(location_search_model)
+    def get(self):
+        """
+        Get top locations with given filters
+        """
+
+        args = top_arguments.parse_args(request)
+        search_filter = get_filter(args)
+        results = SEARCH.get_top_results('locations', args.get('limit'), search_filter)
+        return results
 
 @locations_ns.route('/<string:location_id>')
 @locations_ns.route('/<string:location_id>/info')

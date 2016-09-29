@@ -10,7 +10,7 @@ from mlab_api.data.data import CLIENT_ASN_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.constants import TIME_BINS
 from mlab_api.rest_api import api
-from mlab_api.parsers import date_arguments, search_arguments, include_data_arguments
+from mlab_api.parsers import date_arguments, search_arguments, include_data_arguments, top_arguments
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
@@ -28,13 +28,31 @@ class ClientAsnSearch(Resource):
     @api.marshal_with(client_asn_search_model)
     def get(self):
         """
-        Get ASN Metrics Over Time
+        Search for Client
         """
 
         args = search_arguments.parse_args(request)
         asn_query = normalize_key(args.get('q'))
         search_filter = get_filter(args)
         results = SEARCH.get_search_results('clients', asn_query, search_filter)
+        return results
+
+@client_asn_ns.route('/top')
+class ClientAsnTop(Resource):
+    '''
+    Provide Top Clients with given filters
+    '''
+
+    @api.expect(top_arguments)
+    @api.marshal_with(client_asn_search_model)
+    def get(self):
+        """
+        Get ASN Metrics Over Time
+        """
+
+        args = top_arguments.parse_args(request)
+        search_filter = get_filter(args)
+        results = SEARCH.get_top_results('clients', args.get('limit'), search_filter)
         return results
 
 @client_asn_ns.route('/<string:client_id>')

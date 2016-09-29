@@ -10,6 +10,8 @@ from mlab_api.models.base_models import location_base_meta_fields, search_data_f
 search_meta_fields = location_base_meta_fields.extend('Search Meta', {
     'location': fields.Raw(description="Name of location."),
     'location_key': fields.Raw(description="Key of location."),
+    'client_location_key': fields.Raw(description="Key of location.", attribute='location_key'),
+    'id': fields.Raw(description="Key of location.", attribute='location_key'),
 })
 # HACK: don't know why it won't register extended models
 # so we need to do it manually here.

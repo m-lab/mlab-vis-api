@@ -12,6 +12,7 @@ location_base_meta_fields = api.model('Base Meta', {
     'id': fields.Raw(description="Location id", attribute='client_location_key'),
     'type': fields.String(description="Location type. city, region, country, or continent."),
     'client_location_key': fields.String(description="Location ID."),
+    'location_key': fields.Raw(description="Key of location.", attribute='client_location_key'),
     'client_continent': fields.String(description="Continent of Location."),
     'client_continent_code': fields.String(description="Continent code of Location."),
     'client_country': fields.String(description="Country of Location."),

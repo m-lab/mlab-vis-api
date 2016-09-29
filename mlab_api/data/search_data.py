@@ -33,11 +33,18 @@ class SearchData(Data):
             # its a search table we want
             return du.search_table(search_type)
 
+    def merge_rows(self, row, prev_row):
+        '''
+        Takes 2 rows and merges values from DATA_VALUES
+        '''
+        for key in DATA_VALUES:
+            if (key in prev_row['meta']) and (key in row['meta']):
+                prev_row['meta'][key] += row['meta'][key]
+        return prev_row
 
-    def filter_results(self, search_type, search_query, results, included_keys):
+    def filter_results(self, search_type, search_query, results):
         '''
         Given a list of results and a query, filter matching results.
-        Also given a list of included keys, filter out duplicates
         search_type: one of ['locations', 'servers', 'clients']
         search_query: input query from api
         results: raw unfiltered results
@@ -46,16 +53,20 @@ class SearchData(Data):
 
         # result_keys are the keys to search in the result rows for
         # the `search_query`
+        merged_results = {}
         result_keys = SEARCH_KEYS[search_type]
-        filtered_results = []
         for row in results:
             # if result_keys is > 1, provides a merged string to search in
             row_key = self.get_row_search_key(row, result_keys)
             # only add if not already in the results.
-            if (row_key not in included_keys) and (search_query in row_key):
-                filtered_results.append(row)
-                included_keys.append(row_key)
-        return filtered_results
+            if ((search_query is None) or (search_query in row_key)):
+                if (row_key not in merged_results):
+                    merged_results[row_key] = row
+                else:
+                    # attempt to add count values togehter.
+                    new_row = self.merge_rows(row, merged_results[row_key])
+                    merged_results[row_key] = new_row
+        return merged_results.values()
 
     def prepare_filtered_search_results(self, results):
         '''
@@ -73,7 +84,6 @@ class SearchData(Data):
         return results
 
 
-
     def get_filtered_search_results(self, search_type, search_query, search_filter):
         '''
         Filter search. Provides results for searches that are faceted.
@@ -89,18 +99,18 @@ class SearchData(Data):
                                         None,
                                         table_name)
 
-        union_results = []
-        included_keys = []
-        for filter_value in search_filter['value']:
+        all_results = []
+        for filter_value in sorted(search_filter['value'], reverse=False):
             # we always want this filter value to be the first key
             key_prefix = du.get_key_field(filter_value, 0, table_config)
             key_prefix += du.BIGTABLE_KEY_DELIM
             # filter only the `meta` column family - for speed.
             tablefilter = FamilyNameRegexFilter('meta')
-            results = bt.scan_table(table_config, self.get_pool(), prefix=key_prefix, filter=tablefilter)
-            filtered_results = self.filter_results(search_type, search_query, results, included_keys)
-            union_results += filtered_results
-        return self.prepare_filtered_search_results(union_results)
+            all_results += bt.scan_table(table_config, self.get_pool(), prefix=key_prefix, filter=tablefilter)
+
+        filtered_results = self.filter_results(search_type, search_query, all_results)
+
+        return self.prepare_filtered_search_results(filtered_results)
 
 
     def get_basic_search_results(self, search_type, search_query):
@@ -108,13 +118,10 @@ class SearchData(Data):
         basic search
         '''
         table_name = du.search_table(search_type)
-        table_config = get_table_config(self.table_configs,
-                                        None,
-                                        table_name)
+        table_config = get_table_config(self.table_configs, None, table_name)
 
         results = bt.scan_table(table_config, self.get_pool(), prefix=search_query)
         return results
-
 
 
     def get_search_results(self, search_type, search_query, search_filter):
@@ -133,3 +140,16 @@ class SearchData(Data):
             return {"results": sorted_results}
         else:
             return {"results": results}
+
+    def get_top_results(self, search_type, top_n, search_filter):
+        '''
+        Use same logic as filtered search to get top N filtered results.
+        '''
+        results = self.get_filtered_search_results(search_type, None, search_filter)
+        if not top_n:
+            top_n = -1
+
+        sorted_results = []
+        if len(results) > 0 and 'meta' in results[0]:
+            sorted_results = sorted(results, key=sort_by_count, reverse=True)
+        return {"results": sorted_results[0:top_n]}

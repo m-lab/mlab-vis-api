@@ -10,7 +10,7 @@ from mlab_api.constants import TIME_BINS
 from mlab_api.data.data import SERVER_ASN_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.rest_api import api
-from mlab_api.parsers import date_arguments, search_arguments, include_data_arguments
+from mlab_api.parsers import date_arguments, search_arguments, include_data_arguments, top_arguments
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
@@ -36,6 +36,24 @@ class ServerSearch(Resource):
         search_filter = get_filter(args)
         asn_query = normalize_key(args.get('q'))
         results = SEARCH.get_search_results('servers', asn_query, search_filter)
+        return results
+
+@server_asn_ns.route('/top')
+class ServerTop(Resource):
+    '''
+    Provide Top Clients with given filters
+    '''
+
+    @api.expect(top_arguments)
+    @api.marshal_with(server_asn_search_model)
+    def get(self):
+        """
+        Get Top Servers given filters
+        """
+
+        args = top_arguments.parse_args(request)
+        search_filter = get_filter(args)
+        results = SEARCH.get_top_results('servers', args.get('limit'), search_filter)
         return results
 
 @server_asn_ns.route('/<string:server_id>')
