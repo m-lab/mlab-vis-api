@@ -2,10 +2,10 @@
 '''
 Data class for accessing data for API calls.
 '''
-from gcloud.bigtable.row_filters import FamilyNameRegexFilter
 from mlab_api.data.base_data import Data
 from mlab_api.constants import TABLE_KEYS
 from mlab_api.data.table_config import get_table_config
+from mlab_api.decorators import add_id
 import mlab_api.data.data_utils as du
 import mlab_api.data.bigtable_utils as bt
 from mlab_api.stats import statsd
@@ -54,6 +54,7 @@ class LocationData(Data):
 
         return {"results": results}
 
+    @add_id('client_asn_number')
     def get_location_clients(self, location_id, include_data):
         '''
         Get list and info of client isps for a location
@@ -61,6 +62,7 @@ class LocationData(Data):
         return self.get_list_data(location_id, 'locations', 'clients', include_data)
 
 
+    @add_id('server_asn_number')
     def get_location_servers(self, location_id, include_data):
         '''
         Get list and info of server isps for a location

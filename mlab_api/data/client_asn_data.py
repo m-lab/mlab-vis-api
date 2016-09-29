@@ -6,6 +6,7 @@ from gcloud.bigtable.row_filters import FamilyNameRegexFilter
 from mlab_api.data.table_config import get_table_config
 from mlab_api.constants import TABLE_KEYS
 from mlab_api.data.base_data import Data
+from mlab_api.decorators import add_id
 import mlab_api.data.bigtable_utils as bt
 import mlab_api.data.data_utils as du
 
@@ -38,6 +39,7 @@ class ClientAsnData(Data):
 
         return result
 
+    @add_id('server_asn_number')
     def get_client_servers(self, client_id, include_data):
         '''
         Get list and info of server isps for a client
@@ -46,6 +48,7 @@ class ClientAsnData(Data):
         return self.get_list_data(client_id, 'clients', 'servers', include_data)
 
 
+    @add_id('location_key')
     def get_client_locations(self, client_id, include_data):
         '''
         Get list and info of locations for a client

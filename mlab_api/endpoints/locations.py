@@ -50,7 +50,7 @@ class LocationInfo(Resource):
     '''
     Location Info
     '''
-    # @api.marshal_with(location_search_model)
+    @api.marshal_with(location_info_model)
     @statsd.timer('locations.info.api')
     def get(self, location_id):
         """

@@ -130,21 +130,3 @@ class ClientServerTimeMetric(Resource):
                                                    timebin, startdate, enddate)
 
         return results
-
-@client_asn_ns.route('/<string:client_id>/servers')
-class ClientServers(Resource):
-    '''
-    Client Metrics
-    '''
-
-    @api.expect(include_data_arguments)
-    @api.marshal_with(client_metric_model)
-    def get(self, client_id):
-        """
-        Get Servers associated with a client
-        """
-
-        args = include_data_arguments.parse_args(request)
-        include_data = args.get('data')
-        results = DATA.get_client_servers(client_id, include_data)
-        return results
