@@ -36,7 +36,7 @@ class TestApp(TestCase):
         assert(len(response.json['results']) > 0)
 
         result = response.json['results'][0]
-        expected_fields = [('meta', 'client_region'), ('data', 'last_year_test_count')]
+        expected_fields = [('meta', 'id'), ('meta', 'client_region'), ('data', 'last_year_test_count')]
         print(result)
         for family, key in expected_fields:
             self.assertIsNotNone(result[family][key])
@@ -47,7 +47,7 @@ class TestApp(TestCase):
         self.assertIsNotNone(response.json['data'])
 
         result = response.json
-        expected_fields = [('meta', 'client_region'), ('data', 'last_year_test_count')]
+        expected_fields = [('meta', 'id'), ('meta', 'client_region'), ('data', 'last_year_test_count')]
         for family, key in expected_fields:
             self.assertIsNotNone(result[family][key])
 
@@ -58,6 +58,7 @@ class TestApp(TestCase):
             response = self.client.get("/locations/{0}/metrics?timebin={1}".format(location_key, time_agg))
             self.assertIsNotNone(response.json['results'])
             self.assertIsNotNone(response.json['meta'])
+            self.assertIsNotNone(response.json['meta']['id'])
             assert(len(response.json['results']) > 0)
 
             result = response.json['results'][0]

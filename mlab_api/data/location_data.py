@@ -35,6 +35,7 @@ class LocationData(Data):
 
         return row
 
+    @add_id('parent_location_key')
     def get_location_children(self, location_id, type_filter=None):
         '''
         Return information about children regions of a location
