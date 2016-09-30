@@ -7,4 +7,6 @@ host = app.config['STATSD_SERVER']
 if not host:
     host = 'localhost'
 
+
+#Instance of statsd client to import
 statsd = StatsClient(host=host, prefix="mlab")

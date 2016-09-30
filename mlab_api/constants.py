@@ -1,3 +1,6 @@
+'''
+Constants
+'''
 
 FILTER_TYPES = ['locations', 'clients', 'servers']
 

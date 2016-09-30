@@ -20,10 +20,20 @@ URL_KEY_DELIM = "+"
 BIGTABLE_KEY_DELIM = "|"
 
 def list_table(target_id, scope_id = None):
+    '''
+    Return name of a list table given what entity you are targeting
+    and what entity scopes / facets the target.
+    target_id = [locations, servers, clients]
+    scope_id = [locations, servers, clients]
+    '''
     names = [TABLE_KEYS[tid] for tid in [scope_id, target_id] if tid]
     return "_".join(names) + "_list"
 
 def search_table(target_id):
+    '''
+    Return name of table for searching target
+    target_id = [locations, servers, clients]
+    '''
     return TABLE_KEYS[target_id] + "_search"
 
 
@@ -65,7 +75,6 @@ def get_time_key_fields(time_value, time_aggregation, table_config):
     Returns an array of strings representing the portions of the  row
     key for the time fields
     '''
-
     times = time_value.split(URL_KEY_DELIM)
 
     time_key_fields = []
@@ -84,6 +93,10 @@ def get_time_key_fields(time_value, time_aggregation, table_config):
     return time_key_fields
 
 def get_full_time_keys(key_fields, timebin, starttime, endtime, table_config):
+    '''
+    Helper function that combines functions needed to create
+    a full start and end time key used to query metrics.
+    '''
 
     starttime_fields = get_time_key_fields(starttime, timebin, table_config)
 
@@ -95,26 +108,6 @@ def get_full_time_keys(key_fields, timebin, starttime, endtime, table_config):
     end_key = BIGTABLE_KEY_DELIM.join(key_fields + endtime_fields)
 
     return (start_key, end_key)
-
-# def get_client_isp_fields(client_isp_id, table_config):
-#     '''
-#     Returns an array of strings representing portions of the row
-#     key for the Client ISP
-#
-#     Args:
-#     client_isp_id - ASN Number
-#     '''
-#
-#     client_parts = client_isp_id.split(URL_KEY_DELIM)
-#     client_isp_fields = []
-#     field_names = ['client_asn_number']
-#
-#     for index, field_name in enumerate(field_names):
-#         field_config = [x for x in table_config['row_keys'] if x['name'] == field_name][0]
-#         key_length = field_config['length']
-#         client_isp_fields.append(client_parts[index].ljust(key_length))
-#
-#     return client_isp_fields
 
 
 def decode_value(value, col_type):

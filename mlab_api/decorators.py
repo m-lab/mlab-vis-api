@@ -4,6 +4,11 @@ General purpose decorators
 '''
 
 def add_ids(id_attribute):
+    '''
+    Decorator that adds an 'id' attribute to each value of the
+    returned array. Function it is used on is expected to return
+    and array of results with a 'meta' value in each result.
+    '''
     def add_ids_decorator(func):
         def func_wrapper(*args, **kwargs):
             results = func(*args, **kwargs)
@@ -19,6 +24,10 @@ def add_ids(id_attribute):
     return add_ids_decorator
 
 def add_id(id_attribute):
+    '''
+    Decorator that adds an 'id' attribute to a single value
+    Function is expected to return a dict with a 'meta' value
+    '''
     if isinstance(id_attribute, basestring):
         id_attribute = [id_attribute]
     def add_id_decorator(func):

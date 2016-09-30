@@ -27,6 +27,14 @@ class Data(object):
         return self.connection_pool
 
     def get_list_data(self, entity_id, entity_type, query_type, include_data):
+        '''
+        Helper method to get out data from a list table.
+
+        entity_id = id of entity to look for
+        entity_type = [locations, clients, servers]
+        query_type = [locations, clients, servers]  - what we are faceting on
+        include_data = boolean to indicate if data should be queried and returned.
+        '''
 
         config_id = du.list_table(query_type, entity_type)
 

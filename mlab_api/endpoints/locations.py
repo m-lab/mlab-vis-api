@@ -32,8 +32,7 @@ class LocationSearch(Resource):
     @api.marshal_with(location_search_model)
     def get(self):
         """
-        Location Search
-        Get all location data matching the location_query
+        Get all Locations matching a query
         """
 
         args = search_arguments.parse_args(request)
@@ -46,7 +45,7 @@ class LocationSearch(Resource):
 @locations_ns.route('/top')
 class LocationTop(Resource):
     '''
-    Provide Top Locations with given filters
+    Provide top Locations with provided filters
     '''
 
     @api.expect(top_arguments)
@@ -71,8 +70,7 @@ class LocationInfo(Resource):
     @statsd.timer('locations.info.api')
     def get(self, location_id):
         """
-        Location Info
-        Get all location data matching the location_query
+        Get information for a Location
         """
 
         location_id = normalize_key(location_id)
@@ -91,8 +89,7 @@ class LocationChildren(Resource):
     @statsd.timer('locations.children.api')
     def get(self, location_id):
         """
-        Location Search
-        Get all location data matching the location_query
+        Get Locations matching a query
         """
 
         args = type_arguments.parse_args(request)
@@ -111,7 +108,7 @@ class LocationClients(Resource):
     @statsd.timer('locations_clients.list.api')
     def get(self, location_id):
         """
-        Get list of clients related to this location
+        Get list of Clients related to this Location
         """
 
         location_id = normalize_key(location_id)
@@ -131,7 +128,7 @@ class LocationServers(Resource):
     @statsd.timer('locations_servers.list.api')
     def get(self, location_id):
         """
-        Get list of servers related to this location
+        Get list of Servers related to this Location
         """
 
         location_id = normalize_key(location_id)
@@ -152,7 +149,7 @@ class LocationClientIspInfo(Resource):
     @statsd.timer('locations.clientisps_info.api')
     def get(self, location_id, client_isp_id):
         """
-        Get ISP info for a specific location / isp combo
+        Get info for a particular Location + Client
         """
 
         location_id = normalize_key(location_id)
@@ -174,9 +171,7 @@ class LocationTimeMetric(Resource):
     @statsd.timer('locations.metrics.api')
     def get(self, location_id):
         """
-        Get Location Metrics Over Time
-        Get speed and other metrics for a particular location at a given time \
-        aggregation level.
+        Get time-based metrics for a Location
         """
 
         location_id = normalize_key(location_id)
@@ -197,7 +192,7 @@ class LocationClientTimeMetric(Resource):
     @statsd.timer('locations_clients.metrics.api')
     def get(self, location_id, client_id):
         """
-        Get time metrics for a specific location + client
+        Get time-based metrics for a Location + Client
         """
 
         location_id = normalize_key(location_id)
@@ -221,7 +216,7 @@ class LocationServerTimeMetric(Resource):
     @statsd.timer('locations_servers.metrics.api')
     def get(self, location_id, server_id):
         """
-        Get time metrics for a specific location + server
+        Get time-based metrics for a Location + Server
         """
 
         location_id = normalize_key(location_id)
@@ -245,7 +240,7 @@ class LocationClientServerTimeMetric(Resource):
     @statsd.timer('locations_servers.metrics.api')
     def get(self, location_id, client_id, server_id):
         """
-        Get time metrics for a specific location + client + server
+        Get time-based metrics for a Location + Client + Server
         """
 
         location_id = normalize_key(location_id)

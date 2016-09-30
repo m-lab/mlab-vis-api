@@ -28,7 +28,7 @@ class ClientAsnSearch(Resource):
     @api.marshal_with(client_asn_search_model)
     def get(self):
         """
-        Search for Client
+        Search clients for a given query
         """
 
         args = search_arguments.parse_args(request)
@@ -47,7 +47,7 @@ class ClientAsnTop(Resource):
     @api.marshal_with(client_asn_search_model)
     def get(self):
         """
-        Get ASN Metrics Over Time
+        Get Client Metrics Over Time
         """
 
         args = top_arguments.parse_args(request)
@@ -64,8 +64,7 @@ class ClientInfo(Resource):
     @api.marshal_with(client_asn_info_model)
     def get(self, client_id):
         """
-        Cliet Info
-        Get info for a particular client.
+        Get info for a Client
         """
 
 
@@ -75,13 +74,13 @@ class ClientInfo(Resource):
 @client_asn_ns.route('/<string:client_id>/servers')
 class ClientServers(Resource):
     '''
-     Client  servers List
+     Client servers List
     '''
 
     @api.expect(include_data_arguments)
     def get(self, client_id):
         """
-        Get list of servers related to this client
+        Get list of Servers related to this Client
         """
 
         args = include_data_arguments.parse_args(request)
@@ -92,13 +91,13 @@ class ClientServers(Resource):
 @client_asn_ns.route('/<string:client_id>/locations')
 class ClientLocations(Resource):
     '''
-     Client  locations List
+     Client locations List
     '''
 
     @api.expect(include_data_arguments)
     def get(self, client_id):
         """
-        Get list of clients related to this server
+        Get list of Locations related to this Client
         """
 
         args = include_data_arguments.parse_args(request)
@@ -116,8 +115,7 @@ class ClientAsnTimeMetric(Resource):
     @api.marshal_with(client_metric_model)
     def get(self, client_id):
         """
-        Get Client Metrics Over Time
-        Get speed and other metrics for a particular client at a given time bin level
+        Get time-based metrics for a particular Client.
         """
 
         args = date_arguments.parse_args(request)
@@ -137,7 +135,7 @@ class ClientServerTimeMetric(Resource):
     @api.expect(date_arguments)
     def get(self, client_id, server_id):
         """
-        Get time metrics for a specific client + server
+        Get time-based metrics for a specific Client + Server
         """
 
         args = date_arguments.parse_args(request)

@@ -29,7 +29,7 @@ class ServerSearch(Resource):
     @api.marshal_with(server_asn_search_model)
     def get(self):
         """
-        Get Server search
+        Search for Servers matching a query.
         """
 
         args = search_arguments.parse_args(request)
@@ -41,14 +41,14 @@ class ServerSearch(Resource):
 @server_asn_ns.route('/top')
 class ServerTop(Resource):
     '''
-    Provide Top Clients with given filters
+    Provide top Servers with provided filters
     '''
 
     @api.expect(top_arguments)
     @api.marshal_with(server_asn_search_model)
     def get(self):
         """
-        Get Top Servers given filters
+        Provide top Servers with provided filters
         """
 
         args = top_arguments.parse_args(request)
@@ -65,8 +65,7 @@ class ServerInfo(Resource):
     @api.marshal_with(server_asn_info_model)
     def get(self, server_id):
         """
-        Server Info
-        Get info for a particular server.
+        Get info for a Server
         """
 
 
@@ -76,14 +75,14 @@ class ServerInfo(Resource):
 @server_asn_ns.route('/<string:server_id>/clients')
 class ServerClients(Resource):
     '''
-     Server  clients List
+     Server clients List
     '''
 
     @api.expect(include_data_arguments)
     @statsd.timer('servers_clients.list.api')
     def get(self, server_id):
         """
-        Get list of clients related to this server
+        Get list of Clients related to this Server
         """
 
         args = include_data_arguments.parse_args(request)
@@ -94,14 +93,14 @@ class ServerClients(Resource):
 @server_asn_ns.route('/<string:server_id>/locations')
 class ServerLocations(Resource):
     '''
-     Server  clients List
+     Server locations List
     '''
 
     @api.expect(include_data_arguments)
     @statsd.timer('servers_locations.list.api')
     def get(self, server_id):
         """
-        Get list of clients related to this server
+        Get list of Locations related to this Server
         """
 
         args = include_data_arguments.parse_args(request)
@@ -120,9 +119,7 @@ class ServerTimeMetric(Resource):
     @statsd.timer('servers.metrics.api')
     def get(self, server_id):
         """
-        Get Server Metrics Over Time
-        Get speed and other metrics for a particular server id at a given time \
-        aggregation level.
+        Get time-based metrics for a Server
         """
 
         args = date_arguments.parse_args(request)

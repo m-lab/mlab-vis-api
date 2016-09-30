@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 '''
-Models for definging return value of ASN specific calls
+Models for definging return value of Client / Server specific calls
 '''
 
 from flask_restplus import fields
 from mlab_api.rest_api import api
 from mlab_api.models.base_models import search_data_fields, metric_data_fields
-
-
 
 # ---
 # Models for Client ASN

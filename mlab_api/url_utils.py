@@ -24,10 +24,17 @@ def get_time_window(args, defaults):
 def normalize_key(location_key):
     '''
     Provides consistent search strings
+    Removes white space & non-word characters
+    and lowercases key
     '''
     return re.sub('[\W|_]', '', location_key.lower())
 
 def get_filter(args):
+    '''
+    Formats arguments to return a dict of {filtertype:, filtervalue:}
+    filtertype = [locations, servers, clients]
+    filtervalue = array of ids to filter by.
+    '''
     ftype = args.get('filtertype')
     fvalue = args.get('filtervalue')
 

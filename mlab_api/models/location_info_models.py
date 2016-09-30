@@ -39,9 +39,6 @@ location_info_data_fields = location_info_data_base_fields.extend('Location Info
 })
 api.models[location_info_data_fields.name] = location_info_data_fields
 
-# location_client_isp_meta_fields = base_meta_fields.extend('Location Client Info Meta', {
-# })
-# api.models[location_client_isp_meta_fields.name] = location_client_isp_meta_fields
 
 location_client_isp_data_fields = location_info_data_base_fields.extend('Location Info Meta', {
 })

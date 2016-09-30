@@ -95,9 +95,7 @@ class SearchData(Data):
             return []
         table_name = self.get_table_name(search_type, search_filter)
 
-        table_config = get_table_config(self.table_configs,
-                                        None,
-                                        table_name)
+        table_config = get_table_config(self.table_configs, None, table_name)
 
         all_results = []
         for filter_value in sorted(search_filter['value'], reverse=False):

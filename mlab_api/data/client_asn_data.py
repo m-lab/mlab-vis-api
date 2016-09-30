@@ -71,7 +71,6 @@ class ClientAsnData(Data):
         return formatted
 
 
-
     @add_id(['client_asn_number', 'server_asn_number'])
     def get_client_server_metrics(self, client_id, server_id, timebin, starttime, endtime):
         '''

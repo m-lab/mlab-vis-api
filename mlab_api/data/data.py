@@ -14,6 +14,7 @@ from mlab_api.data.bigtable_utils import init_pool
 TABLE_CONFIGS = read_table_configs(app.config['BIGTABLE_CONFIG_DIR'])
 pool = init_pool(app.config)
 
+# Instances of data classes
 LOCATION_DATA = LocationData(TABLE_CONFIGS, pool)
 CLIENT_ASN_DATA = ClientAsnData(TABLE_CONFIGS, pool)
 SERVER_ASN_DATA = ServerAsnData(TABLE_CONFIGS, pool)
