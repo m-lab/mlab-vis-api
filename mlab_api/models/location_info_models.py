@@ -10,6 +10,8 @@ from mlab_api.models.base_models import location_base_meta_fields
 
 location_info_meta_fields = location_base_meta_fields.extend('Location Info Meta', {
     'id': fields.String(description="Location Id"),
+    'client_location_key': fields.String(description="Location Id", attribute='id'),
+    'location_key': fields.String(description="Location Id", attribute='id')
 })
 api.models[location_info_meta_fields.name] = location_info_meta_fields
 
@@ -59,6 +61,9 @@ location_client_asn_meta_fields = location_info_meta_fields.extend('Location Cli
     'client_asn_name': fields.String(description="Name of ASN."),
     'client_asn_number': fields.String(description="ASN number."),
     'last_year_test_count': fields.Integer(description="Test counts in last year"),
+    'location_key': fields.String(description="Location Id"),
+    'id': fields.String(description="Location Id", attribute='location_key'),
+    'client_location_key': fields.String(description="Location Id", attribute='location_key')
 })
 
 api.models[location_client_asn_meta_fields.name] = location_client_asn_meta_fields

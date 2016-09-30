@@ -5,7 +5,7 @@ Data class for accessing data for API calls.
 from mlab_api.data.base_data import Data
 from mlab_api.constants import TABLE_KEYS
 from mlab_api.data.table_config import get_table_config
-from mlab_api.decorators import add_id
+from mlab_api.decorators import add_ids, add_id_value
 import mlab_api.data.data_utils as du
 import mlab_api.data.bigtable_utils as bt
 from mlab_api.stats import statsd
@@ -15,6 +15,7 @@ class LocationData(Data):
     Connect to BigTable and pull down data.
     '''
 
+    @add_id_value()
     def get_location_info(self, location_id):
         '''
         Get info about specific location
@@ -31,11 +32,9 @@ class LocationData(Data):
         with statsd.timer('location.info.get_row'):
             row = bt.get_row(table_config, self.get_pool(), row_key)
 
-        row["meta"]["id"] = location_id
-
         return row
 
-    @add_id('parent_location_key')
+    @add_ids('parent_location_key')
     def get_location_children(self, location_id, type_filter=None):
         '''
         Return information about children regions of a location
@@ -55,7 +54,7 @@ class LocationData(Data):
 
         return {"results": results}
 
-    @add_id('client_asn_number')
+    @add_ids('client_asn_number')
     def get_location_clients(self, location_id, include_data):
         '''
         Get list and info of client isps for a location
@@ -63,7 +62,7 @@ class LocationData(Data):
         return self.get_list_data(location_id, 'locations', 'clients', include_data)
 
 
-    @add_id('server_asn_number')
+    @add_ids('server_asn_number')
     def get_location_servers(self, location_id, include_data):
         '''
         Get list and info of server isps for a location

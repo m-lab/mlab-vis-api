@@ -12,6 +12,8 @@ search_meta_fields = location_base_meta_fields.extend('Search Meta', {
     'location_key': fields.Raw(description="Key of location."),
     'client_location_key': fields.Raw(description="Key of location.", attribute='location_key'),
     'id': fields.Raw(description="Key of location.", attribute='location_key'),
+    'last_year_test_count': fields.Integer(description="Test counts in last year"),
+    'test_count': fields.Integer(description="All Test counts")
 })
 # HACK: don't know why it won't register extended models
 # so we need to do it manually here.

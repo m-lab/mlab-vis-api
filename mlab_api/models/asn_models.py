@@ -15,7 +15,9 @@ from mlab_api.models.base_models import search_data_fields, metric_data_fields
 client_asn_search_meta_fields = api.model('Client ASN Search Meta', {
     'client_asn_name': fields.Raw(description="Name of ASN."),
     'client_asn_number': fields.String(description="ASN number."),
-    'id': fields.String(description="ID for ASN", attribute='client_asn_number')
+    'id': fields.String(description="ID for ASN", attribute='client_asn_number'),
+    'last_year_test_count': fields.Integer(description="Test counts in last year"),
+    'test_count': fields.Integer(description="All Test counts")
 })
 
 client_asn_search_result_fields = api.model('Client ASN Search Result', {
@@ -55,6 +57,8 @@ server_asn_search_meta_fields = api.model('Server ASN Search Meta', {
     'server_asn_name': fields.Raw(description="Name of ASN."),
     'server_asn_number': fields.Raw(description="ASN for server"),
     'id': fields.Raw(description="Key used to look up ASN.", attribute='server_asn_number'),
+    'last_year_test_count': fields.Integer(description="Test counts in last year"),
+    'test_count': fields.Integer(description="All Test counts")
 })
 
 server_asn_search_result_fields = api.model('Server ASN Search Result', {
