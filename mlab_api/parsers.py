@@ -10,7 +10,7 @@ from mlab_api.constants import FILTER_TYPES, TIME_BINS
 date_arguments = reqparse.RequestParser()
 date_arguments.add_argument('startdate', type=str, required=False, help='Start date of metrics')
 date_arguments.add_argument('enddate', type=str, required=False, help='End date of metrics')
-date_arguments.add_argument('timebin', type=str, required=True,
+date_arguments.add_argument('timebin', type=str, required=False, default='day',
                             choices=TIME_BINS.keys(),
                             help='Time binning to use for time metrics')
 
@@ -37,7 +37,7 @@ search_arguments.add_argument('filtervalue', type=str, required=False,
 
 
 top_arguments = reqparse.RequestParser()
-top_arguments.add_argument('limit', type=int, required=False,
+top_arguments.add_argument('limit', type=int, required=False, default=20,
                             help='Limits results count to top number' )
 
 top_arguments.add_argument('filtertype', type=str, required=True,
