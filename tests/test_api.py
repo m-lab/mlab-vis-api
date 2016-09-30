@@ -1,15 +1,21 @@
-import urllib2
-from flask import Flask
+# import urllib2
+# from flask import Flask
 from flask_testing import TestCase
 from mlab_api.app import app
 from mlab_api.rest_api import api
 from mlab_api.endpoints.locations import locations_ns
 from mlab_api.endpoints.servers import server_asn_ns
+from mlab_api.endpoints.clients import client_asn_ns
 from mlab_api.endpoints.debug import debug_ns
 # from flask_testing import LiveServerTestCase
 
+LOCATION_META_KEYS = ['id', 'client_location_key']
+CLIENT_META_KEYS = ['id', 'client_asn_name', 'client_asn_number']
+SERVER_META_KEYS = ['id', 'server_asn_name', 'server_asn_number']
 
 def check_for_fields(data, root, fields):
+    assert(len(fields) > 0)
+    assert(root)
     assert(root in data)
     for field in fields:
         assert data[root][field] is not None, "{0} is not present in {1}".format(field, root)
@@ -28,14 +34,23 @@ class TestApp(TestCase):
         if not TestApp.init:
             api.add_namespace(locations_ns)
             api.add_namespace(server_asn_ns)
+            api.add_namespace(client_asn_ns)
             api.add_namespace(debug_ns)
             api.init_app(app)
             TestApp.init = True
         return app
 
+    # ---
+    # DEBUG
+    # ---
+
     def test_debug_connection(self):
         response = self.client.get("/debug/connection")
         self.assertIsNotNone(response.json['tables'])
+
+    # ---
+    # LOCATIONS
+    # ---
 
     def test_locations_children(self):
         location_key = 'nausks'
@@ -43,7 +58,7 @@ class TestApp(TestCase):
         self.assertIsNotNone(response.json['results'])
         assert(len(response.json['results']) > 0)
 
-        meta_fields = ['id', 'client_region', 'client_location_key']
+        meta_fields = LOCATION_META_KEYS + ['client_location_key']
         check_all_for_fields(response.json['results'], 'meta', meta_fields)
 
         data_fields = ['last_year_test_count']
@@ -54,7 +69,7 @@ class TestApp(TestCase):
         response = self.client.get("/locations/{0}/info".format(location_key))
         self.assertIsNotNone(response.json['data'])
 
-        meta_fields = ['id', 'client_region', 'client_location_key']
+        meta_fields = LOCATION_META_KEYS + ['client_region']
         check_for_fields(response.json, 'meta', meta_fields)
 
         data_fields = ['last_year_test_count']
@@ -70,7 +85,7 @@ class TestApp(TestCase):
             self.assertIsNotNone(response.json['meta']['id'])
             assert(len(response.json['results']) > 0)
 
-            meta_fields = ['id', 'client_location_key']
+            meta_fields = LOCATION_META_KEYS
             check_for_fields(response.json, 'meta', meta_fields)
 
             result = response.json['results'][0]
@@ -101,11 +116,10 @@ class TestApp(TestCase):
             assert(len(response.json['results']) > 0)
 
             meta_fields = ['id', 'client_asn_number']
-            for meta_field in meta_fields:
-                self.assertIsNotNone(response.json['meta'][meta_field])
+            check_for_fields(response.json, 'meta', meta_fields)
 
             result = response.json['results'][0]
-            
+
             expected_fields = ['date']
             for key in expected_fields:
                 self.assertIsNotNone(result[key])
@@ -117,9 +131,13 @@ class TestApp(TestCase):
         self.assertIsNotNone(response.json['data'])
 
         result = response.json
-        expected_fields = [('meta', 'client_region'), ('meta', 'last_year_test_count'), ('data', 'last_year_download_speed_mbps_median')]
-        for family, key in expected_fields:
-            self.assertIsNotNone(result[family][key])
+        meta_fields = LOCATION_META_KEYS + ['client_region']
+        check_for_fields(result, 'meta', meta_fields)
+        data_fields = ['last_year_download_speed_mbps_median']
+        check_for_fields(result, 'data', data_fields)
+        # expected_fields = [('meta', 'client_region'), ('meta', 'last_year_test_count'), ('data', 'last_year_download_speed_mbps_median')]
+        # for family, key in expected_fields:
+        #     self.assertIsNotNone(result[family][key])
 
     def test_locations_search(self):
         location_key = 'kansascity'
@@ -128,9 +146,80 @@ class TestApp(TestCase):
         assert(len(response.json['results']) > 0)
         # check for some fields
         result = response.json['results'][0]
-        expected_fields = [('meta', 'location_key'), ('data', 'test_count')]
-        for family, key in expected_fields:
-            self.assertIsNotNone(result[family][key])
+        meta_fields = LOCATION_META_KEYS + ['test_count']
+        check_for_fields(result, 'meta', meta_fields)
+
+        data_fields = ['test_count']
+        check_for_fields(result, 'data', data_fields)
+        # expected_fields = [('meta', 'location_key'), ('data', 'test_count')]
+        # for family, key in expected_fields:
+        #     self.assertIsNotNone(result[family][key])
+
+    def test_locations_search_facet(self):
+        filtertype = 'clients'
+        filtervalue = 'AS22773'
+        query = 'no'
+        response = self.client.get("/locations/search?q={0}&filtertype={1}&filtervalue={2}".format(query, filtertype, filtervalue))
+        self.assertIsNotNone(response.json['results'])
+        assert(len(response.json['results']) > 0)
+
+        # check for some fields
+        result = response.json['results'][0]
+        meta_fields = LOCATION_META_KEYS + ['test_count']
+        check_for_fields(result, 'meta', meta_fields)
+
+        data_fields = ['test_count']
+        check_for_fields(result, 'data', data_fields)
+    #
+    def test_locations_top(self):
+        filtertype = 'clients'
+        filtervalue = 'AS22773'
+        response = self.client.get("/locations/top?filtertype={0}&filtervalue={1}".format(filtertype, filtervalue))
+        self.assertIsNotNone(response.json['results'])
+        assert(len(response.json['results']) > 0)
+
+        # check for some fields
+        result = response.json['results'][0]
+        meta_fields = LOCATION_META_KEYS + ['test_count']
+        check_for_fields(result, 'meta', meta_fields)
+
+        data_fields = ['test_count']
+        check_for_fields(result, 'data', data_fields)
+    # ---
+    # CLIENTS
+    # ---
+
+    def test_clients_search(self):
+        search_key = 'as'
+        response = self.client.get("/clients/search?q={0}".format(search_key))
+        self.assertIsNotNone(response.json['results'])
+        assert(len(response.json['results']) > 0)
+
+        # check for some fields
+        result = response.json['results'][0]
+        meta_fields = ['client_asn_name', 'id', 'test_count']
+        check_for_fields(result, 'meta', meta_fields)
+
+        data_fields = ['test_count']
+        check_for_fields(result, 'data', data_fields)
+
+    def test_clients_top(self):
+        filtertype = 'servers'
+        filtervalue = 'AS41364'
+        response = self.client.get("/clients/top?filtertype={0}&filtervalue={1}".format(filtertype, filtervalue))
+        self.assertIsNotNone(response.json['results'])
+        assert(len(response.json['results']) > 0)
+
+        # check for some fields
+        result = response.json['results'][0]
+        meta_fields = CLIENT_META_KEYS + ['test_count']
+        check_for_fields(result, 'meta', meta_fields)
+
+        data_fields = ['test_count']
+        check_for_fields(result, 'data', data_fields)
+    # ---
+    # SERVERS
+    # ---
 
     def test_servers_search(self):
         search_key = 'a'
@@ -140,9 +229,29 @@ class TestApp(TestCase):
 
         # check for some fields
         result = response.json['results'][0]
-        expected_fields = [('meta', 'server_asn_name'), ('data', 'test_count')]
-        for family, key in expected_fields:
-            self.assertIsNotNone(result[family][key])
+        meta_fields = ['server_asn_name', 'id', 'test_count']
+        check_for_fields(result, 'meta', meta_fields)
+
+        data_fields = ['test_count']
+        check_for_fields(result, 'data', data_fields)
+
+    def test_servers_top(self):
+        filtertype = 'clients'
+        filtervalue = 'AS7922'
+        response = self.client.get("/servers/top?filtertype={0}&filtervalue={1}".format(filtertype, filtervalue))
+        self.assertIsNotNone(response.json['results'])
+        assert(len(response.json['results']) > 0)
+
+        # check for some fields
+        result = response.json['results'][0]
+        meta_fields = SERVER_META_KEYS + ['test_count']
+        check_for_fields(result, 'meta', meta_fields)
+
+        data_fields = ['test_count']
+        check_for_fields(result, 'data', data_fields)
+    # ---
+    # EXIT
+    # ---
 
     def tearDown(self):
         pass
