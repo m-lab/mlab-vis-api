@@ -33,16 +33,15 @@ api.add_namespace(server_asn_ns)
 # init api with Flask App
 api.init_app(app)
 
-print(app.config['API_MODE'])
-debug_flag = True
+debug_flag = False
 
-if app.config['API_MODE'] == 'PROD':
-    debug_flag = False
-    print('PRODUCTION MODE')
-else:
+if app.config['API_MODE'] == 'DEV':
+    print('DEV MODE')
     debug_flag = True
     api.add_namespace(debug_ns)
-    print('DEBUG MODE')
+else:
+    print('PRODUCTION MODE')
+    debug_flag = False
 
 if __name__ == '__main__':
     app.run(port=8080, debug=debug_flag)
