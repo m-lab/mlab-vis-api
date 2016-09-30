@@ -32,9 +32,9 @@ search_data_fields = api.model('Search Data', {
 metric_data_fields = api.model('Metric Data', {
     'count': fields.Integer(description="Test counts for time period."),
     'rtt_avg': fields.Float(description="Average round trip time"),
-    'retransmit_avg': fields.Integer(description="Average retransmit rate."),
-    'download_speed_mbps_median': fields.Integer(description="Median Download Speed."),
-    'upload_speed_mbps_median': fields.Integer(description="Median Upload Speed."),
+    'retransmit_avg': fields.Float(description="Average retransmit rate."),
+    'download_speed_mbps_median': fields.Float(description="Median Download Speed."),
+    'upload_speed_mbps_median': fields.Float(description="Median Upload Speed."),
     'hour': fields.String(description="Hour Aggregation, if requested by hour."),
     'date': fields.String(description="Date for time period")
 })
