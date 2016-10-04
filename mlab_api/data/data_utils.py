@@ -110,14 +110,20 @@ def get_full_time_keys(key_fields, timebin, starttime, endtime, table_config):
     return (start_key, end_key)
 
 
-def decode_value(value, col_type):
+def decode_value(value, col_type, options):
     '''
     Decode a given value, based on its given type
     '''
     new_value = value
     if col_type == 'double':
+        shouldRound = True
+        if 'round' in options:
+            shouldRound = options['round']
         try:
-            new_value = round(struct.unpack('>d', value)[0], 3)
+            if shouldRound:
+                new_value = round(struct.unpack('>d', value)[0], 3)
+            else:
+                new_value = struct.unpack('>d', value)[0]
         except Exception as err:  #pylint: disable=W0703
             logging.exception("Double Conversion Error")
             logging.exception(str(err))
@@ -160,12 +166,15 @@ def parse_row(row, col_configs, keep_family=True):
                 parsed[family] = {}
 
         col_type = 'string'
+        options = {}
         if name in col_configs:
             col_type = col_configs[name]['type']
+            if 'options' in col_configs[name]:
+                options = col_configs[name]['options']
         else:
             logging.warning('WARNING: missing in col configs: ' + name)
 
-        decoded_value = decode_value(value, col_type)
+        decoded_value = decode_value(value, col_type,  options)
         if keep_family:
             parsed[family][name] = decoded_value
         else:
