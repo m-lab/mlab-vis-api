@@ -110,7 +110,7 @@ def get_full_time_keys(key_fields, timebin, starttime, endtime, table_config):
     return (start_key, end_key)
 
 
-def decode_value(value, col_type, options):
+def decode_value(value, col_type, options={}):
     '''
     Decode a given value, based on its given type
     '''
