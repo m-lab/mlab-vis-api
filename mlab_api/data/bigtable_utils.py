@@ -59,7 +59,7 @@ def scan_table(table_config, pool, prefix="", start_key="", end_key="", **kwargs
     params = {}
     if len(prefix) > 0:
         params = {"row_prefix": prefix.encode('utf-8')}
-    else:
+    elif len(start_key) > 0:
         params = {"row_start": start_key.encode('utf-8'), "row_stop": end_key.encode('utf-8')}
 
     params.update(kwargs)
