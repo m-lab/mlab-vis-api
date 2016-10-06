@@ -11,9 +11,10 @@ from mlab_api.data.data import LOCATION_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments, search_arguments, top_arguments
 from mlab_api.models.location_search_models import location_search_model
-from mlab_api.models.location_metric_models import location_metric_model
+from mlab_api.models.location_metric_models import location_metric_model, location_metric_to_csv
 from mlab_api.models.location_info_models import location_info_model, location_children_model, location_client_isp_info_model
 
+from mlab_api.format_utils import marshal_with_format
 from mlab_api.url_utils import get_time_window, normalize_key, get_filter
 
 from mlab_api.rest_api import api
@@ -167,7 +168,6 @@ class LocationTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
-    @api.marshal_with(location_metric_model)
     @statsd.timer('locations.metrics.api')
     def get(self, location_id):
         """
@@ -180,7 +180,10 @@ class LocationTimeMetric(Resource):
 
         timebin = args.get('timebin')
         results = DATA.get_location_metrics(location_id, timebin, startdate, enddate)
-        return results
+
+        format = args.get('format')
+
+        return marshal_with_format(format, results, location_metric_model, location_metric_to_csv)
 
 @locations_ns.route('/<string:location_id>/clients/<string:client_id>/metrics')
 class LocationClientTimeMetric(Resource):

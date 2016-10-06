@@ -5,6 +5,11 @@ API input parameter parsers.
 from flask_restplus import reqparse
 from mlab_api.constants import FILTER_TYPES, TIME_BINS
 
+def add_format_argument(arguments):
+    arguments.add_argument('format', type=str, required=False, default='json',
+                           choices=['json', 'csv'],
+                           help='The format the response data comes in')
+
 # ---
 # Date arguments
 # ---
@@ -16,7 +21,7 @@ date_arguments.add_argument('enddate', type=str, required=False, help='End date 
 date_arguments.add_argument('timebin', type=str, required=False, default='day',
                             choices=TIME_BINS.keys(),
                             help='Time binning to use for time metrics')
-
+add_format_argument(date_arguments)
 
 # ---
 # type arguments

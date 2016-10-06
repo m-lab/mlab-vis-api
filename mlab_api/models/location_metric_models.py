@@ -15,3 +15,6 @@ location_metric_model = api.model('Location Metric Model', {
     'meta': fields.Nested(metric_meta_fields, required=True),
     'results': fields.List(fields.Nested(metric_data_fields), required=True)
 })
+
+def location_metric_to_csv(data):
+    return "the-csv-data"
