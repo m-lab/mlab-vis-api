@@ -10,5 +10,5 @@ prepare:
 	cp -r ../mlab-vis-pipeline/dataflow/data/bigtable/*.json ./bigtable_configs
 	cp ../mlab-keys/mlab-cred.json cred.json
 
-deploy: prepare
+deploy:
 	gcloud app deploy
