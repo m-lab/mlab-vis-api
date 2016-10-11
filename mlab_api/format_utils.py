@@ -90,14 +90,15 @@ def make_data_row(groups):
     for group in groups:
         (data, fieldnames) = group
         for fieldname in fieldnames:
-            row[fieldname] = data[fieldname] if fieldname in data else None
+            row[fieldname] = data[fieldname] if data is not None and fieldname in data else None
 
     return row
 
 
 def meta_results_to_csv(data, meta_fields_dict, data_fields_dict):
     '''
-    Helper to create CSV from a set results in { meta, results } format.
+    Helper to create CSV from a set results in { meta: {}, results: [] } format.
+    Typically used in metrics results.
 
     `data`: dictionary of marshaled data
     `meta_fields_dict`: model fields, use .keys() to get fieldnames
@@ -108,4 +109,21 @@ def meta_results_to_csv(data, meta_fields_dict, data_fields_dict):
     data_fields = data_fields_dict.keys()
 
     rows = [make_data_row([(meta, meta_fields), (row, data_fields)]) for row in data['results']]
+    return convert_to_csv(rows, meta_fields + data_fields)
+
+def meta_data_in_row_to_csv(data, meta_fields_dict, data_fields_dict):
+    '''
+    Helper to create CSV from a set results in { results: [{ meta: {}, data: {} }] } format.
+    Typically used in search results.
+
+    `data`: dictionary of marshaled data
+    `meta_fields_dict`: model fields, use .keys() to get fieldnames
+    `data_fields_dict`: model fields, use .keys() to get fieldnames
+    '''
+    meta = data['meta'] if 'meta' in data else None
+    meta_fields = meta_fields_dict.keys()
+    data_fields = data_fields_dict.keys()
+
+    rows = [make_data_row([(row['meta'] if 'meta' in row else None, meta_fields),
+                           (row['data'] if 'data' in row else None, data_fields)]) for row in data['results']]
     return convert_to_csv(rows, meta_fields + data_fields)

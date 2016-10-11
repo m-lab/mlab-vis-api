@@ -10,7 +10,7 @@ from mlab_api.constants import TIME_BINS
 from mlab_api.data.data import LOCATION_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments, search_arguments, top_arguments
-from mlab_api.models.location_search_models import location_search_model
+from mlab_api.models.location_search_models import location_search_model, location_search_to_csv
 from mlab_api.models.location_metric_models import location_metric_model, location_metric_to_csv
 from mlab_api.models.location_info_models import location_info_model, location_children_model, location_client_isp_info_model
 
@@ -30,6 +30,7 @@ class LocationSearch(Resource):
     Location Search Resource
     '''
     @api.expect(search_arguments)
+    @format(location_search_to_csv)
     @api.marshal_with(location_search_model)
     def get(self):
         """

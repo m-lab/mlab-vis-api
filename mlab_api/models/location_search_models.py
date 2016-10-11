@@ -4,6 +4,7 @@ Models for Location Search
 '''
 from flask_restplus import fields
 from mlab_api.rest_api import api
+from mlab_api.format_utils import meta_data_in_row_to_csv
 
 from mlab_api.models.base_models import location_base_meta_fields, search_data_fields
 
@@ -27,3 +28,6 @@ search_result_fields = api.model('Search Result', {
 location_search_model = api.model('Location Search Model', {
     'results': fields.List(fields.Nested(search_result_fields), required=True)
 })
+
+def location_search_to_csv(data):
+    return meta_data_in_row_to_csv(data, search_meta_fields, search_data_fields)
