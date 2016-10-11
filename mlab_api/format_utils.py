@@ -104,11 +104,11 @@ def meta_results_to_csv(data, meta_fields_dict, data_fields_dict):
     `meta_fields_dict`: model fields, use .keys() to get fieldnames
     `data_fields_dict`: model fields, use .keys() to get fieldnames
     '''
-    meta = data['meta'] if 'meta' in data else None
     meta_fields = meta_fields_dict.keys()
     data_fields = data_fields_dict.keys()
 
-    rows = [make_data_row([(meta, meta_fields), (row, data_fields)]) for row in data['results']]
+    rows = [make_data_row([(data['meta'] if 'meta' in data else None, meta_fields),
+                           (row, data_fields)]) for row in data['results']]
     return convert_to_csv(rows, meta_fields + data_fields)
 
 def meta_data_in_row_to_csv(data, meta_fields_dict, data_fields_dict):
@@ -120,10 +120,25 @@ def meta_data_in_row_to_csv(data, meta_fields_dict, data_fields_dict):
     `meta_fields_dict`: model fields, use .keys() to get fieldnames
     `data_fields_dict`: model fields, use .keys() to get fieldnames
     '''
-    meta = data['meta'] if 'meta' in data else None
     meta_fields = meta_fields_dict.keys()
     data_fields = data_fields_dict.keys()
 
     rows = [make_data_row([(row['meta'] if 'meta' in row else None, meta_fields),
                            (row['data'] if 'data' in row else None, data_fields)]) for row in data['results']]
+    return convert_to_csv(rows, meta_fields + data_fields)
+
+def meta_data_to_csv(data, meta_fields_dict, data_fields_dict):
+    '''
+    Helper to create CSV from a set results in { meta: {}, data: {} } format.
+    Typically used in info results.
+
+    `data`: dictionary of marshaled data
+    `meta_fields_dict`: model fields, use .keys() to get fieldnames
+    `data_fields_dict`: model fields, use .keys() to get fieldnames
+    '''
+    meta_fields = meta_fields_dict.keys()
+    data_fields = data_fields_dict.keys()
+
+    rows = [make_data_row([(data['meta'] if 'meta' in data else None, meta_fields),
+                          (data['data'] if 'data' in data else None, data_fields)])]
     return convert_to_csv(rows, meta_fields + data_fields)

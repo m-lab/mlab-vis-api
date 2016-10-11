@@ -7,6 +7,7 @@ from mlab_api.rest_api import api
 
 
 from mlab_api.models.base_models import location_base_meta_fields
+from mlab_api.format_utils import meta_data_to_csv
 
 location_info_meta_fields = location_base_meta_fields.extend('Location Info Meta', {
     'id': fields.String(description="Location Id"),
@@ -48,6 +49,11 @@ location_info_model = api.model('Location Info Model', {
     'meta': fields.Nested(location_info_meta_fields, required=True),
     'data': fields.Nested(location_info_data_fields, required=True),
 })
+
+
+def location_info_to_csv(data):
+    return meta_data_to_csv(data, location_info_meta_fields, location_info_data_fields)
+
 
 location_children_model = api.model('Location Children Info Model', {
     "results": fields.List(fields.Nested(location_info_model))
