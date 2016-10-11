@@ -9,7 +9,7 @@ from flask import make_response
 
 # This is connected to the app in
 # main.py
-api = Api(version='0.1.0', doc='/', title='MLab API', default_mediatype='text/plain')
+api = Api(version='0.1.0', doc='/', title='MLab API')
 
 @api.errorhandler
 def server_error(err):
