@@ -27,11 +27,10 @@ def marshal_with_format(data, model, to_csv):
     marshaled = marshal(data, model)
     if format == 'csv':
         if to_csv is None:
-            print("WARNING: no to_csv provided to marshal with")
-            return 'Not supported'
-
-        # convert to CSV via the provided function
-        return to_csv(marshaled)
+            print("WARNING: no to_csv provided to encode with. Encoding as JSON.")
+        else:
+            # convert to CSV via the provided function
+            return to_csv(marshaled)
 
     # otherwise return the JSON as string
     return convert_to_json(marshaled)

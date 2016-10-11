@@ -6,6 +6,7 @@ import logging
 
 from flask_restplus import Api
 from flask import make_response
+from mlab_api.format_utils import convert_to_json
 
 # This is connected to the app in
 # main.py
@@ -37,8 +38,12 @@ def csv_mediatype_representation(data, code, headers):
 def json_mediatype_representation(data, code, headers):
     """
     Assume the data is already marshaled to JSON and just write it
-    to the response
+    to the response. If it isn't a string, then try to convert it
+    to JSON.
     """
+    if not isinstance(data, basestring):
+        data = convert_to_json(data)
+
     return raw_response(data, code, headers)
 
 def raw_response(data, code, headers):
@@ -52,6 +57,5 @@ def raw_response(data, code, headers):
 
     resp = make_response(data, code)
     resp.headers.extend(headers)
-    print(resp.headers, headers)
 
     return resp
