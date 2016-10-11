@@ -4,6 +4,7 @@ Models for location metrics
 '''
 from flask_restplus import fields
 from mlab_api.rest_api import api
+from mlab_api.format_utils import convert_to_csv
 
 from mlab_api.models.base_models import location_base_meta_fields, metric_data_fields
 
@@ -17,4 +18,10 @@ location_metric_model = api.model('Location Metric Model', {
 })
 
 def location_metric_to_csv(data):
-    return "the-csv-data"
+    rows = [{
+                'count': row['count']
+            } for row in data['results']]
+    fieldnames = ['count']
+    csv = convert_to_csv(rows, fieldnames)
+    print('got csv', csv)
+    return csv

@@ -15,7 +15,7 @@ from mlab_api.models.location_metric_models import location_metric_model, locati
 from mlab_api.models.location_info_models import location_info_model, location_children_model, location_client_isp_info_model
 
 from mlab_api.url_utils import get_time_window, normalize_key, get_filter
-from mlab_api.decorators import marshal_with
+from mlab_api.decorators import format
 
 from mlab_api.rest_api import api
 
@@ -168,7 +168,8 @@ class LocationTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
-    @marshal_with(location_metric_model, location_metric_to_csv)
+    @format(location_metric_to_csv)
+    @api.marshal_with(location_metric_model)
     @statsd.timer('locations.metrics.api')
     def get(self, location_id):
         """

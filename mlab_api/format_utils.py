@@ -9,11 +9,11 @@ from json import dumps
 from flask import current_app, request
 from flask_restplus import marshal
 
-def marshal_with_format(data, model, to_csv):
+def format_marshaled_data(data, to_csv):
     '''
-    Marshal data to CSV or to JSON based on a format query string argument or
+    Encode data as CSV or to JSON based on a format query string argument or
     if `format` is not available, based on the accepted mediatype.
-    If CSV, then to_csv is called after marshalling with the model.
+    If CSV, then to_csv is called to do the formatting.
     '''
     format = request.args.get('format')
     if format is None:
@@ -24,16 +24,15 @@ def marshal_with_format(data, model, to_csv):
         )
         format = 'csv' if mediatype == 'text/csv' else 'json'
 
-    marshaled = marshal(data, model)
     if format == 'csv':
         if to_csv is None:
             print("WARNING: no to_csv provided to encode with. Encoding as JSON.")
         else:
             # convert to CSV via the provided function
-            return to_csv(marshaled)
+            return to_csv(data)
 
     # otherwise return the JSON as string
-    return convert_to_json(marshaled)
+    return convert_to_json(data)
 
 
 def convert_to_csv(rows, fieldnames):

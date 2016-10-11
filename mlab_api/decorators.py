@@ -5,7 +5,7 @@ General purpose decorators
 
 from flask import make_response, request
 from functools import update_wrapper
-from mlab_api.format_utils import marshal_with_format
+from mlab_api.format_utils import format_marshaled_data
 
 def add_ids(id_attribute):
     '''
@@ -78,14 +78,14 @@ def format_from_url():
     return format_from_url_decorator
 
 
-def marshal_with(model, to_csv=None):
+def format(to_csv=None):
     '''
-    Decorator to replace the @api.marshal_with(model) with something
-    aware of converting the marshaled data to CSV format
+    Format the marshaled data as CSV or JSON depending on format
+    request parameter and Accepts header
     '''
-    def marshal_with_decorator(func):
+    def format_decorator(func):
         def func_wrapper(*args, **kwargs):
             results = func(*args, **kwargs)
-            return marshal_with_format(results, model, to_csv)
+            return format_marshaled_data(results, to_csv)
         return func_wrapper
-    return marshal_with_decorator
+    return format_decorator
