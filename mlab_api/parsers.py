@@ -6,8 +6,7 @@ from flask_restplus import reqparse
 from mlab_api.constants import FILTER_TYPES, TIME_BINS
 
 def add_format_argument(arguments):
-    arguments.add_argument('format', type=str, required=False, default='json',
-                           choices=['json', 'csv'],
+    arguments.add_argument('format', type=str, required=False, choices=['json', 'csv'],
                            help='The format the response data comes in')
 
 # ---

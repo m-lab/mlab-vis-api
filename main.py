@@ -17,14 +17,17 @@ from mlab_api.endpoints.clients import client_asn_ns
 from mlab_api.endpoints.servers import server_asn_ns
 from mlab_api.endpoints.raw import raw_ns
 
+from mlab_api.decorators import format_from_url
+
+
 # API is defined here
 from mlab_api.rest_api import api
 
 root = logging.getLogger()
 root.setLevel(logging.DEBUG)
 
-# This appears to provide CORS for all API Requests
-api.decorators = [cors.crossdomain(origin='*')]
+# This provides CORS for all API Requests and adds in our media type coercing based on `format`
+api.decorators = [cors.crossdomain(origin='*'), format_from_url()]
 
 # Add namespaces defined in endpoints module
 api.add_namespace(locations_ns)

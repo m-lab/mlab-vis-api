@@ -9,7 +9,7 @@ from flask import make_response
 
 # This is connected to the app in
 # main.py
-api = Api(version='0.1.0', doc='/', title='MLab API')
+api = Api(version='0.1.0', doc='/', title='MLab API', default_mediatype='text/plain')
 
 @api.errorhandler
 def server_error(err):
@@ -24,30 +24,32 @@ def server_error(err):
     """.format(err), 500
 
 
-
 @api.representation('text/csv')
 def csv_mediatype_representation(data, code, headers):
     """
-    Assume the data is already marshalled to CSV and just write it
+    Assume the data is already marshaled to CSV and just write it
     to the response
     """
-    print("handling CSV")
-    print(data)
-    resp = make_response(data, code)
-    resp.headers.extend(headers)
-    return resp
+    return raw_response(data, code, headers)
+
 
 @api.representation('application/json')
 def json_mediatype_representation(data, code, headers):
     """
-    Assume the data is already marshalled to JSON and just write it
+    Assume the data is already marshaled to JSON and just write it
     to the response
     """
-    print("handling JSON")
-    print(data)
+    return raw_response(data, code, headers)
+
+def raw_response(data, code, headers):
+    """
+    Assume the data is already marshaled and just writes it to the response.
+    """
     if not isinstance(data, basestring):
-        print("shit this isnt a string")
-        data = "fake it homie."
+        print('Expected string data, but received:')
+        print(data)
+        data = '"Error: Malformed response"'
+
     resp = make_response(data, code)
     resp.headers.extend(headers)
     print(resp.headers, headers)

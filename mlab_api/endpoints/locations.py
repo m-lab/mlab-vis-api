@@ -181,9 +181,7 @@ class LocationTimeMetric(Resource):
         timebin = args.get('timebin')
         results = DATA.get_location_metrics(location_id, timebin, startdate, enddate)
 
-        format = args.get('format')
-
-        return marshal_with_format(format, results, location_metric_model, location_metric_to_csv)
+        return marshal_with_format(results, location_metric_model, location_metric_to_csv)
 
 @locations_ns.route('/<string:location_id>/clients/<string:client_id>/metrics')
 class LocationClientTimeMetric(Resource):

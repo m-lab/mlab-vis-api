@@ -6,22 +6,33 @@ import csv
 import cStringIO
 
 from json import dumps
-from flask import current_app
+from flask import current_app, request
 from flask_restplus import marshal
 
-def marshal_with_format(format, data, model, to_csv):
+def marshal_with_format(data, model, to_csv):
     '''
-    Marshal data to CSV or to JSON based on a format argument.
+    Marshal data to CSV or to JSON based on a format query string argument or
+    if `format` is not available, based on the accepted mediatype.
     If CSV, then to_csv is called after marshalling with the model.
     '''
+    format = request.args.get('format')
+    if format is None:
+        # format not in URL, get best guess based on Accept header
+        mediatype = request.accept_mimetypes.best_match(
+            ['application/json', 'text/csv'],
+            default='application/json'
+        )
+        format = 'csv' if mediatype == 'text/csv' else 'json'
+
     marshaled = marshal(data, model)
     if format == 'csv':
         if to_csv is None:
             print("WARNING: no to_csv provided to marshal with")
             return 'Not supported'
-        print("running to_csv but not")
-        return 'csv-data'
-    print("converting to JSON")
+
+        # convert to CSV via the provided function
+        return to_csv(marshaled)
+
     # otherwise return the JSON as string
     return convert_to_json(marshaled)
 
