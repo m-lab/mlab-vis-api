@@ -12,10 +12,10 @@ from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments, search_arguments, top_arguments
 from mlab_api.models.location_search_models import location_search_model, location_search_to_csv
 from mlab_api.models.location_metric_models import location_metric_model, location_metric_to_csv
-from mlab_api.models.location_info_models import location_info_model, \
-                                                 location_children_model, \
-                                                 location_client_isp_info_model, \
-                                                 location_info_to_csv
+from mlab_api.models.location_info_models import location_info_model, location_info_to_csv, \
+                                                 location_children_model, location_children_to_csv, \
+                                                 location_client_isp_info_model, location_client_isp_info_to_csv
+
 
 from mlab_api.url_utils import get_time_window, normalize_key, get_filter
 from mlab_api.decorators import format
@@ -92,6 +92,7 @@ class LocationChildren(Resource):
     Location Children List
     '''
     @api.expect(type_arguments)
+    @format(location_children_to_csv)
     @api.marshal_with(location_children_model)
     @statsd.timer('locations.children.api')
     def get(self, location_id):
@@ -152,6 +153,7 @@ class LocationClientIspInfo(Resource):
     Location ISP Resource info
     '''
 
+    @format(location_client_isp_info_to_csv)
     @api.marshal_with(location_client_isp_info_model)
     @statsd.timer('locations.clientisps_info.api')
     def get(self, location_id, client_isp_id):
