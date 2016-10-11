@@ -74,3 +74,38 @@ def convert_to_json(data):
     dumped = dumps(data, **settings) + "\n"
 
     return dumped
+
+
+def make_data_row(groups):
+    '''
+    Makes a data row based on groups where a group is so that it can then
+    be used to generate a CSV in convert_to_csv.
+
+    `groups` is a list of (dict, fieldnames)
+
+    Example usage:
+    make_data_row([(meta, ['client_city', 'client_country']), (row, ['count', 'rtt_avg'])])
+    '''
+    row = {}
+    for group in groups:
+        (data, fieldnames) = group
+        for fieldname in fieldnames:
+            row[fieldname] = data[fieldname] if fieldname in data else None
+
+    return row
+
+
+def meta_results_to_csv(data, meta_fields_dict, data_fields_dict):
+    '''
+    Helper to create CSV from a set results in { meta, results } format.
+
+    `data`: dictionary of marshaled data
+    `meta_fields_dict`: model fields, use .keys() to get fieldnames
+    `data_fields_dict`: model fields, use .keys() to get fieldnames
+    '''
+    meta = data['meta'] if 'meta' in data else None
+    meta_fields = meta_fields_dict.keys()
+    data_fields = data_fields_dict.keys()
+
+    rows = [make_data_row([(meta, meta_fields), (row, data_fields)]) for row in data['results']]
+    return convert_to_csv(rows, meta_fields + data_fields)
