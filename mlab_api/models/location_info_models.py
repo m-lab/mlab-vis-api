@@ -6,7 +6,8 @@ from flask_restplus import fields
 from mlab_api.rest_api import api
 
 
-from mlab_api.models.base_models import location_meta_fields, location_client_meta_fields
+from mlab_api.models.base_models import location_meta_fields, location_client_meta_fields, \
+    location_info_data_fields
 
 from mlab_api.format_utils import meta_data_to_csv, meta_data_in_row_to_csv, meta_in_row_to_csv
 

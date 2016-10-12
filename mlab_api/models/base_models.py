@@ -4,7 +4,8 @@ Base models to sub-class or clone
 '''
 from flask_restplus import fields
 from mlab_api.rest_api import api
-from mlab_api.id_utils import location_id, location_client_id
+from mlab_api.id_utils import location_id, location_client_id, location_server_id, \
+    location_client_server_id, client_id, server_id
 
 
 # ----------------------------------------------------
@@ -34,7 +35,7 @@ metric_data_fields = api.model('Metric Data', {
 server_meta_fields = api.model('Server Meta', {
     'server_asn_number': fields.String(description="Server ASN Number"),
     'server_asn_name': fields.Raw(description="Server ASN Name"),
-    'id': fields.String(description="Server ID")
+    'id': fields.String(description="Server ID", attribute=server_id)
 })
 
 # Server: search meta
@@ -52,7 +53,7 @@ api.models[server_search_meta_fields.name] = server_search_meta_fields # Registe
 client_meta_fields = api.model('Client Meta', {
     'client_asn_number': fields.String(description="Client ASN Number"),
     'client_asn_name': fields.Raw(description="Client ASN Name"),
-    'id': fields.String(description="Client ID")
+    'id': fields.String(description="Client ID", attribute=client_id)
 })
 
 # Client: search meta
@@ -102,7 +103,7 @@ location_info_data_fields = api.model('Location Info Data', {
     'last_year_upload_speed_mbps_max': fields.Float,
     'last_year_upload_speed_mbps_stddev': fields.Float,
     'last_year_upload_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of upload speeds"),
-    'last_year_test_count': fields.Integer(description="Test counts in last year")
+    'last_year_test_count': fields.Integer(description="Test counts in last year"),
     'last_year_rtt_avg': fields.Float,
     'last_year_retransmit_avg': fields.Float,
 })
@@ -125,3 +126,12 @@ location_server_meta_fields = location_meta_fields.extend('Location+Servers Meta
         'id': fields.String(description="Location+Servers Id", attribute=location_server_id),
     })
 api.models[location_server_meta_fields.name] = location_server_meta_fields # Register extended model manually
+
+# ----------------------------------------------------
+# Locations + Clients + Servers
+# ----------------------------------------------------
+location_client_server_meta_fields = location_client_meta_fields.extend('Location+Clients+Servers Meta (no ID)',
+    server_search_meta_fields).extend('Location+Clients+Servers Meta', {
+        'id': fields.String(description="Location+Clients+Servers Id", attribute=location_client_server_id),
+    })
+api.models[location_client_server_meta_fields.name] = location_client_server_meta_fields # Register extended model manually

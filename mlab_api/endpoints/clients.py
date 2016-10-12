@@ -14,7 +14,7 @@ from mlab_api.parsers import date_arguments, search_arguments, include_data_argu
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.asn_models import client_asn_search_model, client_asn_info_model, client_metric_model
+from mlab_api.models.asn_models import client_search_model, client_info_model, client_metric_model
 
 client_asn_ns = api.namespace('clients', description='Client ASN specific API')
 
@@ -25,7 +25,7 @@ class ClientAsnSearch(Resource):
     '''
 
     @api.expect(search_arguments)
-    @api.marshal_with(client_asn_search_model)
+    @api.marshal_with(client_search_model)
     def get(self):
         """
         Search clients for a given query
@@ -44,7 +44,7 @@ class ClientAsnTop(Resource):
     '''
 
     @api.expect(top_arguments)
-    @api.marshal_with(client_asn_search_model)
+    @api.marshal_with(client_search_model)
     def get(self):
         """
         Get Client Metrics Over Time
@@ -61,7 +61,7 @@ class ClientInfo(Resource):
     '''
     Client Info
     '''
-    @api.marshal_with(client_asn_info_model)
+    @api.marshal_with(client_info_model)
     def get(self, client_id):
         """
         Get info for a Client
