@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Base models to sub-class or clone
+Base models that can be nested or extended to create those used in responses
 '''
 from flask_restplus import fields
 from mlab_api.rest_api import api
