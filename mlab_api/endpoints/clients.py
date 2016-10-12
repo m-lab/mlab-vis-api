@@ -14,9 +14,15 @@ from mlab_api.parsers import date_arguments, search_arguments, include_data_argu
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.location_search_models import location_client_list_model
-from mlab_api.models.client_models import client_search_model, client_info_model, client_metric_model, \
-    client_server_metric_model, client_server_list_model
+from mlab_api.models.location_search_models import location_client_list_model, location_client_list_to_csv
+from mlab_api.models.client_models import client_search_model, client_search_to_csv, \
+    client_info_model, client_info_to_csv, \
+    client_metric_model, client_metric_to_csv, \
+    client_server_metric_model, client_server_metric_to_csv, \
+    client_server_list_model, client_server_list_to_csv
+
+from mlab_api.decorators import format
+
 
 client_asn_ns = api.namespace('clients', description='Client ASN specific API')
 
@@ -27,6 +33,7 @@ class ClientAsnSearch(Resource):
     '''
 
     @api.expect(search_arguments)
+    @format(client_search_to_csv)
     @api.marshal_with(client_search_model)
     def get(self):
         """
@@ -46,6 +53,7 @@ class ClientAsnTop(Resource):
     '''
 
     @api.expect(top_arguments)
+    @format(client_search_to_csv)
     @api.marshal_with(client_search_model)
     def get(self):
         """
@@ -63,6 +71,7 @@ class ClientInfo(Resource):
     '''
     Client Info
     '''
+    @format(client_info_to_csv)
     @api.marshal_with(client_info_model)
     def get(self, client_id):
         """
@@ -80,6 +89,7 @@ class ClientServers(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @format(client_server_list_to_csv)
     @api.marshal_with(client_server_list_model)
     def get(self, client_id):
         """
@@ -98,6 +108,7 @@ class ClientLocations(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @format(location_client_list_to_csv)
     @api.marshal_with(location_client_list_model)
     def get(self, client_id):
         """
@@ -116,6 +127,7 @@ class ClientAsnTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @format(client_metric_to_csv)
     @api.marshal_with(client_metric_model)
     def get(self, client_id):
         """
@@ -137,6 +149,7 @@ class ClientServerTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @format(client_server_metric_to_csv)
     @api.marshal_with(client_server_metric_model)
     def get(self, client_id, server_id):
         """
