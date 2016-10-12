@@ -14,7 +14,7 @@ from mlab_api.parsers import date_arguments, search_arguments, include_data_argu
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.asn_models import server_search_model, server_info_model, server_metric_model
+from mlab_api.models.server_models import server_search_model, server_info_model, server_metric_model
 from mlab_api.stats import statsd
 
 server_asn_ns = api.namespace('servers', description='Server ASN specific API')
