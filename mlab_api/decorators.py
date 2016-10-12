@@ -78,7 +78,7 @@ def format_from_url():
     return format_from_url_decorator
 
 
-def format(to_csv=None):
+def format_response(to_csv=None):
     '''
     Format the marshaled data as CSV or JSON depending on format
     request parameter and Accepts header

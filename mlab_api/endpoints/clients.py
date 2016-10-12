@@ -21,7 +21,7 @@ from mlab_api.models.client_models import client_search_model, client_search_to_
     client_server_metric_model, client_server_metric_to_csv, \
     client_server_list_model, client_server_list_to_csv
 
-from mlab_api.decorators import format
+from mlab_api.decorators import format_response
 
 
 client_asn_ns = api.namespace('clients', description='Client ASN specific API')
@@ -33,7 +33,7 @@ class ClientAsnSearch(Resource):
     '''
 
     @api.expect(search_arguments)
-    @format(client_search_to_csv)
+    @format_response(client_search_to_csv)
     @api.marshal_with(client_search_model)
     def get(self):
         """
@@ -53,7 +53,7 @@ class ClientAsnTop(Resource):
     '''
 
     @api.expect(top_arguments)
-    @format(client_search_to_csv)
+    @format_response(client_search_to_csv)
     @api.marshal_with(client_search_model)
     def get(self):
         """
@@ -71,7 +71,7 @@ class ClientInfo(Resource):
     '''
     Client Info
     '''
-    @format(client_info_to_csv)
+    @format_response(client_info_to_csv)
     @api.marshal_with(client_info_model)
     def get(self, client_id):
         """
@@ -89,7 +89,7 @@ class ClientServers(Resource):
     '''
 
     @api.expect(include_data_arguments)
-    @format(client_server_list_to_csv)
+    @format_response(client_server_list_to_csv)
     @api.marshal_with(client_server_list_model)
     def get(self, client_id):
         """
@@ -108,7 +108,7 @@ class ClientLocations(Resource):
     '''
 
     @api.expect(include_data_arguments)
-    @format(location_client_list_to_csv)
+    @format_response(location_client_list_to_csv)
     @api.marshal_with(location_client_list_model)
     def get(self, client_id):
         """
@@ -127,7 +127,7 @@ class ClientAsnTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
-    @format(client_metric_to_csv)
+    @format_response(client_metric_to_csv)
     @api.marshal_with(client_metric_model)
     def get(self, client_id):
         """
@@ -149,7 +149,7 @@ class ClientServerTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
-    @format(client_server_metric_to_csv)
+    @format_response(client_server_metric_to_csv)
     @api.marshal_with(client_server_metric_model)
     def get(self, client_id, server_id):
         """
