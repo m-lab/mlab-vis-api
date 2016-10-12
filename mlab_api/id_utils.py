@@ -7,7 +7,17 @@ def location_id(d):
     '''
     Create ID for locations
     '''
-    return d['location_key'] if 'location_key' in d else d['client_location_key']
+    print('got d =', d)
+    if 'location_key' in d:
+        return d['location_key']
+    if 'client_location_key' in d:
+        return d['client_location_key']
+    if 'child_location_key' in d:
+        return d['child_location_key']
+    if 'id' in d:
+        return d['id']
+
+    return None
 
 
 def client_id(d):
