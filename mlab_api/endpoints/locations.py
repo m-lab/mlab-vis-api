@@ -17,7 +17,8 @@ from mlab_api.models.location_metric_models import location_metric_model, locati
                                                    location_client_server_metric_model, location_client_server_metric_to_csv
 from mlab_api.models.location_info_models import location_info_model, location_info_to_csv, \
                                                  location_children_model, location_children_to_csv, \
-                                                 location_client_isp_info_model, location_client_isp_info_to_csv
+                                                 location_client_isp_info_model, location_client_isp_info_to_csv, \
+                                                 location_clients_list_model, location_clients_list_to_csv
 
 
 from mlab_api.url_utils import get_time_window, normalize_key, get_filter
@@ -116,6 +117,8 @@ class LocationClients(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @format(location_clients_list_to_csv)
+    @api.marshal_with(location_clients_list_model)
     @statsd.timer('locations_clients.list.api')
     def get(self, location_id):
         """

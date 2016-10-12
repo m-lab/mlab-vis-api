@@ -11,7 +11,6 @@ from mlab_api.models.base_models import location_base_meta_fields, search_data_f
 search_meta_fields = location_base_meta_fields.extend('Search Meta', {
     'location': fields.Raw(description="Name of location."),
     'location_key': fields.Raw(description="Key of location."),
-    'client_location_key': fields.Raw(description="Key of location.", attribute='location_key'),
     'id': fields.Raw(description="Key of location.", attribute='location_key'),
     'last_year_test_count': fields.Integer(description="Test counts in last year"),
     'test_count': fields.Integer(description="All Test counts")

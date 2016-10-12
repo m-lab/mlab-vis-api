@@ -129,6 +129,20 @@ def meta_results_to_csv(data, meta_fields_dict, data_fields_dict):
                            (row, data_fields)]) for row in data['results']]
     return convert_to_csv(rows, meta_fields + data_fields)
 
+def meta_in_row_to_csv(data, meta_fields_dict):
+    '''
+    Helper to create CSV from a set results in { results: [{ meta: {} }] } format.
+    Typically used in list results.
+
+    `data`: dictionary of marshaled data
+    `meta_fields_dict`: model fields, use .keys() to get fieldnames
+    '''
+    meta_fields = meta_fields_dict.keys()
+
+    rows = [make_data_row([(row['meta'] if 'meta' in row else None, meta_fields)]) for row in data['results']]
+    return convert_to_csv(rows, meta_fields)
+
+
 def meta_data_in_row_to_csv(data, meta_fields_dict, data_fields_dict):
     '''
     Helper to create CSV from a set results in { results: [{ meta: {}, data: {} }] } format.
