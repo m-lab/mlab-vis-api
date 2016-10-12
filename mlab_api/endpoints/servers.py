@@ -14,6 +14,9 @@ from mlab_api.parsers import date_arguments, search_arguments, include_data_argu
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
+from mlab_api.models.location_search_models import location_server_list_model
+from mlab_api.models.client_models import client_server_list_model
+
 from mlab_api.models.server_models import server_search_model, server_info_model, server_metric_model
 from mlab_api.stats import statsd
 
@@ -79,6 +82,7 @@ class ServerClients(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @api.marshal_with(client_server_list_model)
     @statsd.timer('servers_clients.list.api')
     def get(self, server_id):
         """
@@ -97,6 +101,7 @@ class ServerLocations(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @api.marshal_with(location_server_list_model)
     @statsd.timer('servers_locations.list.api')
     def get(self, server_id):
         """

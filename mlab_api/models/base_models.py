@@ -122,7 +122,7 @@ location_info_data_fields = api.model('Location Info Data', {
 # ----------------------------------------------------
 location_client_meta_fields = location_meta_fields.extend('Location+Clients Meta (no ID)',
     client_search_meta_fields).extend('Location+Clients Meta', {
-        'id': fields.String(description="Location+Clients Id", attribute=location_client_id),
+        'id': fields.Raw(description="Location+Clients Id", attribute=location_client_id),
     })
 api.models[location_client_meta_fields.name] = location_client_meta_fields # Register extended model manually
 
@@ -132,7 +132,7 @@ api.models[location_client_meta_fields.name] = location_client_meta_fields # Reg
 # ----------------------------------------------------
 location_server_meta_fields = location_meta_fields.extend('Location+Servers Meta (no ID)',
     server_search_meta_fields).extend('Location+Servers Meta', {
-        'id': fields.String(description="Location+Servers Id", attribute=location_server_id),
+        'id': fields.Raw(description="Location+Servers Id", attribute=location_server_id),
     })
 api.models[location_server_meta_fields.name] = location_server_meta_fields # Register extended model manually
 
@@ -141,6 +141,6 @@ api.models[location_server_meta_fields.name] = location_server_meta_fields # Reg
 # ----------------------------------------------------
 location_client_server_meta_fields = location_client_meta_fields.extend('Location+Clients+Servers Meta (no ID)',
     server_search_meta_fields).extend('Location+Clients+Servers Meta', {
-        'id': fields.String(description="Location+Clients+Servers Id", attribute=location_client_server_id),
+        'id': fields.Raw(description="Location+Clients+Servers Id", attribute=location_client_server_id),
     })
 api.models[location_client_server_meta_fields.name] = location_client_server_meta_fields # Register extended model manually
