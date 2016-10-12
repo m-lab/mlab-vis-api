@@ -56,9 +56,27 @@ def convert_to_csv(rows, fieldnames):
     return output.getvalue()
 
 
+def cleandict(d):
+    '''
+    Removes None values from the dictionary. Useful for not having `null` in the JSON
+    encoded values. Inspired by http://stackoverflow.com/a/4257279
+    '''
+
+    # if a list, clean each item in the list
+    if type(d) is list:
+        return [cleandict(item) for item in d]
+
+    # if not a dictionary or a tuple, just return it
+    if not isinstance(d, dict):
+        return d
+
+    return dict((k, cleandict(v)) for k,v in d.iteritems() if v is not None)
+
+
 def convert_to_json(data):
     '''
     Encode the data as JSON -- taken from flask_restplus.representations.output_json
+    -- updated to clean the dictionary of nulls.
     '''
     settings = current_app.config.get('RESTPLUS_JSON', {})
 
@@ -71,7 +89,7 @@ def convert_to_json(data):
 
     # always end the json dumps with a new line
     # see https://github.com/mitsuhiko/flask/pull/1262
-    dumped = dumps(data, **settings) + "\n"
+    dumped = dumps(cleandict(data), **settings) + "\n"
 
     return dumped
 
