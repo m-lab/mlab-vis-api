@@ -3,6 +3,10 @@
 General purpose decorators
 '''
 
+from flask import make_response, request
+from functools import update_wrapper
+from mlab_api.format_utils import format_marshaled_data
+
 def add_ids(id_attribute):
     '''
     Decorator that adds an 'id' attribute to each value of the
@@ -51,3 +55,37 @@ def add_id_value():
             return result
         return func_wrapper
     return add_id_decorator
+
+def format_from_url():
+    '''
+    Decorator to handle setting the Content-Type header based on the
+    format query parameter if available.
+    '''
+    def format_from_url_decorator(func):
+        def func_wrapper(*args, **kwargs):
+            resp = make_response(func(*args, **kwargs))
+
+            # restplus ignores our setting of Content-Type in our mediatype handlers
+            # so set it here based on the format parameter
+            format = request.args.get('format')
+            if format == 'csv':
+                resp.headers['Content-Type'] = 'text/csv'
+            elif format == 'json':
+                resp.headers['Content-Type'] = 'application/json'
+
+            return resp
+        return update_wrapper(func_wrapper, func)
+    return format_from_url_decorator
+
+
+def format_response(to_csv=None):
+    '''
+    Format the marshaled data as CSV or JSON depending on format
+    request parameter and Accepts header
+    '''
+    def format_decorator(func):
+        def func_wrapper(*args, **kwargs):
+            results = func(*args, **kwargs)
+            return format_marshaled_data(results, to_csv)
+        return func_wrapper
+    return format_decorator

@@ -10,11 +10,21 @@ from mlab_api.constants import TIME_BINS
 from mlab_api.data.data import LOCATION_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.parsers import date_arguments, type_arguments, include_data_arguments, search_arguments, top_arguments
-from mlab_api.models.location_search_models import location_search_model
-from mlab_api.models.location_metric_models import location_metric_model
-from mlab_api.models.location_info_models import location_info_model, location_children_model, location_client_isp_info_model
+
+from mlab_api.models.location_models import location_search_model, location_search_to_csv, \
+    location_client_list_model, location_client_list_to_csv, \
+    location_server_list_model, location_server_list_to_csv, \
+    location_metric_model, location_metric_to_csv, \
+    location_client_metric_model, location_client_metric_to_csv, \
+    location_server_metric_model, location_server_metric_to_csv, \
+    location_client_server_metric_model, location_client_server_metric_to_csv, \
+    location_info_model, location_info_to_csv, \
+    location_children_model, location_children_to_csv, \
+    location_client_isp_info_model, location_client_isp_info_to_csv
+
 
 from mlab_api.url_utils import get_time_window, normalize_key, get_filter
+from mlab_api.decorators import format_response
 
 from mlab_api.rest_api import api
 
@@ -29,6 +39,7 @@ class LocationSearch(Resource):
     Location Search Resource
     '''
     @api.expect(search_arguments)
+    @format_response(location_search_to_csv)
     @api.marshal_with(location_search_model)
     def get(self):
         """
@@ -49,6 +60,7 @@ class LocationTop(Resource):
     '''
 
     @api.expect(top_arguments)
+    @format_response(location_search_to_csv)
     @api.marshal_with(location_search_model)
     def get(self):
         """
@@ -66,6 +78,7 @@ class LocationInfo(Resource):
     '''
     Location Info
     '''
+    @format_response(location_info_to_csv)
     @api.marshal_with(location_info_model)
     @statsd.timer('locations.info.api')
     def get(self, location_id):
@@ -85,6 +98,7 @@ class LocationChildren(Resource):
     Location Children List
     '''
     @api.expect(type_arguments)
+    @format_response(location_children_to_csv)
     @api.marshal_with(location_children_model)
     @statsd.timer('locations.children.api')
     def get(self, location_id):
@@ -105,6 +119,8 @@ class LocationClients(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @format_response(location_client_list_to_csv)
+    @api.marshal_with(location_client_list_model)
     @statsd.timer('locations_clients.list.api')
     def get(self, location_id):
         """
@@ -125,6 +141,8 @@ class LocationServers(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @format_response(location_server_list_to_csv)
+    @api.marshal_with(location_server_list_model)
     @statsd.timer('locations_servers.list.api')
     def get(self, location_id):
         """
@@ -145,6 +163,7 @@ class LocationClientIspInfo(Resource):
     Location ISP Resource info
     '''
 
+    @format_response(location_client_isp_info_to_csv)
     @api.marshal_with(location_client_isp_info_model)
     @statsd.timer('locations.clientisps_info.api')
     def get(self, location_id, client_isp_id):
@@ -167,6 +186,7 @@ class LocationTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @format_response(location_metric_to_csv)
     @api.marshal_with(location_metric_model)
     @statsd.timer('locations.metrics.api')
     def get(self, location_id):
@@ -180,6 +200,7 @@ class LocationTimeMetric(Resource):
 
         timebin = args.get('timebin')
         results = DATA.get_location_metrics(location_id, timebin, startdate, enddate)
+
         return results
 
 @locations_ns.route('/<string:location_id>/clients/<string:client_id>/metrics')
@@ -189,6 +210,8 @@ class LocationClientTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @format_response(location_client_metric_to_csv)
+    @api.marshal_with(location_client_metric_model)
     @statsd.timer('locations_clients.metrics.api')
     def get(self, location_id, client_id):
         """
@@ -213,6 +236,8 @@ class LocationServerTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @format_response(location_server_metric_to_csv)
+    @api.marshal_with(location_server_metric_model)
     @statsd.timer('locations_servers.metrics.api')
     def get(self, location_id, server_id):
         """
@@ -237,6 +262,8 @@ class LocationClientServerTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @format_response(location_client_server_metric_to_csv)
+    @api.marshal_with(location_client_server_metric_model)
     @statsd.timer('locations_servers.metrics.api')
     def get(self, location_id, client_id, server_id):
         """

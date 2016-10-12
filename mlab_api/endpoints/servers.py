@@ -14,7 +14,14 @@ from mlab_api.parsers import date_arguments, search_arguments, include_data_argu
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.asn_models import server_asn_search_model, server_asn_info_model, server_metric_model
+from mlab_api.models.location_search_models import location_server_list_model, location_server_list_to_csv
+from mlab_api.models.client_models import client_server_list_model, client_server_list_to_csv
+
+from mlab_api.models.server_models import server_search_model, server_search_to_csv, \
+    server_info_model, server_info_to_csv, \
+    server_metric_model,server_metric_to_csv
+
+from mlab_api.decorators import format_response
 from mlab_api.stats import statsd
 
 server_asn_ns = api.namespace('servers', description='Server ASN specific API')
@@ -26,7 +33,8 @@ class ServerSearch(Resource):
     '''
 
     @api.expect(search_arguments)
-    @api.marshal_with(server_asn_search_model)
+    @format_response(server_search_to_csv)
+    @api.marshal_with(server_search_model)
     def get(self):
         """
         Search for Servers matching a query.
@@ -45,7 +53,8 @@ class ServerTop(Resource):
     '''
 
     @api.expect(top_arguments)
-    @api.marshal_with(server_asn_search_model)
+    @format_response(server_search_to_csv)
+    @api.marshal_with(server_search_model)
     def get(self):
         """
         Provide top Servers with provided filters
@@ -62,7 +71,8 @@ class ServerInfo(Resource):
     '''
     Server Info
     '''
-    @api.marshal_with(server_asn_info_model)
+    @format_response(server_info_to_csv)
+    @api.marshal_with(server_info_model)
     def get(self, server_id):
         """
         Get info for a Server
@@ -79,6 +89,8 @@ class ServerClients(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @format_response(client_server_list_to_csv)
+    @api.marshal_with(client_server_list_model)
     @statsd.timer('servers_clients.list.api')
     def get(self, server_id):
         """
@@ -97,6 +109,8 @@ class ServerLocations(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @format_response(location_server_list_to_csv)
+    @api.marshal_with(location_server_list_model)
     @statsd.timer('servers_locations.list.api')
     def get(self, server_id):
         """
@@ -115,6 +129,7 @@ class ServerTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @format_response(server_metric_to_csv)
     @api.marshal_with(server_metric_model)
     @statsd.timer('servers.metrics.api')
     def get(self, server_id):

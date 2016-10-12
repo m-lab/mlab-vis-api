@@ -17,7 +17,6 @@ date_arguments.add_argument('timebin', type=str, required=False, default='day',
                             choices=TIME_BINS.keys(),
                             help='Time binning to use for time metrics')
 
-
 # ---
 # type arguments
 # ---
