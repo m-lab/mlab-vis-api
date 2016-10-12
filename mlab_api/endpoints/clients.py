@@ -14,7 +14,9 @@ from mlab_api.parsers import date_arguments, search_arguments, include_data_argu
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.client_models import client_search_model, client_info_model, client_metric_model
+from mlab_api.models.location_search_models import location_client_list_model
+from mlab_api.models.client_models import client_search_model, client_info_model, client_metric_model, \
+    client_server_metric_model, client_server_list_model
 
 client_asn_ns = api.namespace('clients', description='Client ASN specific API')
 
@@ -78,6 +80,7 @@ class ClientServers(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @api.marshal_with(client_server_list_model)
     def get(self, client_id):
         """
         Get list of Servers related to this Client
@@ -95,6 +98,7 @@ class ClientLocations(Resource):
     '''
 
     @api.expect(include_data_arguments)
+    @api.marshal_with(location_client_list_model)
     def get(self, client_id):
         """
         Get list of Locations related to this Client
@@ -133,6 +137,7 @@ class ClientServerTimeMetric(Resource):
     '''
 
     @api.expect(date_arguments)
+    @api.marshal_with(client_server_metric_model)
     def get(self, client_id, server_id):
         """
         Get time-based metrics for a specific Client + Server

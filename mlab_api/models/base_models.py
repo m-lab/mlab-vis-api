@@ -5,7 +5,7 @@ Base models to sub-class or clone
 from flask_restplus import fields
 from mlab_api.rest_api import api
 from mlab_api.id_utils import location_id, location_client_id, location_server_id, \
-    location_client_server_id, client_id, server_id
+    location_client_server_id, client_id, server_id, client_server_id
 
 
 # ----------------------------------------------------
@@ -63,6 +63,15 @@ client_search_meta_fields = client_meta_fields.extend('Client Search Meta', {
 })
 api.models[client_search_meta_fields.name] = client_search_meta_fields # Register extended model manually
 
+
+# ----------------------------------------------------
+# Clients + Servers
+# ----------------------------------------------------
+client_server_meta_fields = client_meta_fields.extend('Clients+Servers Meta (no ID)',
+    server_search_meta_fields).extend('Clients+Servers Meta', {
+        'id': fields.String(description="Clients+Servers Id", attribute=client_server_id),
+    })
+api.models[client_server_meta_fields.name] = client_server_meta_fields # Register extended model manually
 
 
 # ----------------------------------------------------
