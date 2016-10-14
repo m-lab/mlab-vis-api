@@ -9,7 +9,7 @@ from mlab_api.endpoints.clients import client_asn_ns
 from mlab_api.endpoints.debug import debug_ns
 # from flask_testing import LiveServerTestCase
 
-LOCATION_META_KEYS = ['id', 'client_location_key']
+LOCATION_META_KEYS = ['id', 'location_key']
 CLIENT_META_KEYS = ['id', 'client_asn_name', 'client_asn_number']
 SERVER_META_KEYS = ['id', 'server_asn_name', 'server_asn_number']
 
@@ -58,7 +58,7 @@ class TestApp(TestCase):
         self.assertIsNotNone(response.json['results'])
         assert(len(response.json['results']) > 0)
 
-        meta_fields = LOCATION_META_KEYS + ['client_location_key']
+        meta_fields = LOCATION_META_KEYS
         check_all_for_fields(response.json['results'], 'meta', meta_fields)
 
         data_fields = ['last_year_test_count']
