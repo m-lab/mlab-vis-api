@@ -160,7 +160,7 @@ location_info_data_fields = api.model('Location Info Data', {
     'last_six_months_upload_speed_mbps_max': fields.Float,
     'last_six_months_upload_speed_mbps_stddev': fields.Float,
     'last_six_months_upload_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of upload speeds"),
-    'last_six_months_test_count': fields.Integer(description="Test counts in last year"),
+    'last_six_months_test_count': fields.Integer(description="Test counts in last six months"),
     'last_six_months_rtt_avg': fields.Float,
     'last_six_months_retransmit_avg': fields.Float,
 })
