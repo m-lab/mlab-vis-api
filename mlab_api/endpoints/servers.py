@@ -14,7 +14,7 @@ from mlab_api.parsers import date_arguments, search_arguments, include_data_argu
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.location_search_models import location_server_list_model, location_server_list_to_csv
+from mlab_api.models.location_models import location_server_list_model, location_server_list_to_csv
 from mlab_api.models.client_models import client_server_list_model, client_server_list_to_csv
 
 from mlab_api.models.server_models import server_search_model, server_search_to_csv, \
