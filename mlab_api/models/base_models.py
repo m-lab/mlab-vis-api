@@ -114,7 +114,9 @@ location_info_data_fields = api.model('Location Info Data', {
     'last_year_upload_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of upload speeds"),
     'last_year_test_count': fields.Integer(description="Test counts in last year"),
     'last_year_rtt_avg': fields.Float,
+    'last_year_rtt_avg_bins': fields.List(fields.Integer, description="Distribution of RTT"),
     'last_year_retransmit_avg': fields.Float,
+    'last_year_packet_retransmit_rate_bins': fields.List(fields.Integer, description="Distribution of Retransmit rate"),
 
     'last_month_download_speed_mbps_median': fields.Float,
     'last_month_download_speed_mbps_avg': fields.Float,
@@ -130,23 +132,9 @@ location_info_data_fields = api.model('Location Info Data', {
     'last_month_upload_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of upload speeds"),
     'last_month_test_count': fields.Integer(description="Test counts in last year"),
     'last_month_rtt_avg': fields.Float,
+    'last_month_rtt_avg_bins': fields.List(fields.Integer, description="Distribution of RTT"),
     'last_month_retransmit_avg': fields.Float,
-
-    # 'last_three_months_download_speed_mbps_median': fields.Float,
-    # 'last_three_months_download_speed_mbps_avg': fields.Float,
-    # 'last_three_months_download_speed_mbps_min': fields.Float,
-    # 'last_three_months_download_speed_mbps_max': fields.Float,
-    # 'last_three_months_download_speed_mbps_stddev': fields.Float,
-    # 'last_three_months_download_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of download speeds"),
-    # 'last_three_months_upload_speed_mbps_median': fields.Float,
-    # 'last_three_months_upload_speed_mbps_avg': fields.Float,
-    # 'last_three_months_upload_speed_mbps_min': fields.Float,
-    # 'last_three_months_upload_speed_mbps_max': fields.Float,
-    # 'last_three_months_upload_speed_mbps_stddev': fields.Float,
-    # 'last_three_months_upload_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of upload speeds"),
-    # 'last_three_months_test_count': fields.Integer(description="Test counts in last year"),
-    # 'last_three_months_rtt_avg': fields.Float,
-    # 'last_three_months_retransmit_avg': fields.Float,
+    'last_month_packet_retransmit_rate_bins': fields.List(fields.Integer, description="Distribution of Retransmit rate"),
 
     'last_six_months_download_speed_mbps_median': fields.Float,
     'last_six_months_download_speed_mbps_avg': fields.Float,
@@ -162,7 +150,9 @@ location_info_data_fields = api.model('Location Info Data', {
     'last_six_months_upload_speed_mbps_bins': fields.List(fields.Integer, description="Distribution of upload speeds"),
     'last_six_months_test_count': fields.Integer(description="Test counts in last six months"),
     'last_six_months_rtt_avg': fields.Float,
+    'last_six_months_rtt_avg_bins': fields.List(fields.Integer, description="Distribution of RTT"),
     'last_six_months_retransmit_avg': fields.Float,
+    'last_six_months_packet_retransmit_rate_bins': fields.List(fields.Integer, description="Distribution of Retransmit rate"),
 })
 
 # ----------------------------------------------------
