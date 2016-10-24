@@ -97,6 +97,7 @@ def get_row(table_config, pool, row_key, **kwargs):
     Retrieve a single result from a table
     '''
     table_id = table_config['bigtable_table_name']
+    row_key = row_key.encode('utf-8')
 
     logging.info("querying: %s", table_id)
     logging.info("row_key: %s", row_key)

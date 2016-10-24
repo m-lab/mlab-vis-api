@@ -7,6 +7,8 @@ def location_id(d):
     '''
     Create ID for locations
     '''
+    if d is None:
+        d = {}
     if 'location_key' in d:
         return d['location_key']
     if 'client_location_key' in d:
@@ -23,13 +25,19 @@ def client_id(d):
     '''
     Create ID for clients
     '''
+    if d is None:
+        d = {}
     return d['client_asn_number']
 
 def server_id(d):
     '''
     Create ID for servers
     '''
-    return d['server_asn_number']
+    if d is None:
+        d = {}
+    if 'server_asn_number' in d:
+        return d['server_asn_number']
+    return None
 
 
 def location_client_id(d):

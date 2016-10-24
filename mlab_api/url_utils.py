@@ -27,7 +27,7 @@ def normalize_key(location_key):
     Removes white space & non-word characters
     and lowercases key
     '''
-    return re.sub('[\W|_]', '', location_key.lower())
+    return re.sub('[\s|_]', '', location_key.lower())
 
 def get_filter(args):
     '''
