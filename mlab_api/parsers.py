@@ -37,13 +37,13 @@ include_data_arguments.add_argument('data', type=bool, required=False, default=F
 # search arguments
 # ---
 search_arguments = reqparse.RequestParser()
-search_arguments.add_argument('q', type=str, required=True,
+search_arguments.add_argument('q', required=True,
                               help='Query String')
 search_arguments.add_argument('filtertype', type=str, required=False,
                               choices=FILTER_TYPES,
                               help='Filter type works in conjunction with filtervalue to specify search filter')
 
-search_arguments.add_argument('filtervalue', type=str, required=False,
+search_arguments.add_argument('filtervalue', required=False,
                               help='Limit search to only results with associations with ids in filtervalue. Id type is specified in filtertype.')
 
 # ---
@@ -53,9 +53,9 @@ top_arguments = reqparse.RequestParser()
 top_arguments.add_argument('limit', type=int, required=False, default=20,
                             help='Limits results count to top number' )
 
-top_arguments.add_argument('filtertype', type=str, required=True,
+top_arguments.add_argument('filtertype', required=True,
                               choices=FILTER_TYPES,
                               help='Filter type works in conjunction with filtervalue to specify search filter')
 
-top_arguments.add_argument('filtervalue', type=str, required=True,
+top_arguments.add_argument('filtervalue', required=True,
                               help='Limit search to only results with associations with ids in filtervalue. Id type is specified in filtertype.')
