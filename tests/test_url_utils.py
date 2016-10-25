@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Test URL Utils
 '''
@@ -16,6 +17,10 @@ def test_normalize_key():
     outkey = normalize_key(inkey)
 
     assert(outkey == 'attfriends')
+
+    inkey = 'saco34bogotá'
+    outkey = normalize_key(inkey)
+    assert(outkey == 'saco34bogotá')
 
 
 def test_get_filter():
