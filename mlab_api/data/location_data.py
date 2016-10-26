@@ -8,7 +8,6 @@ from mlab_api.data.table_config import get_table_config
 from mlab_api.decorators import add_ids, add_id_value, add_id
 import mlab_api.data.data_utils as du
 import mlab_api.data.bigtable_utils as bt
-from mlab_api.stats import statsd
 
 class LocationData(Data):
     '''
@@ -29,8 +28,7 @@ class LocationData(Data):
 
         row_key = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
         row = ""
-        with statsd.timer('location.info.get_row'):
-            row = bt.get_row(table_config, self.get_pool(), row_key)
+        row = bt.get_row(table_config, self.get_pool(), row_key)
 
         return row
 
@@ -47,10 +45,9 @@ class LocationData(Data):
         location_key_field = du.BIGTABLE_KEY_DELIM.join(location_key_fields)
 
         results = []
-        with statsd.timer('locations.children.scan_table'):
-            results = bt.scan_table(table_config, self.get_pool(), prefix=location_key_field)
-            if type_filter:
-                results = [r for r in results if r['meta']['type'] == type_filter]
+        results = bt.scan_table(table_config, self.get_pool(), prefix=location_key_field)
+        if type_filter:
+            results = [r for r in results if r['meta']['type'] == type_filter]
 
         return {"results": results}
 
@@ -82,8 +79,7 @@ class LocationData(Data):
         row_key = du.BIGTABLE_KEY_DELIM.join(key_fields)
 
         results = []
-        with statsd.timer('locations.clientisps_info.scan_table'):
-            results = bt.get_row(table_config, self.get_pool(), row_key)
+        results = bt.get_row(table_config, self.get_pool(), row_key)
 
         return results
 

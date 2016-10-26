@@ -28,7 +28,7 @@ from mlab_api.decorators import format_response
 
 from mlab_api.rest_api import api
 
-from mlab_api.stats import statsd
+from mlab_api.stats import analytics
 
 # this is the namespace that gets included elsewhere.
 locations_ns = api.namespace('locations', description='Location specific API')
@@ -80,7 +80,7 @@ class LocationInfo(Resource):
     '''
     @format_response(location_info_to_csv)
     @api.marshal_with(location_info_model)
-    @statsd.timer('locations.info.api')
+    @analytics.timer('api_call', 'locations.info.api')
     def get(self, location_id):
         """
         Get information for a Location
@@ -100,7 +100,7 @@ class LocationChildren(Resource):
     @api.expect(type_arguments)
     @format_response(location_children_to_csv)
     @api.marshal_with(location_children_model)
-    @statsd.timer('locations.children.api')
+    @analytics.timer('api_call', 'locations.children.api')
     def get(self, location_id):
         """
         Get Locations matching a query
@@ -121,7 +121,7 @@ class LocationClients(Resource):
     @api.expect(include_data_arguments)
     @format_response(location_client_list_to_csv)
     @api.marshal_with(location_client_list_model)
-    @statsd.timer('locations_clients.list.api')
+    @analytics.timer('api_call', 'locations_clients.list.api')
     def get(self, location_id):
         """
         Get list of Clients related to this Location
@@ -143,7 +143,7 @@ class LocationServers(Resource):
     @api.expect(include_data_arguments)
     @format_response(location_server_list_to_csv)
     @api.marshal_with(location_server_list_model)
-    @statsd.timer('locations_servers.list.api')
+    @analytics.timer('api_call', 'locations_servers.list.api')
     def get(self, location_id):
         """
         Get list of Servers related to this Location
@@ -165,7 +165,7 @@ class LocationClientIspInfo(Resource):
 
     @format_response(location_client_isp_info_to_csv)
     @api.marshal_with(location_client_isp_info_model)
-    @statsd.timer('locations.clientisps_info.api')
+    @analytics.timer('api_call', 'locations.clientisps_info.api')
     def get(self, location_id, client_isp_id):
         """
         Get info for a particular Location + Client
@@ -188,7 +188,7 @@ class LocationTimeMetric(Resource):
     @api.expect(date_arguments)
     @format_response(location_metric_to_csv)
     @api.marshal_with(location_metric_model)
-    @statsd.timer('locations.metrics.api')
+    @analytics.timer('api_call', 'locations.metrics.api')
     def get(self, location_id):
         """
         Get time-based metrics for a Location
@@ -212,7 +212,7 @@ class LocationClientTimeMetric(Resource):
     @api.expect(date_arguments)
     @format_response(location_client_metric_to_csv)
     @api.marshal_with(location_client_metric_model)
-    @statsd.timer('locations_clients.metrics.api')
+    @analytics.timer('api_call', 'locations_clients.metrics.api')
     def get(self, location_id, client_id):
         """
         Get time-based metrics for a Location + Client
@@ -238,7 +238,7 @@ class LocationServerTimeMetric(Resource):
     @api.expect(date_arguments)
     @format_response(location_server_metric_to_csv)
     @api.marshal_with(location_server_metric_model)
-    @statsd.timer('locations_servers.metrics.api')
+    @analytics.timer('api_call', 'locations_servers.metrics.api')
     def get(self, location_id, server_id):
         """
         Get time-based metrics for a Location + Server
@@ -264,7 +264,7 @@ class LocationClientServerTimeMetric(Resource):
     @api.expect(date_arguments)
     @format_response(location_client_server_metric_to_csv)
     @api.marshal_with(location_client_server_metric_model)
-    @statsd.timer('locations_servers.metrics.api')
+    @analytics.timer('api_call', 'locations_servers.metrics.api')
     def get(self, location_id, client_id, server_id):
         """
         Get time-based metrics for a Location + Client + Server

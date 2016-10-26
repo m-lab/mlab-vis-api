@@ -11,7 +11,6 @@ from gcloud.bigtable.row_filters import FamilyNameRegexFilter
 from oauth2client.client import GoogleCredentials
 
 import mlab_api.data.data_utils as du
-from mlab_api.stats import statsd
 from mlab_api.sort_utils import sort_by_count
 
 def init_pool(app_config):
@@ -122,21 +121,25 @@ def get_row(table_config, pool, row_key, **kwargs):
     return row
 
 def get_time_metric_results(key_fields, pool, timebin, starttime, endtime, table_config, metric_name):
+    '''
+    Helper to query table and create results for time based metrics
+    '''
     # get startkey and endkey prefixed with key_fields
     start_key, end_key = du.get_full_time_keys(key_fields, timebin, starttime, endtime, table_config)
 
     # Prepare to query the table
     results = []
-    with statsd.timer('{0}.metric.scan_table'.format(metric_name)):
-        results = scan_table(table_config, pool, start_key=start_key, end_key=end_key)
+    results = scan_table(table_config, pool, start_key=start_key, end_key=end_key)
 
     formatted = {}
-    with statsd.timer('{0}.metric.format_data'.format(metric_name)):
-        # format output for API
-        formatted = du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=timebin)
+    # format output for API
+    formatted = du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=timebin)
     return formatted
 
 def get_list_table_results(key_fields, pool, include_data, table_config, metric_name):
+    '''
+    Helper to query table and create results for list based results
+    '''
 
     key_fields = du.BIGTABLE_KEY_DELIM.join(key_fields)
 
@@ -145,10 +148,8 @@ def get_list_table_results(key_fields, pool, include_data, table_config, metric_
         params["filter"] = FamilyNameRegexFilter('meta')
 
     results = []
-    with statsd.timer('{0}.listtable.scan_table'.format(metric_name)):
-        results = scan_table(table_config, pool, **params)
+    results = scan_table(table_config, pool, **params)
 
     sorted_results = []
-    with statsd.timer('{0}.listtable.sort_results'):
-        sorted_results = sorted(results, key=sort_by_count, reverse=True)
+    sorted_results = sorted(results, key=sort_by_count, reverse=True)
     return sorted_results

@@ -22,7 +22,7 @@ from mlab_api.models.server_models import server_search_model, server_search_to_
     server_metric_model,server_metric_to_csv
 
 from mlab_api.decorators import format_response
-from mlab_api.stats import statsd
+from mlab_api.stats import analytics
 
 server_asn_ns = api.namespace('servers', description='Server ASN specific API')
 
@@ -91,7 +91,7 @@ class ServerClients(Resource):
     @api.expect(include_data_arguments)
     @format_response(client_server_list_to_csv)
     @api.marshal_with(client_server_list_model)
-    @statsd.timer('servers_clients.list.api')
+    @analytics.timer('api_call', 'servers_clients.list.api')
     def get(self, server_id):
         """
         Get list of Clients related to this Server
@@ -111,7 +111,7 @@ class ServerLocations(Resource):
     @api.expect(include_data_arguments)
     @format_response(location_server_list_to_csv)
     @api.marshal_with(location_server_list_model)
-    @statsd.timer('servers_locations.list.api')
+    @analytics.timer('api_call', 'servers_locations.list.api')
     def get(self, server_id):
         """
         Get list of Locations related to this Server
@@ -131,7 +131,7 @@ class ServerTimeMetric(Resource):
     @api.expect(date_arguments)
     @format_response(server_metric_to_csv)
     @api.marshal_with(server_metric_model)
-    @statsd.timer('servers.metrics.api')
+    @analytics.timer('api_call', 'servers.metrics.api')
     def get(self, server_id):
         """
         Get time-based metrics for a Server
