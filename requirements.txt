@@ -6,6 +6,5 @@ gcloud>=0.18.1
 google-api-python-client>=1.5.3
 gunicorn==19.6.0
 python-dateutil>=2.5.3
-statsd>=3.2.1
 python-dotenv>=0.6.0
 universal-analytics-python>=0.2.4

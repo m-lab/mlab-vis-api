@@ -6,7 +6,7 @@ from UniversalAnalytics import Tracker
 
 
 class Timer(object):
-    """A context manager/decorator for statsd.timing()."""
+    """A context manager/decorator for analytics.timing()."""
 
     def __init__(self, client, category, variable, label=None):
         self.client = client
@@ -60,7 +60,7 @@ class Timer(object):
         self.client.timing(self.category, self.variable, self.label, self.ms)
 
 class GoogleAnalyticsClient(object):
-    """A Base class for various statsd clients."""
+    """Analytics timing / event client"""
 
     def __init__(self, ua_id):
         self.tracker = Tracker.create(ua_id, client_id = 'zzz')
