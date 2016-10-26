@@ -1,7 +1,5 @@
 # MLAB VIS API
 
-**Work in progress.**
-
 ## What
 
 Python Flask server connected to Bigtable to serve up data needed for MLab Visualization.
@@ -50,6 +48,8 @@ So ensure that directory and file is present.
 ../mlab-vis-pipeline/dataflow/data/bigtable/
 ```
 
+You can use `make prepare` to copy the appropriate config files from the pipeline to the api.
+
 So make sure they are present and up-to-date
 
 3 - the `gcloud` command line tool.
@@ -59,55 +59,15 @@ Ensure you have this tool installed and configured properly.
 
 The app will be deployed and accessible from:
 
-[https://mlab-api-dot-mlab-oti.appspot.com/](https://mlab-api-dot-mlab-oti.appspot.com/)
+[http://mlab-api-dot-mlab-oti.appspot.com/](http://mlab-api-dot-mlab-oti.appspot.com/)
 
-Right now there is a `debug/connection` API call so you can see that the bigtable connection was made succesfully.
+The API is documented at this url as well.
 
-[https://mlab-api-dot-mlab-oti.appspot.com/debug/connection](https://mlab-api-dot-mlab-oti.appspot.com/debug/connection)
-
-Example Queries:
-
-[https://mlab-api-dot-mlab-oti.appspot.com/locations/AF+EG+11+Garden%20City/time/month/clientisps/AS24863/metrics](https://mlab-api-dot-mlab-oti.appspot.com/locations/AF+EG+11+Garden%20City/time/month/clientisps/AS24863/metrics)
-
-[https://mlab-api-dot-mlab-oti.appspot.com/locations/NA+US+NY+New%20York/time/month/metrics](https://mlab-api-dot-mlab-oti.appspot.com/locations/NA+US+NY+New%20York/time/month/metrics)
-
-
-## Configuration
-
-Configs live in `config.py`.
-
-## Organization
-
-### Flask Stuff
-
-Most of the flask app is currently in:
-
-```
-main.py
-```
-
-### Bigtable
-
-Bigtable connection is currently in:
-
-```
-app/data/data.py
-```
-
-### Config reading
-
-A lot of the functionality of the bigtable side of things comes from
-reading our bigtable config files.
-
-This functionality is implemented in
-
-```
-app/data/table_config.py
-```
-
-## Test
+## Testing
 
 Test requirements are stored in a separate `requirements-test.txt` file.
+
+(So that the deploy code does not need to download these additional requirements).
 
 Install with:
 
@@ -120,3 +80,9 @@ Then run tests with:
 ```
 make test
 ```
+
+## code
+
+This code depends heavily on the [Flask-RESTPlus](https://flask-restplus.readthedocs.io/en/stable/) package.
+
+It uses the [google api python client](http://google.github.io/google-api-python-client/docs/epy/index.html) for communicating with BigTable.

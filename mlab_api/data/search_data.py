@@ -84,7 +84,7 @@ class SearchData(Data):
         return results
 
 
-    def get_filtered_search_results(self, search_type, search_query, search_filter):
+    def get_filtered_search_results(self, search_type, search_query, search_filter, **kwargs):
         '''
         Filter search. Provides results for searches that are faceted.
         search_type: one of ['locations', 'servers', 'clients']
@@ -104,7 +104,7 @@ class SearchData(Data):
             key_prefix += du.BIGTABLE_KEY_DELIM
             # filter only the `meta` column family - for speed.
             tablefilter = FamilyNameRegexFilter('meta')
-            all_results += bt.scan_table(table_config, self.get_pool(), prefix=key_prefix, filter=tablefilter)
+            all_results += bt.scan_table(table_config, self.get_pool(), prefix=key_prefix, filter=tablefilter, **kwargs)
 
         filtered_results = self.filter_results(search_type, search_query, all_results)
 
@@ -143,7 +143,9 @@ class SearchData(Data):
         '''
         Use same logic as filtered search to get top N filtered results.
         '''
-        results = self.get_filtered_search_results(search_type, None, search_filter)
+
+        # limit here to prevent bigtable queries from timing out. 
+        results = self.get_filtered_search_results(search_type, None, search_filter, limit=300)
         if not top_n:
             top_n = -1
 

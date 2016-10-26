@@ -27,7 +27,9 @@ def client_id(d):
     '''
     if d is None:
         d = {}
-    return d['client_asn_number']
+    if 'client_asn_number' in d:
+        return d['client_asn_number']
+    return None
 
 def server_id(d):
     '''

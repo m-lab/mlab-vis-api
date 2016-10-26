@@ -135,9 +135,6 @@ class TestApp(TestCase):
         check_for_fields(result, 'meta', meta_fields)
         data_fields = ['last_year_download_speed_mbps_median']
         check_for_fields(result, 'data', data_fields)
-        # expected_fields = [('meta', 'client_region'), ('meta', 'last_year_test_count'), ('data', 'last_year_download_speed_mbps_median')]
-        # for family, key in expected_fields:
-        #     self.assertIsNotNone(result[family][key])
 
     def test_locations_search(self):
         location_key = 'kansascity'
@@ -151,9 +148,6 @@ class TestApp(TestCase):
 
         data_fields = ['test_count']
         check_for_fields(result, 'data', data_fields)
-        # expected_fields = [('meta', 'location_key'), ('data', 'test_count')]
-        # for family, key in expected_fields:
-        #     self.assertIsNotNone(result[family][key])
 
     def test_locations_search_facet(self):
         filtertype = 'clients'
@@ -217,6 +211,8 @@ class TestApp(TestCase):
 
         data_fields = ['test_count']
         check_for_fields(result, 'data', data_fields)
+
+
     # ---
     # SERVERS
     # ---
