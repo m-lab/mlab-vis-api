@@ -75,9 +75,6 @@ class GoogleAnalyticsClient(object):
         # google analytics requires integers for timing?
         timed_amount = int(round(timed_amount))
 
-        print("~~~~ sending timing")
-        print(category)
-        print(timed_amount)
         self.tracker.send('timing', category, variable, timed_amount, label)
 
 
