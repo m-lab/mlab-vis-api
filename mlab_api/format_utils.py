@@ -7,7 +7,6 @@ import cStringIO
 
 from json import dumps
 from flask import current_app, request
-from flask_restplus import marshal
 
 def format_marshaled_data(data, to_csv):
     '''
@@ -15,16 +14,16 @@ def format_marshaled_data(data, to_csv):
     if `format` is not available, based on the accepted mediatype.
     If CSV, then to_csv is called to do the formatting.
     '''
-    format = request.args.get('format')
-    if format is None:
+    result_format = request.args.get('format')
+    if result_format is None:
         # format not in URL, get best guess based on Accept header
         mediatype = request.accept_mimetypes.best_match(
             ['application/json', 'text/csv'],
             default='application/json'
         )
-        format = 'csv' if mediatype == 'text/csv' else 'json'
+        result_format = 'csv' if mediatype == 'text/csv' else 'json'
 
-    if format == 'csv':
+    if result_format == 'csv':
         if to_csv is None:
             print("WARNING: no to_csv provided to encode with. Encoding as JSON.")
         else:
@@ -70,7 +69,7 @@ def cleandict(d):
     if not isinstance(d, dict):
         return d
 
-    return dict((k, cleandict(v)) for k,v in d.iteritems() if v is not None)
+    return dict((k, cleandict(v)) for k, v in d.iteritems() if v is not None)
 
 
 def convert_to_json(data):
@@ -168,9 +167,13 @@ def meta_data_to_csv(data, meta_fields_dict, data_fields_dict):
     `meta_fields_dict`: model fields, use .keys() to get fieldnames
     `data_fields_dict`: model fields, use .keys() to get fieldnames
     '''
-    meta_fields = meta_fields_dict.keys()
-    data_fields = data_fields_dict.keys()
+    meta_fields = []
+    if meta_fields_dict:
+        meta_fields = meta_fields_dict.keys()
+    data_fields = []
+    if data_fields_dict:
+        data_fields = data_fields_dict.keys()
 
     rows = [make_data_row([(data['meta'] if 'meta' in data else None, meta_fields),
-                          (data['data'] if 'data' in data else None, data_fields)])]
+                           (data['data'] if 'data' in data else None, data_fields)])]
     return convert_to_csv(rows, meta_fields + data_fields)
