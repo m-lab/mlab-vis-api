@@ -3,8 +3,8 @@
 General purpose decorators
 '''
 
-from flask import make_response, request
 from functools import update_wrapper
+from flask import make_response, request
 from mlab_api.format_utils import format_marshaled_data
 
 def add_ids(id_attribute):
@@ -67,10 +67,10 @@ def format_from_url_decorator(func):
 
         # restplus ignores our setting of Content-Type in our mediatype handlers
         # so set it here based on the format parameter
-        format = request.args.get('format')
-        if format == 'csv':
+        result_format = request.args.get('format')
+        if result_format == 'csv':
             resp.headers['Content-Type'] = 'text/csv'
-        elif format == 'json':
+        elif result_format == 'json':
             resp.headers['Content-Type'] = 'application/json'
 
         return resp
@@ -100,7 +100,7 @@ def download_decorator(func):
 
         # replace the slashes in the API url to get the filename
         path = request.path if request.path[0] != '/' else request.path[1:]
-        filename = path.replace('/', '_');
+        filename = path.replace('/', '_')
 
         # Add in query param values to the filename
         for k, v in request.args.iteritems():
