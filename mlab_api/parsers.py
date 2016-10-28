@@ -51,11 +51,11 @@ search_arguments.add_argument('filtervalue', required=False,
 # ---
 top_arguments = reqparse.RequestParser()
 top_arguments.add_argument('limit', type=int, required=False, default=20,
-                            help='Limits results count to top number' )
+                           help='Limits results count to top number')
 
 top_arguments.add_argument('filtertype', required=True,
-                              choices=FILTER_TYPES,
-                              help='Filter type works in conjunction with filtervalue to specify search filter')
+                           choices=FILTER_TYPES,
+                           help='Filter type works in conjunction with filtervalue to specify search filter')
 
 top_arguments.add_argument('filtervalue', required=True,
-                              help='Limit search to only results with associations with ids in filtervalue. Id type is specified in filtertype.')
+                           help='Limit search to only results with associations with ids in filtervalue. Id type is specified in filtertype.')
