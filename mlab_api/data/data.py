@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 '''
 Data instances to use in endpoints
+
+Creates instances of necessary data classes for use in the application.
 '''
 
 from mlab_api.app import app

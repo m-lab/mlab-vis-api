@@ -22,10 +22,20 @@ DATA_VALUES = ['test_count', 'last_three_month_test_count', 'last_year_test_coun
 class SearchData(Data):
 
     def get_row_search_key(self, row, result_keys):
+        '''
+        Returns search key for provided row.
+        Search key is based on provided result_keys array.
+        '''
         row_keys = [row['meta'][key] for key in result_keys if key in row['meta']]
         return normalize_key(''.join(row_keys))
 
     def get_table_name(self, search_type, search_filter):
+        '''
+        Returns name of table for provided search type.
+
+        search_type = type of search.
+        search_filter = optional filter we are searching within.
+        '''
         if search_filter['type']:
             # its a list table we want
             return du.list_table(search_type, search_filter['type'])
@@ -45,6 +55,7 @@ class SearchData(Data):
     def filter_results(self, search_type, search_query, results):
         '''
         Given a list of results and a query, filter matching results.
+
         search_type: one of ['locations', 'servers', 'clients']
         search_query: input query from api
         results: raw unfiltered results
@@ -87,9 +98,10 @@ class SearchData(Data):
     def get_filtered_search_results(self, search_type, search_query, search_filter, **kwargs):
         '''
         Filter search. Provides results for searches that are faceted.
-        search_type: one of ['locations', 'servers', 'clients']
-        search_query: input query from api
-        search_filter: {type: ['locations', 'servers', 'clients'], value:[id1, id2]}
+
+        search_type = one of ['locations', 'servers', 'clients']
+        search_query = input query from api
+        search_filter = {type: ['locations', 'servers', 'clients'], value:[id1, id2]}
         '''
         if not search_filter['type'] or search_filter['type'] == search_type:
             return []
@@ -113,7 +125,8 @@ class SearchData(Data):
 
     def get_basic_search_results(self, search_type, search_query):
         '''
-        basic search
+        Provide basic search with no filtering logic.
+        Basic search is based purely on bigtable prefix scans.
         '''
         table_name = du.search_table(search_type)
         table_config = get_table_config(self.table_configs, None, table_name)
@@ -124,7 +137,12 @@ class SearchData(Data):
 
     def get_search_results(self, search_type, search_query, search_filter):
         '''
-        Root method
+        Root search method. calls into basic search or filtered search depending on
+        specific search parameters.
+
+        search_type = type of search being performed.
+        search_query = query key of search
+        search_filter = filter to search within.
         '''
         results = []
         if search_filter['type']:
@@ -142,9 +160,13 @@ class SearchData(Data):
     def get_top_results(self, search_type, top_n, search_filter):
         '''
         Use same logic as filtered search to get top N filtered results.
+
+        search_type = type of search being performed.
+        top_n = integer max count to return
+        search_filter = filter to search within.
         '''
 
-        # limit here to prevent bigtable queries from timing out. 
+        # limit here to prevent bigtable queries from timing out.
         results = self.get_filtered_search_results(search_type, None, search_filter, limit=300)
         if not top_n:
             top_n = -1

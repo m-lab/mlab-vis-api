@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Data class for accessing data for API calls.
+Data class for accessing client data for API calls.
 '''
 from gcloud.bigtable.row_filters import FamilyNameRegexFilter
 from mlab_api.data.table_config import get_table_config
@@ -12,12 +12,14 @@ import mlab_api.data.data_utils as du
 
 class ClientAsnData(Data):
     '''
-    Connect to BigTable and pull down data.
+    Data connection for Client API calls.
     '''
 
     def get_client_info(self, client_id):
         '''
-        Get info for a client
+        Get info for a client.
+
+        client_id = id string of client.
         '''
 
         # we are using a hack from list tables
@@ -26,7 +28,6 @@ class ClientAsnData(Data):
 
 
         table_config = get_table_config(self.table_configs, None, table_name)
-
 
         key_fields = du.get_key_fields([client_id], table_config)
         prefix_key = du.BIGTABLE_KEY_DELIM.join(key_fields)
@@ -43,6 +44,9 @@ class ClientAsnData(Data):
     def get_client_servers(self, client_id, include_data):
         '''
         Get list and info of server isps for a client
+
+        client_id = id string of client.
+        include_data = boolean indicating whether to include data attributes in results or not.
         '''
 
         return self.get_list_data(client_id, 'clients', 'servers', include_data)
@@ -52,6 +56,9 @@ class ClientAsnData(Data):
     def get_client_locations(self, client_id, include_data):
         '''
         Get list and info of locations for a client
+
+        client_id = id string of client.
+        include_data = boolean indicating whether to include data attributes in results or not.
         '''
 
         return self.get_list_data(client_id, 'clients', 'locations', include_data)
@@ -61,6 +68,11 @@ class ClientAsnData(Data):
         '''
         Get data for client location at a specific
         timebin between start and stop times.
+
+        client_id = id string of client.
+        timebin = time aggregation key.
+        starttime = start time for metric query.
+        endtime = end time for metric query.
         '''
 
         table_config = get_table_config(self.table_configs, timebin, TABLE_KEYS["clients"])
@@ -76,6 +88,12 @@ class ClientAsnData(Data):
         '''
         Get data for a specific client + server at a
         timebin between start and stop times.
+
+        client_id = id string of client.
+        server_id = id of server.
+        timebin = time aggregation key.
+        starttime = start time for metric query.
+        endtime = end time for metric query.
         '''
 
         agg_name = TABLE_KEYS["servers"] + '_' + TABLE_KEYS["clients"]

@@ -18,6 +18,8 @@ class ServerAsnData(Data):
     def get_server_info(self, server_id):
         '''
         Get info for a client
+
+        server_id = id of server.
         '''
 
         # we are using a hack from list tables
@@ -43,6 +45,9 @@ class ServerAsnData(Data):
     def get_server_clients(self, server_id, include_data):
         '''
         Get list and info of client isps for a server
+
+        server_id = id of server.
+        include_data = boolean indicating whether to include data attributes in results or not.
         '''
         return self.get_list_data(server_id, 'servers', 'clients', include_data)
 
@@ -51,6 +56,9 @@ class ServerAsnData(Data):
     def get_server_locations(self, server_id, include_data):
         '''
         Get list and info of locations for a server
+
+        server_id = id of server.
+        include_data = boolean indicating whether to include data attributes in results or not.
         '''
         return self.get_list_data(server_id, 'servers', 'locations', include_data)
 
@@ -60,6 +68,11 @@ class ServerAsnData(Data):
         '''
         Get data for specific location at a specific
         frequency between start and stop times.
+
+        server_id = id of server.
+        timebin = time aggregation key.
+        starttime = start time for metric query.
+        endtime = end time for metric query.
         '''
 
         table_config = get_table_config(self.table_configs, timebin, TABLE_KEYS["servers"])

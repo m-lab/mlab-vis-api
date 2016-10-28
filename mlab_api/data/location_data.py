@@ -18,6 +18,8 @@ class LocationData(Data):
     def get_location_info(self, location_id):
         '''
         Get info about specific location
+
+        location_id = id string of location.
         '''
 
         table_config = get_table_config(self.table_configs,
@@ -36,6 +38,9 @@ class LocationData(Data):
     def get_location_children(self, location_id, type_filter=None):
         '''
         Return information about children regions of a location
+
+        location_id = id string of location.
+        type_filter = optionally restrict results to a location type.
         '''
         table_config = get_table_config(self.table_configs,
                                         None,
@@ -55,6 +60,9 @@ class LocationData(Data):
     def get_location_clients(self, location_id, include_data):
         '''
         Get list and info of client isps for a location
+
+        location_id = id string of location.
+        include_data = boolean indicating whether to include data attributes in results or not.
         '''
         return self.get_list_data(location_id, 'locations', 'clients', include_data)
 
@@ -63,18 +71,24 @@ class LocationData(Data):
     def get_location_servers(self, location_id, include_data):
         '''
         Get list and info of server isps for a location
+
+        location_id = id string of location.
+        include_data = boolean indicating whether to include data attributes in results or not.
         '''
         return self.get_list_data(location_id, 'locations', 'servers', include_data)
 
     @add_id('client_asn_number')
-    def get_location_client_isp_info(self, location_id, client_isp_id):
+    def get_location_client_isp_info(self, location_id, client_id):
         '''
         Get static information about
+
+        location_id = id string of location.
+        client_id = id string of client.
         '''
         config_id = du.list_table('clients', 'locations')
         table_config = get_table_config(self.table_configs, None, config_id)
 
-        key_fields = du.get_key_fields([location_id, client_isp_id], table_config)
+        key_fields = du.get_key_fields([location_id, client_id], table_config)
 
         row_key = du.BIGTABLE_KEY_DELIM.join(key_fields)
 
@@ -87,6 +101,11 @@ class LocationData(Data):
         '''
         Get data for specific location at a specific
         frequency between start and stop times.
+
+        location_id = id string of location.
+        timebin = time aggregation key.
+        starttime = start time for metric query.
+        endtime = end time for metric query.
         '''
 
         table_config = get_table_config(self.table_configs, timebin, TABLE_KEYS["locations"])
@@ -106,6 +125,12 @@ class LocationData(Data):
         Get data for specific location + client at a specific
         frequency between start and stop times for a
         specific client ISP.
+
+        location_id = id string of location.
+        client_id = id of client.
+        timebin = time aggregation key.
+        starttime = start time for metric query.
+        endtime = end time for metric query.
         '''
         # Create Row Key
         agg_name = TABLE_KEYS["clients"] + '_' + TABLE_KEYS["locations"]
@@ -127,6 +152,12 @@ class LocationData(Data):
         Get data for specific location + server at a specific
         frequency between start and stop times for a
         specific client ISP.
+
+        location_id = id string of location.
+        server_id = id of server.
+        timebin = time aggregation key.
+        starttime = start time for metric query.
+        endtime = end time for metric query.
         '''
         # Create Row Key
         agg_name = TABLE_KEYS["servers"] + '_' + TABLE_KEYS["locations"]
@@ -149,6 +180,13 @@ class LocationData(Data):
         Get data for specific location + client + server at a specific
         frequency between start and stop times for a
         specific client ISP.
+
+        location_id = id string of location.
+        client_id = id of client.
+        server_id = id of server.
+        timebin = time aggregation key.
+        starttime = start time for metric query.
+        endtime = end time for metric query.
         '''
         # Create Row Key
         agg_name = "{0}_{1}_{2}".format(TABLE_KEYS["servers"], TABLE_KEYS["clients"], TABLE_KEYS["locations"])

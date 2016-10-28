@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 '''
 Base Data Class
+
+Parent class for other data connection classes.
+Provides helper functions for getting list based data
+and bigtable connection pool.
 '''
 
 import mlab_api.data.bigtable_utils as bt
