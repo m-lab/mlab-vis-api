@@ -11,10 +11,21 @@ from mlab_api.id_utils import location_id, location_client_id, location_server_i
 # ----------------------------------------------------
 # Generic Data Fields
 # ----------------------------------------------------
+
 search_data_fields = api.model('Search Data', {
-    'last_three_month_test_count': fields.Integer(description="Test counts over last 3 months."),
+    'last_three_months_test_count': fields.Integer(description="Test counts over last 3 months."),
+    'last_six_months_test_count': fields.Integer(description="Test counts in last six months"),
+    'last_year_test_count': fields.Integer(description="Test counts in last year"),
     'test_count': fields.Integer(description="Test counts over entire MLab dataset"),
-    'last_year_test_count': fields.Integer(description="Test counts over last year.")
+})
+
+# Unfortunately, currently some models include test count in meta and some do it in data
+# (e.g., see location info vs location+client info). Ideally this gets fixed at some point.
+search_meta_fields = api.model('Search Meta', {
+    'last_three_months_test_count': fields.Integer(description="Test counts over last 3 months."),
+    'last_six_months_test_count': fields.Integer(description="Test counts in last six months"),
+    'last_year_test_count': fields.Integer(description="Test counts in last year"),
+    'test_count': fields.Integer(description="Test counts over entire MLab dataset"),
 })
 
 metric_data_fields = api.model('Metric Data', {
@@ -39,10 +50,7 @@ server_meta_fields = api.model('Server Meta', {
 })
 
 # Server: search meta
-server_search_meta_fields = server_meta_fields.extend('Server Search Meta', {
-    'last_year_test_count': fields.Integer(description="Test counts in last year"),
-    'test_count': fields.Integer(description="All Test counts")
-})
+server_search_meta_fields = search_meta_fields.extend('Server Search Meta', server_meta_fields)
 api.models[server_search_meta_fields.name] = server_search_meta_fields # Register extended model manually
 
 
@@ -57,10 +65,7 @@ client_meta_fields = api.model('Client Meta', {
 })
 
 # Client: search meta
-client_search_meta_fields = client_meta_fields.extend('Client Search Meta', {
-    'last_year_test_count': fields.Integer(description="Test counts in last year"),
-    'test_count': fields.Integer(description="All Test counts")
-})
+client_search_meta_fields = search_meta_fields.extend('Client Search Meta', client_meta_fields)
 api.models[client_search_meta_fields.name] = client_search_meta_fields # Register extended model manually
 
 
@@ -92,10 +97,7 @@ location_meta_fields = api.model('Location Meta', {
 })
 
 # Location Search: meta
-location_search_meta_fields = location_meta_fields.extend('Location Search Meta', {
-    'last_year_test_count': fields.Integer(description="Test counts in last year"),
-    'test_count': fields.Integer(description="All Test counts")
-})
+location_search_meta_fields = search_meta_fields.extend('Location Search Meta', location_meta_fields)
 api.models[location_search_meta_fields.name] = location_search_meta_fields # Register extended model manually
 
 # Location Info: data
