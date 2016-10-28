@@ -38,7 +38,7 @@ def get_filter(args):
     ftype = args.get('filtertype')
     fvalue = args.get('filtervalue')
 
-    if( ftype and fvalue):
+    if(ftype and fvalue):
         fvalues = fvalue.split(",")
         return {'type': ftype, 'value':fvalues}
     return {'type': None, 'value': []}
