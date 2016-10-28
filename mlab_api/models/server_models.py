@@ -37,7 +37,7 @@ server_info_model = api.model('Server Info Model', {
 })
 
 def server_info_to_csv(data):
-    return meta_data_to_csv(data, server_meta_fields, server_info_data_fields)
+    return meta_data_to_csv(data, server_meta_fields, None)
 
 
 # -------------------------------------------

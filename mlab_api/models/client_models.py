@@ -6,8 +6,8 @@ Models for definging return value of Client specific calls
 from flask_restplus import fields
 from mlab_api.rest_api import api
 
-from mlab_api.format_utils import meta_results_to_csv, meta_data_in_row_to_csv, \
-    meta_data_to_csv
+from mlab_api.format_utils import meta_results_to_csv, meta_data_to_csv, \
+    meta_data_in_row_to_csv, meta_in_row_to_csv
 
 from mlab_api.models.base_models import search_data_fields, metric_data_fields, \
     client_search_meta_fields, client_meta_fields, client_server_meta_fields
@@ -50,7 +50,7 @@ client_info_model = api.model('Client Info Model', {
 })
 
 def client_info_to_csv(data):
-    return meta_data_to_csv(data, client_meta_fields, client_info_data_fields)
+    return meta_data_to_csv(data, client_meta_fields, None)
 
 # -------------------------------------------
 # Clients: metrics
