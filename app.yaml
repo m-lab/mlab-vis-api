@@ -1,7 +1,7 @@
 runtime: python
 vm: true
 entrypoint: gunicorn -b :$PORT main:app
-service: mlab-api
+service: data-api
 
 runtime_config:
   python_version: 2
