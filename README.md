@@ -2,7 +2,12 @@
 
 ## What
 
-Python Flask server connected to Bigtable to serve up data needed for MLab Visualization.
+The staging verion of the Python Flask server connected to Bigtable to serve up data needed for MLab Visualization.
+
+The production api can be found [here.](https://github.com/opentechinstitute/mlab-vis-api/tree/master)
+
+To test changes, first deploy to the [mlab-staging project](https://console.cloud.google.com/appengine/services?project=mlab-staging) and then submit a PR to merge them into the production repo.
+
 
 ## Install
 
