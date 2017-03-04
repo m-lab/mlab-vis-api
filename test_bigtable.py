@@ -11,8 +11,8 @@ credentials = GoogleCredentials.get_application_default()
 print 'Using credentials' + credentials.service_account_email
 
 app_config = {
-  'GOOGLE_PROJECT_ID': 'mlab-sandbox',
-  'BIGTABLE_INSTANCE': 'mlab-data-viz',
+  'GOOGLE_PROJECT_ID': 'mlab-oti',
+  'BIGTABLE_INSTANCE': 'mlab-data-viz-prod',
   'BIGTABLE_POOL_SIZE': 1,
   'BIGTABLE_CONFIG_DIR': 'bigtable_configs'
 }
