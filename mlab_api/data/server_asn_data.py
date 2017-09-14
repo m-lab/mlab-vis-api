@@ -2,7 +2,7 @@
 '''
 Data class for accessing data for API calls.
 '''
-from gcloud.bigtable.row_filters import FamilyNameRegexFilter
+from google.cloud.bigtable.row_filters import FamilyNameRegexFilter
 from mlab_api.data.table_config import get_table_config
 from mlab_api.constants import TABLE_KEYS
 from mlab_api.data.base_data import Data

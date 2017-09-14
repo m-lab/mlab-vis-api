@@ -1,17 +1,23 @@
+setup:
+	pip install -t lib -r requirements.txt
+	pip install -t lib -r requirements-test.txt
+	pip install -t lib -r git-hooks/requirements-python.txt
 
 test:
-	python -m pytest tests
+	GOOGLE_APPLICATION_CREDENTIALS=cred.json python -m pytest tests
 
 clean:
 	find . -name *.pyc -delete
 
 lint:
-	pylint --rcfile .pylintrc mlab_api/*/**.py
+	pylint --rcfile git-hooks/pylintrc mlab_api/*/**.py
 
 prepare: clean
 	mkdir -p bigtable_configs
 	cp -r ../mlab-vis-pipeline/dataflow/data/bigtable/*.json ./bigtable_configs
-	cp ../mlab-keys/mlab-cred.json cred.json
+
+run:
+	GOOGLE_APPLICATION_CREDENTIALS=cred.json python main.py
 
 deploy: clean
 	gcloud app deploy

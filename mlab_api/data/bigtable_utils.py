@@ -4,16 +4,16 @@ Utilities to help with connecting and communicating with BigTable
 '''
 
 import logging
-
-from gcloud import bigtable
-from gcloud.bigtable import happybase
-from gcloud.bigtable.row_filters import FamilyNameRegexFilter
-from oauth2client.client import GoogleCredentials
+import os
+from google.cloud import bigtable
+from google.cloud import happybase
+from google.cloud.bigtable.row_filters import FamilyNameRegexFilter
+from google.oauth2 import service_account
 
 import mlab_api.data.data_utils as du
 from mlab_api.sort_utils import sort_by_count
 
-def init_pool(app_config):
+def init_pool():
     '''
     Setup Connection
     From the documentation:
@@ -22,21 +22,24 @@ def init_pool(app_config):
      share it among threads in your application.
     '''
 
-    credentials = GoogleCredentials.get_application_default()
-    connection_pool = None
+    credentials = service_account.Credentials.from_service_account_file(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
 
-    if 'GOOGLE_PROJECT_ID' and 'BIGTABLE_INSTANCE' in app_config:
+    connection_pool = None
+    project_id = os.environ.get("PROJECT")
+    bigtable_instance = os.environ.get("BIGTABLE_INSTANCE")
+    bigtable_pool_size = os.environ.get("BIGTABLE_POOL_SIZE")
+
+    if project_id and bigtable_instance:
         try:
-            client = bigtable.Client(project=app_config['GOOGLE_PROJECT_ID'],
+            client = bigtable.Client(project=project_id,
                                      admin=True, credentials=credentials)
 
-            instance = client.instance(app_config['BIGTABLE_INSTANCE'])
+            instance = client.instance(bigtable_instance)
 
-            size = 10
-            if 'BIGTABLE_POOL_SIZE' in app_config:
-                size = app_config['BIGTABLE_POOL_SIZE']
-
+            size = int(bigtable_pool_size) if bigtable_pool_size else 10
+            
             connection_pool = happybase.pool.ConnectionPool(size, instance=instance)
+            logging.info("Connection made to %s for project %s", bigtable_instance, project_id)
         except Exception as err:  #pylint: disable=W0703
             logging.exception("ERROR: Could not make connection")
             logging.exception(err)

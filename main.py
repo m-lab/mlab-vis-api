@@ -3,6 +3,7 @@
 App Entry Point
 '''
 from __future__ import print_function
+import os
 import logging
 
 from flask_restplus import cors
@@ -18,7 +19,6 @@ from mlab_api.endpoints.servers import server_asn_ns
 from mlab_api.endpoints.raw import raw_ns
 
 from mlab_api.decorators import format_from_url_decorator, download_decorator
-
 
 # API is defined here
 from mlab_api.rest_api import api
@@ -39,8 +39,9 @@ api.add_namespace(raw_ns)
 api.init_app(app)
 
 debug_flag = False
+api_mode = os.environ.get("API_MODE")
 
-if app.config['API_MODE'] == 'DEV':
+if api_mode == 'DEV':
     print('DEV MODE')
     debug_flag = True
     api.add_namespace(debug_ns)
