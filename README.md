@@ -59,7 +59,7 @@ Ensure you have this tool installed and configured properly.
 
 The app will be deployed and accessible from:
 
-[http://mlab-api-dot-mlab-oti.appspot.com/](http://mlab-api-dot-mlab-oti.appspot.com/)
+[http://data-api.measurementlab.net/](http://data-api.measurementlab.net/)
 
 The API is documented at this url as well.
 
