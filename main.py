@@ -40,13 +40,12 @@ api.init_app(app)
 
 debug_flag = False
 api_mode = os.environ.get("API_MODE")
+print(api_mode)
 
-if api_mode == 'DEV':
-    print('DEV MODE')
+if api_mode is 'staging' or api_mode is 'sandbox':
     debug_flag = True
     api.add_namespace(debug_ns)
 else:
-    print('PRODUCTION MODE')
     debug_flag = False
 
 if __name__ == '__main__':

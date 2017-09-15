@@ -55,7 +55,7 @@ elif [[ "$1" == staging ]]; then
     echo "We won't deploy to staging with uncommitted changes"
     exit 1
   fi
-elif [[ "$1" == sandbox-* ]]; then
+elif [[ "$1" == sandbox ]]; then
   source ./environments/sandbox.sh
 else
   echo "BAD ARGUMENT TO $0"
@@ -66,4 +66,25 @@ if [[ $2 == travis ]]; then
   gcloud auth activate-service-account --key-file ${KEY_FILE}
 fi
 
+# remove built files so we do not upload them.
+find . -name '*.pyc' -delete
+
+# Copy service key locally so that we can upload it as part of the deploy.
+cp ${KEY_FILE} cred.json
+
+# Copy templates folder for deploy
+rm -rf deploy-build
+mkdir deploy-build
+cp templates/* deploy-build/
+
+# Build app.yaml template
+./travis/substitute_values.sh deploy-build \
+    GOOGLE_APPLICATION_CREDENTIALS cred.json \
+    API_MODE ${API_MODE} \
+    PROJECT ${PROJECT} \
+    BIGTABLE_INSTANCE ${BIGTABLE_INSTANCE} \
+    BIGTABLE_CONFIG_DIR bigtable_configs \
+    BIGTABLE_POOL_SIZE ${BIGTABLE_POOL_SIZE}
+
+#  gcloud app deploy deploy-build/app.yaml
 

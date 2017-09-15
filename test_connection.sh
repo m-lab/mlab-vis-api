@@ -5,7 +5,7 @@ USAGE="$0 [production|staging|arbitrary-string-sandbox]"
 set -e
 set -x
 
-# source "${HOME}/google-cloud-sdk/path.bash.inc"
+source "${HOME}/google-cloud-sdk/path.bash.inc"
 
 # Initialize correct environment variables based on type of server being run
 if [[ "$1" == production ]]; then
@@ -23,6 +23,6 @@ BIGTABLE_CONFIG_DIR=bigtable_configs \
 BIGTABLE_INSTANCE=${BIGTABLE_INSTANCE} \
 PROJECT=${PROJECT} \
 API_MODE=${API_MODE} \
-GOOGLE_APPLICATION_CREDENTIALS=cred.json \
+GOOGLE_APPLICATION_CREDENTIALS=${KEY_FILE} \
 BIGTABLE_POOL_SIZE=${BIGTABLE_POOL_SIZE} \
-gunicorn -b :8080 main:app
+python test_bigtable.py

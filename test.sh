@@ -25,4 +25,4 @@ PROJECT=${PROJECT} \
 API_MODE=${API_MODE} \
 GOOGLE_APPLICATION_CREDENTIALS=cred.json \
 BIGTABLE_POOL_SIZE=${BIGTABLE_POOL_SIZE} \
-gunicorn -b :8080 main:app
+python -m pytest tests

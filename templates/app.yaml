@@ -1,5 +1,3 @@
-api_version: 1
-
 runtime: python
 env: flex
 entrypoint: gunicorn -b :$PORT main:app
@@ -9,8 +7,8 @@ runtime_config:
   python_version: 2
 
 resources:
-  cpu: 2
-  memory_gb: 2.3
+  cpu: 1.0
+  memory_gb: 2.0
   disk_size_gb: 10
 
 automatic_scaling:
@@ -25,9 +23,9 @@ automatic_scaling:
 
 # Environment variables are set by the ./deploy.sh script
 env_variables:
-    GOOGLE_APPLICATION_CREDENTIALS: "cred.json"
-    API_MODE: "sandbox"
-    PROJECT: "mlab-sandbox"
-    BIGTABLE_INSTANCE: "mlab-data-viz"
-    BIGTABLE_CONFIG_DIR: "bigtable_configs"
-    BIGTABLE_POOL_SIZE: "10"
+    GOOGLE_APPLICATION_CREDENTIALS: "{{GOOGLE_APPLICATION_CREDENTIALS}}"
+    API_MODE: "{{API_MODE}}"
+    PROJECT: "{{PROJECT}}"
+    BIGTABLE_INSTANCE: "{{BIGTABLE_INSTANCE}}"
+    BIGTABLE_CONFIG_DIR: "{{BIGTABLE_CONFIG_DIR}}"
+    BIGTABLE_POOL_SIZE: "{{BIGTABLE_POOL_SIZE}}"

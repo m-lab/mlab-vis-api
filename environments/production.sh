@@ -7,5 +7,5 @@
 KEY_FILE=../mlab-keys/mlab-viz-bigtable-production@mlab-oti.iam.gserviceaccount.com-creds.json
 PROJECT=mlab-oti
 BIGTABLE_INSTANCE=mlab-data-viz-prod
-API_MODE=PROD
+API_MODE=production
 BIGTABLE_POOL_SIZE=40

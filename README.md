@@ -3,26 +3,15 @@
 ## What
 
 Python Flask server connected to Bigtable to serve up data needed for MLab Visualization.
+You can run this application locally with Docker.
 
 ## Install
 
 ### Clone
 
-There are githooks setup in this repository. You can either clone this repo with the `--recursive` flag 
+There are githooks and travis files setup in this repository. You can either clone this repo with the `--recursive` flag 
 to fetch them like so: `git clone --recursive <...>` or you can 
 run `git submodule update --init` after a basic clone.
-
-### Setup
-
-Call `make setup`
-Since this is a python application, requirements need to be installed. There are 3 sets of requirements: Main application, testing environment and the git-hooks. 
-Make sure you've initialized your local submodule. 
-
-_Suggestion:_ Have a conda environment active before installing packages. If you do not have a conda environment setup, you may need to sudo install some of the requirements. This is a Python 2.* application.
-
-### Point to credential files
-
-In order to access the bigtable tables in production, you need to use a service account that you can authenticate with. You should recieve them from an m-lab team member or setup your own. You will need to update the variables set in the `environments/*.sh` files to reflect the paths to those files before you run the server! 
 
 ### Prepare Bigtable configuration files
 
@@ -30,9 +19,25 @@ The bigtable configuration files that are used in the `mlab-vis-pipeline`. These
 
 Run `make prepare` to copy over necessary files. 
 
-## Run
+### Bring over credential file
 
-Start flask server by calling `./run.sh production|staging|sandbox`
+In order to access the bigtable tables in production, you need to use a service account that you can authenticate with. You should recieve them from an m-lab team member or setup your own.
+Copy that file and name it `cred.json` in the root of the application.
+
+### Build docker image
+
+`docker build -t data-api .`
+
+Everytime you change your cred.json you'll need to rebuild the image.
+
+### Run Docker Image
+
+`docker run -p 8080:8080 -e API_MODE=production|staging|sandbox data-api`
+
+Note that the environment you choose to run in needs to have the appropriate service key available as a `cred.json` file. Make sure you copy that over in advance.
+Once the docker image is running, you should be able to access it at [http://localhost:8080](http://localhost:8080).
+
+The `API_MODE` flag will also choose one of the `environments/*` files to run. Check those vars to ensure they match your expected settings.
 
 ## Deploy
 
@@ -51,9 +56,14 @@ The API is documented at this url as well.
 
 ## Testing
 
-Test requirements are stored in a separate `requirements-test.txt` file. They should be installed when you called `make setup`. If they did not, you can run it manually as well: `pip install -r requirements-test.txt`
+Call `make setup` to install dependencies.
 
-Then run tests with: `make test`
+Since this is a python application, requirements need to be installed. There are 3 sets of requirements: Main application, testing environment and the git-hooks. 
+Make sure you've initialized your local submodule. 
+
+_Suggestion:_ Have a conda environment active before installing packages. If you do not have a conda environment setup, you may need to sudo install some of the requirements. This is a Python 2.* application.
+
+You can call `./test.sh production|staging|sandbox`. Note that you will need that same `cred.json` file available.
 
 ## code
 
