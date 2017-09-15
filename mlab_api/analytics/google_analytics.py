@@ -26,7 +26,8 @@ class Timer(object):
                 return_value = f(*args, **kwargs)
             finally:
                 elapsed_time_ms = 1000.0 * (time.time() - start_time)
-                self.client.timing(self.category, self.variable, self.label, elapsed_time_ms)
+                self.client.timing(self.category, self.variable, 
+                    self.label, elapsed_time_ms)
             return return_value
         return _wrapped
 

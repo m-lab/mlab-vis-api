@@ -86,5 +86,9 @@ cp templates/* deploy-build/
     BIGTABLE_CONFIG_DIR bigtable_configs \
     BIGTABLE_POOL_SIZE ${BIGTABLE_POOL_SIZE}
 
-#  gcloud app deploy deploy-build/app.yaml
+# Copy app.yaml to root... this is required for the deploy to identify the Dockerfile
+cp deploy-build/app.yaml app.yaml
+
+# Run deploy - You might need to approve this.
+gcloud app deploy
 

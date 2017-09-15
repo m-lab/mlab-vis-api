@@ -1,14 +1,18 @@
-runtime: python
+api_version: 1
+
+runtime: custom
 env: flex
 entrypoint: gunicorn -b :$PORT main:app
 service: data-api
+
+threadsafe: true
 
 runtime_config:
   python_version: 2
 
 resources:
-  cpu: 1.0
-  memory_gb: 2.0
+  cpu: 2.0
+  memory_gb: 2.3
   disk_size_gb: 10
 
 automatic_scaling:

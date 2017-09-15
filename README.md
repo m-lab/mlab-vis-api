@@ -21,7 +21,7 @@ Run `make prepare` to copy over necessary files.
 
 ### Bring over credential file
 
-In order to access the bigtable tables in production, you need to use a service account that you can authenticate with. You should recieve them from an m-lab team member or setup your own.
+In order to access the bigtable tables in the desired environment (staging, production or sandbox), you need to use a service account that you can authenticate with. You should recieve a credential json file from an m-lab team member or setup your own.
 Copy that file and name it `cred.json` in the root of the application.
 
 ### Build docker image
@@ -43,12 +43,13 @@ The `API_MODE` flag will also choose one of the `environments/*` files to run. C
 
 We can deploy to flexibe [App Engine](https://console.cloud.google.com/appengine)!
 
-To deploy to app engine, run this simple command: `./deploy.sh production|staging|sandbox`
+To deploy to app engine, run this simple command: `KEY_FILE=<pathToYourCredFile> ./deploy.sh production|staging|sandbox`
 
 Currently, `gcloud app deploy` is used to deploy internally.
 Ensure you have this tool installed and configured properly.
 
-The app will be deployed and accessible from:
+The app will be deployed and accessible from the service URL which depends on the environment.
+In production this URL is:
 
 [https://data-api.measurementlab.net/](https://data-api.measurementlab.net/)
 
