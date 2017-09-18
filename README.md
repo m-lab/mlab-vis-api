@@ -3,6 +3,7 @@
 ## What
 
 Python Flask server connected to Bigtable to serve up data needed for MLab Visualization.
+This is a Python 2.* application.
 You can run this application locally with Docker.
 
 ## Install
@@ -62,9 +63,11 @@ Call `make setup` to install dependencies.
 Since this is a python application, requirements need to be installed. There are 3 sets of requirements: Main application, testing environment and the git-hooks. 
 Make sure you've initialized your local submodule. 
 
-_Suggestion:_ Have a conda environment active before installing packages. If you do not have a conda environment setup, you may need to sudo install some of the requirements. This is a Python 2.* application.
+_Suggestion:_ Have a conda environment active before installing packages. If you do not have a conda environment setup, you may need to sudo install some of the requirements.
 
-You can call `./test.sh production|staging|sandbox`. Note that you will need that same `cred.json` file available.
+You can call `KEY_FILE=<path to your cred.json file> ./test.sh production|staging|sandbox`. 
+
+_Note_: The tests were written to data that is in production. We should probably refactor them to be slightly more generic. 
 
 ## code
 
