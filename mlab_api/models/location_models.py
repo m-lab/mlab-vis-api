@@ -7,130 +7,171 @@ from mlab_api.rest_api import api
 from mlab_api.format_utils import meta_results_to_csv, meta_data_to_csv, \
     meta_data_in_row_to_csv, meta_in_row_to_csv
 
-from mlab_api.models.base_models import location_meta_fields, metric_data_fields, \
-    location_client_meta_fields, location_client_server_meta_fields, \
-    location_search_meta_fields, search_data_fields, location_info_data_fields, \
-    location_server_meta_fields
+from mlab_api.models.base_models import LOCATION_META_FIELDS, \
+    METRIC_META_FIELDS, LOCATION_CLIENT_META_FIELDS, \
+    LOCATION_CLIENT_SERVER_META_FIELDS, LOCATION_SEARCH_META_FIELDS, \
+    SEARCH_DATA_FIELDS, LOCATION_INFO_DATA_FIELDS, LOCATION_SERVER_META_FIELDS
 
 
 # -------------------------------------------
 # Locations: search
 # -------------------------------------------
-location_search_result_fields = api.model('Search Result', {
-    'meta': fields.Nested(location_search_meta_fields, required=True),
-    'data': fields.Nested(search_data_fields, required=False)
+LOCATION_SEARCH_RESULT_FIELDS = api.model('Search Result', {
+    'meta': fields.Nested(LOCATION_SEARCH_META_FIELDS, required=True),
+    'data': fields.Nested(SEARCH_DATA_FIELDS, required=False)
 })
 
-location_search_model = api.model('Location Search Model', {
-    'results': fields.List(fields.Nested(location_search_result_fields), required=True)
+LOCATION_SEARCH_MODEL = api.model('Location Search Model', {
+    'results': fields.List(fields.Nested(LOCATION_SEARCH_RESULT_FIELDS),
+                           required=True)
 })
 
 def location_search_to_csv(data):
-    return meta_data_in_row_to_csv(data, location_search_meta_fields, search_data_fields)
+    '''
+    Convert location search results to CSV
+    '''
+    return meta_data_in_row_to_csv(data, LOCATION_SEARCH_META_FIELDS,
+                                   SEARCH_DATA_FIELDS)
 
 
 # ------------------------------------------------------
 # Location + Client: list
 # ------------------------------------------------------
-location_client_list_model = api.model('Location Client List Model', {
+LOCATION_CLIENT_LIST_MODEL = api.model('Location Client List Model', {
     "results": fields.List(fields.Nested({
-        'meta': fields.Nested(location_client_meta_fields, required=True)
+        'meta': fields.Nested(LOCATION_CLIENT_META_FIELDS, required=True)
     }))
 })
 
 def location_client_list_to_csv(data):
-    return meta_in_row_to_csv(data, location_client_meta_fields)
+    '''
+    Convert location client list to CSV
+    '''
+    return meta_in_row_to_csv(data, LOCATION_CLIENT_META_FIELDS)
 
 
 # ------------------------------------------------------
 # Location + Server: list
 # ------------------------------------------------------
-location_server_list_model = api.model('Location Server List Model', {
+LOCATION_SERVER_LIST_MODEL = api.model('Location Server List Model', {
     "results": fields.List(fields.Nested({
-        'meta': fields.Nested(location_server_meta_fields, required=True)
+        'meta': fields.Nested(LOCATION_SERVER_META_FIELDS, required=True)
     }))
 })
 
 def location_server_list_to_csv(data):
-    return meta_in_row_to_csv(data, location_server_meta_fields)
+    '''
+    Convert location server list to CSV
+    '''
+    return meta_in_row_to_csv(data, LOCATION_SERVER_META_FIELDS)
 
 
 # -------------------------------------------
 # Location: info
 # -------------------------------------------
-location_info_model = api.model('Location Info Model', {
-    'meta': fields.Nested(location_meta_fields, required=True),
-    'data': fields.Nested(location_info_data_fields, required=True),
+LOCATION_INFO_MODEL = api.model('Location Info Model', {
+    'meta': fields.Nested(LOCATION_META_FIELDS, required=True),
+    'data': fields.Nested(LOCATION_INFO_DATA_FIELDS, required=True),
 })
 
 def location_info_to_csv(data):
-    return meta_data_to_csv(data, location_meta_fields, location_info_data_fields)
+    '''
+    Convert location information to CSV
+    '''
+    return meta_data_to_csv(data, LOCATION_META_FIELDS,
+                            LOCATION_INFO_DATA_FIELDS)
 
 # -------------------------------------------
 # Location: children info
 # -------------------------------------------
-location_children_model = api.model('Location Children Info Model', {
-    "results": fields.List(fields.Nested(location_info_model))
+LOCATION_CHILDREN_MODEL = api.model('Location Children Info Model', {
+    "results": fields.List(fields.Nested(LOCATION_INFO_MODEL))
 })
 
 def location_children_to_csv(data):
-    return meta_data_in_row_to_csv(data, location_meta_fields, location_info_data_fields)
+    '''
+    Convert location children data to CSV
+    '''
+    return meta_data_in_row_to_csv(data, LOCATION_META_FIELDS,
+                                   LOCATION_INFO_DATA_FIELDS)
 
 
 # ------------------------------------------------------
 # Location + Client: info
 # ------------------------------------------------------
-location_client_isp_info_model = api.model('Location Client ASN Model', {
-    'meta': fields.Nested(location_client_meta_fields, required=True),
-    'data': fields.Nested(location_info_data_fields, required=True)
+LOCATION_CLIENT_ISP_INFO_MODEL = api.model('Location Client ASN Model', {
+    'meta': fields.Nested(LOCATION_CLIENT_META_FIELDS, required=True),
+    'data': fields.Nested(LOCATION_INFO_DATA_FIELDS, required=True)
 })
 
 def location_client_isp_info_to_csv(data):
-    return meta_data_to_csv(data, location_client_meta_fields, location_info_data_fields)
+    '''
+    Convert location client ISP information to CSV
+    '''
+    return meta_data_to_csv(data, LOCATION_CLIENT_META_FIELDS,
+                            LOCATION_INFO_DATA_FIELDS)
 
 
 # -------------------------------------------
 # Locations: metrics
 # -------------------------------------------
-location_metric_model = api.model('Location Metric Model', {
-    'meta': fields.Nested(location_meta_fields, required=True),
-    'results': fields.List(fields.Nested(metric_data_fields), required=True)
+LOCATION_METRIC_MODEL = api.model('Location Metric Model', {
+    'meta': fields.Nested(LOCATION_META_FIELDS, required=True),
+    'results': fields.List(fields.Nested(METRIC_META_FIELDS), required=True)
 })
 
 def location_metric_to_csv(data):
-    return meta_results_to_csv(data, location_meta_fields, metric_data_fields)
+    '''
+    Convert location metric to CSV
+    '''
+    return meta_results_to_csv(data, LOCATION_META_FIELDS, METRIC_META_FIELDS)
 
 # -------------------------------------------
 # Location + Clients: metrics
 # -------------------------------------------
-location_client_metric_model = api.model('Location+Client Metric Model', {
-    'meta': fields.Nested(location_client_meta_fields, required=True),
-    'results': fields.List(fields.Nested(metric_data_fields), required=True)
+LOCATION_CLIENT_METRIC_MODEL = api.model('Location+Client Metric Model', {
+    'meta': fields.Nested(LOCATION_CLIENT_META_FIELDS, required=True),
+    'results': fields.List(fields.Nested(METRIC_META_FIELDS), required=True)
 })
 
 def location_client_metric_to_csv(data):
-    return meta_results_to_csv(data, location_client_meta_fields, metric_data_fields)
+    '''
+    Convert location client metrics to CSV
+    '''
+    return meta_results_to_csv(data, LOCATION_CLIENT_META_FIELDS,
+                               METRIC_META_FIELDS)
 
 
 # -------------------------------------------
 # Location + Server: metrics
 # -------------------------------------------
-location_server_metric_model = api.model('Location+Server Metric Model', {
-    'meta': fields.Nested(location_server_meta_fields, required=True),
-    'results': fields.List(fields.Nested(metric_data_fields), required=True)
+LOCATION_SERVER_METRIC_MODEL = api.model('Location+Server Metric Model', {
+    'meta': fields.Nested(LOCATION_SERVER_META_FIELDS, required=True),
+    'results': fields.List(fields.Nested(METRIC_META_FIELDS), required=True)
 })
 
 def location_server_metric_to_csv(data):
-    return meta_results_to_csv(data, location_server_meta_fields, metric_data_fields)
+    '''
+    Convert server metrics model to CSV
+    '''
+    return meta_results_to_csv(data, LOCATION_SERVER_META_FIELDS,
+                               METRIC_META_FIELDS)
 
 
 # -------------------------------------------
 # Location + Client + Server: metrics
 # -------------------------------------------
-location_client_server_metric_model = api.model('Location+Client+Server Metric Model', {
-    'meta': fields.Nested(location_client_server_meta_fields, required=True),
-    'results': fields.List(fields.Nested(metric_data_fields), required=True)
-})
+LOCATION_CLIENT_SERVER_METRIC_MODEL = api.model(
+    'Location+Client+Server Metric Model', {
+        'meta': fields.Nested(LOCATION_CLIENT_SERVER_META_FIELDS,
+                              required=True),
+        'results': fields.List(fields.Nested(METRIC_META_FIELDS),
+                               required=True)
+    })
 
 def location_client_server_metric_to_csv(data):
-    return meta_results_to_csv(data, location_client_server_meta_fields, metric_data_fields)
+    '''
+    Convert location client and server metrics to CSV
+    '''
+    return meta_results_to_csv(data, LOCATION_CLIENT_SERVER_META_FIELDS,
+                               METRIC_META_FIELDS)

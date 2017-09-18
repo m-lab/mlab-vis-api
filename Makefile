@@ -7,7 +7,9 @@ clean:
 	find . -name *.pyc -delete
 
 lint:
-	pylint --rcfile git-hooks/pylintrc mlab_api/*/**.py
+	cp git-hooks/pylintrc .
+	pylint --rcfile pylintrc mlab_api/*/**.py
+	rm pylintrc
 
 prepare: clean
 	mkdir -p bigtable_configs

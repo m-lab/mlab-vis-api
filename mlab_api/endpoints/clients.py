@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=no-self-use
 '''
 Endpoints for client asns
 '''
@@ -10,23 +11,25 @@ from mlab_api.data.data import CLIENT_ASN_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.constants import TIME_BINS
 from mlab_api.rest_api import api
-from mlab_api.parsers import date_arguments, search_arguments, include_data_arguments, top_arguments
+from mlab_api.parsers import date_arguments, search_arguments, \
+    include_data_arguments, top_arguments
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
-from mlab_api.models.location_models import location_client_list_model, location_client_list_to_csv
-from mlab_api.models.client_models import client_search_model, client_search_to_csv, \
-    client_info_model, client_info_to_csv, \
-    client_metric_model, client_metric_to_csv, \
-    client_server_metric_model, client_server_metric_to_csv, \
-    client_server_list_model, client_server_list_to_csv
+from mlab_api.models.location_models import LOCATION_CLIENT_LIST_MODEL, \
+    location_client_list_to_csv
+from mlab_api.models.client_models import CLIENT_SEARCH_MODEL, \
+    client_search_to_csv, CLIENT_INFO_MODEL, client_info_to_csv, \
+    CLIENT_METRIC_MODEL, client_metric_to_csv, \
+    CLIENT_SERVER_METRIC_MODEL, client_server_metric_to_csv, \
+    CLIENT_SERVER_LIST_MODEL, client_server_list_to_csv
 
 from mlab_api.decorators import format_response
 
 
-client_asn_ns = api.namespace('clients', description='Client ASN specific API')
+CLIENT_ASN_NS = api.namespace('clients', description='Client ASN specific API')
 
-@client_asn_ns.route('/search')
+@CLIENT_ASN_NS.route('/search')
 class ClientAsnSearch(Resource):
     '''
     Client Search
@@ -34,7 +37,7 @@ class ClientAsnSearch(Resource):
 
     @api.expect(search_arguments)
     @format_response(client_search_to_csv)
-    @api.marshal_with(client_search_model)
+    @api.marshal_with(CLIENT_SEARCH_MODEL)
     def get(self):
         """
         Search clients for a given query
@@ -46,7 +49,7 @@ class ClientAsnSearch(Resource):
         results = SEARCH.get_search_results('clients', asn_query, search_filter)
         return results
 
-@client_asn_ns.route('/top')
+@CLIENT_ASN_NS.route('/top')
 class ClientAsnTop(Resource):
     '''
     Provide Top Clients with given filters
@@ -54,7 +57,7 @@ class ClientAsnTop(Resource):
 
     @api.expect(top_arguments)
     @format_response(client_search_to_csv)
-    @api.marshal_with(client_search_model)
+    @api.marshal_with(CLIENT_SEARCH_MODEL)
     def get(self):
         """
         Get Client Metrics Over Time
@@ -62,17 +65,18 @@ class ClientAsnTop(Resource):
 
         args = top_arguments.parse_args(request)
         search_filter = get_filter(args)
-        results = SEARCH.get_top_results('clients', args.get('limit'), search_filter)
+        results = SEARCH.get_top_results('clients', args.get('limit'),
+                                         search_filter)
         return results
 
-@client_asn_ns.route('/<string:client_id>')
-@client_asn_ns.route('/<string:client_id>/info')
+@CLIENT_ASN_NS.route('/<string:client_id>')
+@CLIENT_ASN_NS.route('/<string:client_id>/info')
 class ClientInfo(Resource):
     '''
     Client Info
     '''
     @format_response(client_info_to_csv)
-    @api.marshal_with(client_info_model)
+    @api.marshal_with(CLIENT_INFO_MODEL)
     def get(self, client_id):
         """
         Get info for a Client
@@ -82,7 +86,7 @@ class ClientInfo(Resource):
         results = DATA.get_client_info(client_id)
         return results
 
-@client_asn_ns.route('/<string:client_id>/servers')
+@CLIENT_ASN_NS.route('/<string:client_id>/servers')
 class ClientServers(Resource):
     '''
      Client servers List
@@ -90,7 +94,7 @@ class ClientServers(Resource):
 
     @api.expect(include_data_arguments)
     @format_response(client_server_list_to_csv)
-    @api.marshal_with(client_server_list_model)
+    @api.marshal_with(CLIENT_SERVER_LIST_MODEL)
     def get(self, client_id):
         """
         Get list of Servers related to this Client
@@ -101,7 +105,7 @@ class ClientServers(Resource):
 
         return results
 
-@client_asn_ns.route('/<string:client_id>/locations')
+@CLIENT_ASN_NS.route('/<string:client_id>/locations')
 class ClientLocations(Resource):
     '''
      Client locations List
@@ -109,7 +113,7 @@ class ClientLocations(Resource):
 
     @api.expect(include_data_arguments)
     @format_response(location_client_list_to_csv)
-    @api.marshal_with(location_client_list_model)
+    @api.marshal_with(LOCATION_CLIENT_LIST_MODEL)
     def get(self, client_id):
         """
         Get list of Locations related to this Client
@@ -120,7 +124,7 @@ class ClientLocations(Resource):
 
         return results
 
-@client_asn_ns.route('/<string:client_id>/metrics')
+@CLIENT_ASN_NS.route('/<string:client_id>/metrics')
 class ClientAsnTimeMetric(Resource):
     '''
     Client Metrics
@@ -128,7 +132,7 @@ class ClientAsnTimeMetric(Resource):
 
     @api.expect(date_arguments)
     @format_response(client_metric_to_csv)
-    @api.marshal_with(client_metric_model)
+    @api.marshal_with(CLIENT_METRIC_MODEL)
     def get(self, client_id):
         """
         Get time-based metrics for a particular Client.
@@ -138,11 +142,12 @@ class ClientAsnTimeMetric(Resource):
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')
-        results = DATA.get_client_metrics(client_id, timebin, startdate, enddate)
+        results = DATA.get_client_metrics(client_id, timebin, startdate,
+                                          enddate)
         return results
 
 
-@client_asn_ns.route('/<string:client_id>/servers/<string:server_id>/metrics')
+@CLIENT_ASN_NS.route('/<string:client_id>/servers/<string:server_id>/metrics')
 class ClientServerTimeMetric(Resource):
     '''
     Location + Server Time Metric Resource
@@ -150,7 +155,7 @@ class ClientServerTimeMetric(Resource):
 
     @api.expect(date_arguments)
     @format_response(client_server_metric_to_csv)
-    @api.marshal_with(client_server_metric_model)
+    @api.marshal_with(CLIENT_SERVER_METRIC_MODEL)
     def get(self, client_id, server_id):
         """
         Get time-based metrics for a specific Client + Server
@@ -160,7 +165,7 @@ class ClientServerTimeMetric(Resource):
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')
-        results = DATA.get_client_server_metrics(client_id, server_id,
-                                                   timebin, startdate, enddate)
+        results = DATA.get_client_server_metrics(
+            client_id, server_id, timebin, startdate, enddate)
 
         return results

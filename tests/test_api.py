@@ -3,10 +3,10 @@
 from flask_testing import TestCase
 from mlab_api.app import app
 from mlab_api.rest_api import api
-from mlab_api.endpoints.locations import locations_ns
-from mlab_api.endpoints.servers import server_asn_ns
-from mlab_api.endpoints.clients import client_asn_ns
-from mlab_api.endpoints.debug import debug_ns
+from mlab_api.endpoints.locations import LOCATIONS_NS
+from mlab_api.endpoints.servers import SERVER_ASN_NS
+from mlab_api.endpoints.clients import CLIENT_ASN_NS
+from mlab_api.endpoints.debug import DEBUG_NS
 # from flask_testing import LiveServerTestCase
 
 LOCATION_META_KEYS = ['id', 'location_key']
@@ -32,10 +32,10 @@ class TestApp(TestCase):
 
     def create_app(self):
         if not TestApp.init:
-            api.add_namespace(locations_ns)
-            api.add_namespace(server_asn_ns)
-            api.add_namespace(client_asn_ns)
-            api.add_namespace(debug_ns)
+            api.add_namespace(LOCATIONS_NS)
+            api.add_namespace(SERVER_ASN_NS)
+            api.add_namespace(CLIENT_ASN_NS)
+            api.add_namespace(DEBUG_NS)
             api.init_app(app)
             TestApp.init = True
         return app
