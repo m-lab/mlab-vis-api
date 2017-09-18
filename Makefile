@@ -7,8 +7,8 @@ clean:
 	find . -name *.pyc -delete
 
 lint:
-	cp git-hooks/pylintrc .
-	pylint --rcfile pylintrc mlab_api/*/**.py
+	cp git-hooks/pylintrc pylintrc
+	pylint --disable=W --rcfile pylintrc mlab_api/*/**.py
 	rm pylintrc
 
 prepare: clean

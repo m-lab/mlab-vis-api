@@ -2,7 +2,9 @@
 '''
 Shared ASN functions between client and server classes.
 '''
+#pylint: disable=no-name-in-module
 from google.cloud.bigtable.row_filters import FamilyNameRegexFilter
+
 import mlab_api.data.bigtable_utils as bt
 import mlab_api.data.data_utils as du
 

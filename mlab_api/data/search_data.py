@@ -2,7 +2,10 @@
 '''
 Data class for accessing data for search
 '''
+
+#pylint: disable=no-name-in-module, relative-import
 from google.cloud.bigtable.row_filters import FamilyNameRegexFilter
+
 from mlab_api.data.table_config import get_table_config
 from mlab_api.data.base_data import Data
 from mlab_api.url_utils import normalize_key

@@ -6,6 +6,8 @@ Utilities to help with connecting and communicating with BigTable
 
 import logging
 import os
+
+#pylint: disable=no-name-in-module, relative-import
 from google.cloud import bigtable
 from google.cloud import happybase
 from google.cloud.bigtable.row_filters import FamilyNameRegexFilter
