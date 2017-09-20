@@ -3,13 +3,13 @@
 '''
 Potentially helpful debugging routes.
 '''
-from mlab_api.rest_api import api
+from mlab_api.rest_api import API
 from mlab_api.data.data import LOCATION_DATA as DATA
 
 from flask_restplus import Resource
 
 
-DEBUG_NS = api.namespace('debug', description='Debug Help')
+DEBUG_NS = API.namespace('debug', description='Debug Help')
 
 @DEBUG_NS.route('/connection')
 class Connection(Resource):

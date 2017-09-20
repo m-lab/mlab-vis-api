@@ -14,7 +14,13 @@ def add_ids(id_attribute):
     and array of results with a 'meta' value in each result.
     '''
     def add_ids_decorator(func):
+        '''
+        Decorator function
+        '''
         def func_wrapper(*args, **kwargs):
+            '''
+            Wrapper
+            '''
             results = func(*args, **kwargs)
             if not 'results' in results:
                 return results
@@ -35,10 +41,18 @@ def add_id(id_attribute):
     if isinstance(id_attribute, basestring):
         id_attribute = [id_attribute]
     def add_id_decorator(func):
+        '''
+        Decorator function
+        '''
         def func_wrapper(*args, **kwargs):
+            '''
+            Wrapper function
+            '''
             result = func(*args, **kwargs)
             if 'meta' in result:
-                id_values = [result['meta'][attr] for attr in id_attribute if attr in result['meta']]
+                id_values = [
+                    result['meta'][attr] for attr in id_attribute
+                    if attr in result['meta']]
                 result['meta']['id'] = "_".join(id_values)
 
             return result
@@ -46,8 +60,17 @@ def add_id(id_attribute):
     return add_id_decorator
 
 def add_id_value():
+    '''
+    Adds id value
+    '''
     def add_id_decorator(func):
+        '''
+        Decorator function
+        '''
         def func_wrapper(self, id_value, **kwargs):
+            '''
+            Wrapper function
+            '''
             result = func(self, id_value, **kwargs)
             if 'meta' in result:
                 result['meta']['id'] = id_value
@@ -63,6 +86,9 @@ def format_from_url_decorator(func):
     '''
 
     def func_wrapper(*args, **kwargs):
+        '''
+        Wrapper function
+        '''
         resp = make_response(func(*args, **kwargs))
 
         # restplus ignores our setting of Content-Type in our mediatype handlers
@@ -83,7 +109,13 @@ def format_response(to_csv=None):
     request parameter and Accepts header
     '''
     def format_decorator(func):
+        '''
+        Format decorator
+        '''
         def func_wrapper(*args, **kwargs):
+            '''
+            Wrapper
+            '''
             results = func(*args, **kwargs)
             return format_marshaled_data(results, to_csv)
         return func_wrapper
@@ -91,7 +123,13 @@ def format_response(to_csv=None):
 
 
 def download_decorator(func):
+    '''
+    Download decorator function
+    '''
     def func_wrapper(*args, **kwargs):
+        '''
+        Wrapper function
+        '''
         resp = func(*args, **kwargs)
 
         # ignore if download query param is not set
@@ -103,15 +141,20 @@ def download_decorator(func):
         filename = path.replace('/', '_')
 
         # Add in query param values to the filename
-        for k, v in request.args.iteritems():
-            print('got kv', k, v)
-            if k not in ['download', 'format']:
-                filename += '_%s' % v
+        for key, value in request.args.iteritems():
+            print('got key value', key, value)
+            if key not in ['download', 'format']:
+                filename += '_%s' % value
 
         # add the file extension based on the mimetype
-        filetype = 'csv' if resp.headers['Content-Type'] == 'text/csv' else 'json'
+        if resp.headers['Content-Type'] == 'text/csv':
+            filetype = 'csv'
+        else:
+            filetype = 'json'
 
         # set the content disposition header so it downloads
-        resp.headers['Content-Disposition'] = 'attachment; filename=%s.%s' % (filename, filetype)
+        resp.headers['Content-Disposition'] = 'attachment; filename=%s.%s' % (
+            filename, filetype)
+
         return resp
     return update_wrapper(func_wrapper, func)

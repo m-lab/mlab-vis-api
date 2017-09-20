@@ -20,24 +20,24 @@ from mlab_api.endpoints.raw import RAW_NS
 from mlab_api.decorators import format_from_url_decorator, download_decorator
 
 # API is defined here
-from mlab_api.rest_api import api
+from mlab_api.rest_api import API
 
 ROOT = logging.getLogger()
 ROOT.setLevel(logging.DEBUG)
 
 # This provides CORS for all API Requests and adds in our media type coercing
 # based on `format`
-api.decorators = [cors.crossdomain(origin='*'), format_from_url_decorator,
+API.decorators = [cors.crossdomain(origin='*'), format_from_url_decorator,
                   download_decorator]
 
 # Add namespaces defined in endpoints module
-api.add_namespace(LOCATIONS_NS)
-api.add_namespace(CLIENT_ASN_NS)
-api.add_namespace(SERVER_ASN_NS)
-api.add_namespace(RAW_NS)
+API.add_namespace(LOCATIONS_NS)
+API.add_namespace(CLIENT_ASN_NS)
+API.add_namespace(SERVER_ASN_NS)
+API.add_namespace(RAW_NS)
 
-# init api with Flask App
-api.init_app(app)
+# init API with Flask App
+API.init_app(app)
 
 DEBUG_FLAG = False
 API_MODE = os.environ.get("API_MODE")
@@ -45,7 +45,7 @@ print(API_MODE)
 
 if API_MODE == 'staging' or API_MODE == 'sandbox':
     DEBUG_FLAG = True
-    api.add_namespace(DEBUG_NS)
+    API.add_namespace(DEBUG_NS)
 else:
     DEBUG_FLAG = False
 

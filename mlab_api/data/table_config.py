@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 '''
 Module for handling table configuration objects
 '''
 from __future__ import print_function
-import json
 import glob
 import os
+from mlab_api.os_utils import read_json
 
 class TableConfig(object):
     '''
@@ -88,16 +89,6 @@ def make_config_key(time_aggregation, key_name):
         return time_aggregation + "-" + key_name
     else:
         return key_name
-
-def read_json(filename):
-    '''
-    Read a JSON file and return the dictionary representation of results
-    '''
-    data = {}
-    with open(filename) as data_file:
-        data = json.load(data_file)
-    return data
-
 
 def get_column_configs(config):
     '''

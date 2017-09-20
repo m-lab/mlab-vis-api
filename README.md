@@ -10,15 +10,15 @@ You can run this application locally with Docker.
 
 ### Clone
 
-There are githooks and travis files setup in this repository. You can either clone this repo with the `--recursive` flag 
-to fetch them like so: `git clone --recursive <...>` or you can 
+There are githooks and travis files setup in this repository. You can either clone this repo with the `--recursive` flag
+to fetch them like so: `git clone --recursive <...>` or you can
 run `git submodule update --init` after a basic clone.
 
 ### Prepare Bigtable configuration files
 
 The bigtable configuration files that are used in the `mlab-vis-pipeline`. These file are used to create the bigtable tables AND determine the correct query format within this application. For that purpose, we copy them from that repo here. The make script assumes you have `mlab-vis-pipeline` checked out in the same parent folder.
 
-Run `make prepare` to copy over necessary files. 
+Run `make prepare` to copy over necessary files.
 
 ### Bring over credential file
 
@@ -60,16 +60,18 @@ The API is documented at this url as well.
 
 Call `make setup` to install dependencies.
 
-Since this is a python application, requirements need to be installed. There are 3 sets of requirements: Main application, testing environment and the git-hooks. 
-Make sure you've initialized your local submodule. 
+Since this is a python application, requirements need to be installed. There are 3 sets of requirements: Main application, testing environment and the git-hooks.
+Make sure you've initialized your local submodule.
 
 _Suggestion:_ Have a conda environment active before installing packages. If you do not have a conda environment setup, you may need to sudo install some of the requirements.
 
-You can call `KEY_FILE=<path to your cred.json file> ./test.sh production|staging|sandbox`. 
+You can call `KEY_FILE=<path to your cred.json file> ./test.sh production|staging|sandbox`.
 
-_Note_: The tests were written to data that is in production. We should probably refactor them to be slightly more generic. 
+Note, you should also lint your code before you consider PRing it. You can do so by calling `./lint.sh`.
 
-## code
+_Note_: The tests were written to data that is in production. We should probably refactor them to be slightly more generic.
+
+## Code
 
 This code depends heavily on the [Flask-RESTPlus](https://flask-restplus.readthedocs.io/en/stable/) package.
 

@@ -3,7 +3,7 @@
 Base models that can be nested or extended to create those used in responses
 '''
 from flask_restplus import fields
-from mlab_api.rest_api import api
+from mlab_api.rest_api import API
 from mlab_api.id_utils import location_id, location_client_id, \
     location_server_id, location_client_server_id, client_id, server_id, \
     client_server_id
@@ -13,7 +13,7 @@ from mlab_api.id_utils import location_id, location_client_id, \
 # Generic Data Fields
 # ----------------------------------------------------
 
-SEARCH_DATA_FIELDS = api.model('Search Data', {
+SEARCH_DATA_FIELDS = API.model('Search Data', {
     'last_three_months_test_count': fields.Integer(
         description="Test counts over last 3 months."),
     'last_six_months_test_count': fields.Integer(
@@ -27,7 +27,7 @@ SEARCH_DATA_FIELDS = api.model('Search Data', {
 # Unfortunately, currently some models include test count in meta and some do
 # it in data (e.g., see location info vs location+client info).
 # Ideally this gets fixed at some point.
-SEARCH_META_FIELDS = api.model('Search Meta', {
+SEARCH_META_FIELDS = API.model('Search Meta', {
     'last_three_months_test_count': fields.Integer(
         description="Test counts over last 3 months."),
     'last_six_months_test_count': fields.Integer(
@@ -38,7 +38,7 @@ SEARCH_META_FIELDS = api.model('Search Meta', {
         description="Test counts over entire MLab dataset"),
 })
 
-METRIC_META_FIELDS = api.model('Metric Data', {
+METRIC_META_FIELDS = API.model('Metric Data', {
     'count': fields.Integer(description="Test counts for time period."),
     'rtt_avg': fields.Float(description="Average round trip time"),
     'retransmit_avg': fields.Float(description="Average retransmit rate."),
@@ -56,7 +56,7 @@ METRIC_META_FIELDS = api.model('Metric Data', {
 # Servers
 # ----------------------------------------------------
 # Server: meta
-SERVER_META_FIELDS = api.model('Server Meta', {
+SERVER_META_FIELDS = API.model('Server Meta', {
     'server_asn_number': fields.String(description="Server ASN Number"),
     'server_asn_name': fields.Raw(description="Server ASN Name"),
     'id': fields.String(description="Server ID", attribute=server_id)
@@ -66,14 +66,14 @@ SERVER_META_FIELDS = api.model('Server Meta', {
 SERVER_SEARCH_META_FIELDS = SEARCH_META_FIELDS.extend('Server Search Meta',
                                                       SERVER_META_FIELDS)
 # Register extended model manually
-api.models[SERVER_SEARCH_META_FIELDS.name] = SERVER_SEARCH_META_FIELDS
+API.models[SERVER_SEARCH_META_FIELDS.name] = SERVER_SEARCH_META_FIELDS
 
 
 # ----------------------------------------------------
 # Clients
 # ----------------------------------------------------
 # Client: meta
-CLIENT_META_FIELDS = api.model('Client Meta', {
+CLIENT_META_FIELDS = API.model('Client Meta', {
     'client_asn_number': fields.String(description="Client ASN Number"),
     'client_asn_name': fields.Raw(description="Client ASN Name"),
     'id': fields.String(description="Client ID", attribute=client_id)
@@ -83,7 +83,7 @@ CLIENT_META_FIELDS = api.model('Client Meta', {
 CLIENT_SEARCH_META_FIELDS = SEARCH_META_FIELDS.extend('Client Search Meta',
                                                       CLIENT_META_FIELDS)
 # Register extended model manually
-api.models[CLIENT_SEARCH_META_FIELDS.name] = CLIENT_SEARCH_META_FIELDS
+API.models[CLIENT_SEARCH_META_FIELDS.name] = CLIENT_SEARCH_META_FIELDS
 
 
 # ----------------------------------------------------
@@ -96,14 +96,14 @@ CLIENT_SERVER_META_FIELDS = CLIENT_META_FIELDS.extend(
                             attribute=client_server_id),
     })
 # Register extended model manually
-api.models[CLIENT_SEARCH_META_FIELDS.name] = CLIENT_SERVER_META_FIELDS
+API.models[CLIENT_SEARCH_META_FIELDS.name] = CLIENT_SERVER_META_FIELDS
 
 
 # ----------------------------------------------------
 # Locations
 # ----------------------------------------------------
 # Location: meta
-LOCATION_META_FIELDS = api.model('Location Meta', {
+LOCATION_META_FIELDS = API.model('Location Meta', {
     'id': fields.Raw(description="Location id", attribute=location_id),
     'type': fields.String(
         description="Location type. city, region, country, or continent."),
@@ -126,10 +126,10 @@ LOCATION_META_FIELDS = api.model('Location Meta', {
 LOCATION_SEARCH_META_FIELDS = SEARCH_META_FIELDS.extend(
     'Location Search Meta', LOCATION_META_FIELDS)
 # Register extended model manually
-api.models[LOCATION_SEARCH_META_FIELDS.name] = LOCATION_SEARCH_META_FIELDS
+API.models[LOCATION_SEARCH_META_FIELDS.name] = LOCATION_SEARCH_META_FIELDS
 
 # Location Info: data
-LOCATION_INFO_DATA_FIELDS = api.model('Location Info Data', {
+LOCATION_INFO_DATA_FIELDS = API.model('Location Info Data', {
     'last_year_download_speed_mbps_median': fields.Float,
     'last_year_download_speed_mbps_avg': fields.Float,
     'last_year_download_speed_mbps_min': fields.Float,
@@ -209,7 +209,7 @@ LOCATION_CLIENT_META_FIELDS = LOCATION_META_FIELDS.extend(
                          attribute=location_client_id),
     })
 # Register extended model manually
-api.models[LOCATION_CLIENT_META_FIELDS.name] = LOCATION_CLIENT_META_FIELDS
+API.models[LOCATION_CLIENT_META_FIELDS.name] = LOCATION_CLIENT_META_FIELDS
 
 
 # ----------------------------------------------------
@@ -222,7 +222,7 @@ LOCATION_SERVER_META_FIELDS = LOCATION_META_FIELDS.extend(
                          attribute=location_server_id),
     })
 # Register extended model manually
-api.models[LOCATION_SERVER_META_FIELDS.name] = LOCATION_SERVER_META_FIELDS
+API.models[LOCATION_SERVER_META_FIELDS.name] = LOCATION_SERVER_META_FIELDS
 
 # ----------------------------------------------------
 # Locations + Clients + Servers
@@ -234,6 +234,6 @@ LOCATION_CLIENT_SERVER_META_FIELDS = LOCATION_CLIENT_META_FIELDS.extend(
                          attribute=location_client_server_id),
     })
 # Register extended model manually
-api.models[
+API.models[
     LOCATION_CLIENT_SERVER_META_FIELDS.name
 ] = LOCATION_CLIENT_SERVER_META_FIELDS

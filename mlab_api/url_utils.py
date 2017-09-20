@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=anomalous-backslash-in-string
 '''
 Utilities for working with URL inputs
 '''
@@ -38,7 +39,7 @@ def get_filter(args):
     ftype = args.get('filtertype')
     fvalue = args.get('filtervalue')
 
-    if(ftype and fvalue):
+    if ftype and fvalue:
         fvalues = fvalue.split(",")
         return {'type': ftype, 'value':fvalues}
     return {'type': None, 'value': []}

@@ -4,7 +4,7 @@ Models for definging return value of Client specific calls
 '''
 
 from flask_restplus import fields
-from mlab_api.rest_api import api
+from mlab_api.rest_api import API
 
 from mlab_api.format_utils import meta_results_to_csv, meta_data_to_csv, \
     meta_data_in_row_to_csv, meta_in_row_to_csv
@@ -17,12 +17,12 @@ from mlab_api.models.base_models import SEARCH_DATA_FIELDS, \
 # -------------------------------------------
 # Clients: search
 # -------------------------------------------
-CLIENT_SEARCH_RESULT_FIELDS = api.model('Client ASN Search Result', {
+CLIENT_SEARCH_RESULT_FIELDS = API.model('Client ASN Search Result', {
     'meta': fields.Nested(CLIENT_SEARCH_META_FIELDS, required=True),
     'data': fields.Nested(SEARCH_DATA_FIELDS, required=True)
 })
 
-CLIENT_SEARCH_MODEL = api.model('Client ASN Search Results', {
+CLIENT_SEARCH_MODEL = API.model('Client ASN Search Results', {
     'results': fields.List(fields.Nested(CLIENT_SEARCH_RESULT_FIELDS),
                            required=True)
 
@@ -39,7 +39,7 @@ def client_search_to_csv(data):
 # ------------------------------------------------------
 # Client + Server List
 # ------------------------------------------------------
-CLIENT_SERVER_LIST_MODEL = api.model('Client Server List Model', {
+CLIENT_SERVER_LIST_MODEL = API.model('Client Server List Model', {
     "results": fields.List(fields.Nested({
         'meta': fields.Nested(CLIENT_SERVER_META_FIELDS, required=True)
     }))
@@ -55,7 +55,7 @@ def client_server_list_to_csv(data):
 # -------------------------------------------
 # Clients: info
 # -------------------------------------------
-CLIENT_INFO_MODEL = api.model('Client Info Model', {
+CLIENT_INFO_MODEL = API.model('Client Info Model', {
     'meta': fields.Nested(CLIENT_SEARCH_META_FIELDS, required=True),
 })
 
@@ -68,7 +68,7 @@ def client_info_to_csv(data):
 # -------------------------------------------
 # Clients: metrics
 # -------------------------------------------
-CLIENT_METRIC_MODEL = api.model('Client Metric Model', {
+CLIENT_METRIC_MODEL = API.model('Client Metric Model', {
     'meta': fields.Nested(CLIENT_META_FIELDS, required=True),
     'results': fields.List(fields.Nested(METRIC_META_FIELDS), required=True)
 })
@@ -82,7 +82,7 @@ def client_metric_to_csv(data):
 # -------------------------------------------
 # Clients + Servers: metrics
 # -------------------------------------------
-CLIENT_SERVER_METRIC_MODEL = api.model('Client+Server Metric Model', {
+CLIENT_SERVER_METRIC_MODEL = API.model('Client+Server Metric Model', {
     'meta': fields.Nested(CLIENT_SERVER_META_FIELDS, required=True),
     'results': fields.List(fields.Nested(METRIC_META_FIELDS), required=True)
 })

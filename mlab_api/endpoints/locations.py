@@ -10,8 +10,8 @@ from flask_restplus import Resource
 from mlab_api.constants import TIME_BINS
 from mlab_api.data.data import LOCATION_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
-from mlab_api.parsers import date_arguments, type_arguments, \
-    include_data_arguments, search_arguments, top_arguments
+from mlab_api.parsers import DATE_ARGUMENTS, TYPE_ARGUMENTS, \
+    INCLUDE_DATA_ARGUMENTS, SEARCH_ARGUMENTS, TOP_ARGUMENTS
 
 from mlab_api.models.location_models import LOCATION_SEARCH_MODEL, \
     location_search_to_csv, LOCATION_CLIENT_LIST_MODEL, \
@@ -28,27 +28,26 @@ from mlab_api.models.location_models import LOCATION_SEARCH_MODEL, \
 from mlab_api.url_utils import get_time_window, normalize_key, get_filter
 from mlab_api.decorators import format_response
 
-from mlab_api.rest_api import api
-
-from mlab_api.stats import analytics
+from mlab_api.rest_api import API
+from mlab_api.stats import ANALYTICS
 
 # this is the namespace that gets included elsewhere.
-LOCATIONS_NS = api.namespace('locations', description='Location specific API')
+LOCATIONS_NS = API.namespace('locations', description='Location specific API')
 
 @LOCATIONS_NS.route('/search')
 class LocationSearch(Resource):
     '''
     Location Search Resource
     '''
-    @api.expect(search_arguments)
+    @API.expect(SEARCH_ARGUMENTS)
     @format_response(location_search_to_csv)
-    @api.marshal_with(LOCATION_SEARCH_MODEL)
+    @API.marshal_with(LOCATION_SEARCH_MODEL)
     def get(self):
         """
         Get all Locations matching a query
         """
 
-        args = search_arguments.parse_args(request)
+        args = SEARCH_ARGUMENTS.parse_args(request)
         location_query = normalize_key(args.get('q'))
         search_filter = get_filter(args)
         results = SEARCH.get_search_results('locations', location_query,
@@ -62,15 +61,15 @@ class LocationTop(Resource):
     Provide top Locations with provided filters
     '''
 
-    @api.expect(top_arguments)
+    @API.expect(TOP_ARGUMENTS)
     @format_response(location_search_to_csv)
-    @api.marshal_with(LOCATION_SEARCH_MODEL)
+    @API.marshal_with(LOCATION_SEARCH_MODEL)
     def get(self):
         """
         Get top locations with given filters
         """
 
-        args = top_arguments.parse_args(request)
+        args = TOP_ARGUMENTS.parse_args(request)
         search_filter = get_filter(args)
         results = SEARCH.get_top_results('locations', args.get('limit'),
                                          search_filter)
@@ -83,8 +82,8 @@ class LocationInfo(Resource):
     Location Info
     '''
     @format_response(location_info_to_csv)
-    @api.marshal_with(LOCATION_INFO_MODEL)
-    @analytics.timer('api_call', 'locations.info.api')
+    @API.marshal_with(LOCATION_INFO_MODEL)
+    @ANALYTICS.timer('api_call', 'locations.info.api')
     def get(self, location_id):
         """
         Get information for a Location
@@ -101,16 +100,16 @@ class LocationChildren(Resource):
     '''
     Location Children List
     '''
-    @api.expect(type_arguments)
+    @API.expect(TYPE_ARGUMENTS)
     @format_response(location_children_to_csv)
-    @api.marshal_with(LOCATION_CHILDREN_MODEL)
-    @analytics.timer('api_call', 'locations.children.api')
+    @API.marshal_with(LOCATION_CHILDREN_MODEL)
+    @ANALYTICS.timer('api_call', 'locations.children.api')
     def get(self, location_id):
         """
         Get Locations matching a query
         """
 
-        args = type_arguments.parse_args(request)
+        args = TYPE_ARGUMENTS.parse_args(request)
         location_id = normalize_key(location_id)
 
         results = DATA.get_location_children(location_id, args.get('type'))
@@ -122,10 +121,10 @@ class LocationClients(Resource):
     Location Clients Resource
     '''
 
-    @api.expect(include_data_arguments)
+    @API.expect(INCLUDE_DATA_ARGUMENTS)
     @format_response(location_client_list_to_csv)
-    @api.marshal_with(LOCATION_CLIENT_LIST_MODEL)
-    @analytics.timer('api_call', 'locations_clients.list.api')
+    @API.marshal_with(LOCATION_CLIENT_LIST_MODEL)
+    @ANALYTICS.timer('api_call', 'locations_clients.list.api')
     def get(self, location_id):
         """
         Get list of Clients related to this Location
@@ -133,7 +132,7 @@ class LocationClients(Resource):
 
         location_id = normalize_key(location_id)
 
-        args = include_data_arguments.parse_args(request)
+        args = INCLUDE_DATA_ARGUMENTS.parse_args(request)
         results = DATA.get_location_clients(location_id, args.get('data'))
 
         return results
@@ -144,10 +143,10 @@ class LocationServers(Resource):
      Location + Server List
     '''
 
-    @api.expect(include_data_arguments)
+    @API.expect(INCLUDE_DATA_ARGUMENTS)
     @format_response(location_server_list_to_csv)
-    @api.marshal_with(LOCATION_SERVER_LIST_MODEL)
-    @analytics.timer('api_call', 'locations_servers.list.api')
+    @API.marshal_with(LOCATION_SERVER_LIST_MODEL)
+    @ANALYTICS.timer('api_call', 'locations_servers.list.api')
     def get(self, location_id):
         """
         Get list of Servers related to this Location
@@ -155,7 +154,7 @@ class LocationServers(Resource):
 
         location_id = normalize_key(location_id)
 
-        args = include_data_arguments.parse_args(request)
+        args = INCLUDE_DATA_ARGUMENTS.parse_args(request)
         results = DATA.get_location_servers(location_id, args.get('data'))
 
         return results
@@ -168,8 +167,8 @@ class LocationClientIspInfo(Resource):
     '''
 
     @format_response(location_client_isp_info_to_csv)
-    @api.marshal_with(LOCATION_CLIENT_ISP_INFO_MODEL)
-    @analytics.timer('api_call', 'locations.clientisps_info.api')
+    @API.marshal_with(LOCATION_CLIENT_ISP_INFO_MODEL)
+    @ANALYTICS.timer('api_call', 'locations.clientisps_info.api')
     def get(self, location_id, client_isp_id):
         """
         Get info for a particular Location + Client
@@ -189,17 +188,17 @@ class LocationTimeMetric(Resource):
     Location Time Metrics
     '''
 
-    @api.expect(date_arguments)
+    @API.expect(DATE_ARGUMENTS)
     @format_response(location_metric_to_csv)
-    @api.marshal_with(LOCATION_METRIC_MODEL)
-    @analytics.timer('api_call', 'locations.metrics.api')
+    @API.marshal_with(LOCATION_METRIC_MODEL)
+    @ANALYTICS.timer('api_call', 'locations.metrics.api')
     def get(self, location_id):
         """
         Get time-based metrics for a Location
         """
 
         location_id = normalize_key(location_id)
-        args = date_arguments.parse_args(request)
+        args = DATE_ARGUMENTS.parse_args(request)
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')
@@ -214,18 +213,17 @@ class LocationClientTimeMetric(Resource):
     Location + Client Time Resource
     '''
 
-    @api.expect(date_arguments)
+    @API.expect(DATE_ARGUMENTS)
     @format_response(location_client_metric_to_csv)
-    @api.marshal_with(LOCATION_CLIENT_METRIC_MODEL)
-    @analytics.timer('api_call', 'locations_clients.metrics.api')
+    @API.marshal_with(LOCATION_CLIENT_METRIC_MODEL)
+    @ANALYTICS.timer('api_call', 'locations_clients.metrics.api')
     def get(self, location_id, client_id):
         """
         Get time-based metrics for a Location + Client
         """
-
         location_id = normalize_key(location_id)
 
-        args = date_arguments.parse_args(request)
+        args = DATE_ARGUMENTS.parse_args(request)
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')
@@ -240,10 +238,10 @@ class LocationServerTimeMetric(Resource):
     Location + Server Time Metric Resource
     '''
 
-    @api.expect(date_arguments)
+    @API.expect(DATE_ARGUMENTS)
     @format_response(location_server_metric_to_csv)
-    @api.marshal_with(LOCATION_SERVER_METRIC_MODEL)
-    @analytics.timer('api_call', 'locations_servers.metrics.api')
+    @API.marshal_with(LOCATION_SERVER_METRIC_MODEL)
+    @ANALYTICS.timer('api_call', 'locations_servers.metrics.api')
     def get(self, location_id, server_id):
         """
         Get time-based metrics for a Location + Server
@@ -251,7 +249,7 @@ class LocationServerTimeMetric(Resource):
 
         location_id = normalize_key(location_id)
 
-        args = date_arguments.parse_args(request)
+        args = DATE_ARGUMENTS.parse_args(request)
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')
@@ -267,10 +265,10 @@ class LocationClientServerTimeMetric(Resource):
     Location + Client + Server Time Resource
     '''
 
-    @api.expect(date_arguments)
+    @API.expect(DATE_ARGUMENTS)
     @format_response(location_client_server_metric_to_csv)
-    @api.marshal_with(LOCATION_CLIENT_SERVER_METRIC_MODEL)
-    @analytics.timer('api_call', 'locations_servers.metrics.api')
+    @API.marshal_with(LOCATION_CLIENT_SERVER_METRIC_MODEL)
+    @ANALYTICS.timer('api_call', 'locations_servers.metrics.api')
     def get(self, location_id, client_id, server_id):
         """
         Get time-based metrics for a Location + Client + Server
@@ -278,7 +276,7 @@ class LocationClientServerTimeMetric(Resource):
 
         location_id = normalize_key(location_id)
 
-        args = date_arguments.parse_args(request)
+        args = DATE_ARGUMENTS.parse_args(request)
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')

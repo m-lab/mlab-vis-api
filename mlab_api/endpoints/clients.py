@@ -10,9 +10,9 @@ from flask import request
 from mlab_api.data.data import CLIENT_ASN_DATA as DATA
 from mlab_api.data.data import SEARCH_DATA as SEARCH
 from mlab_api.constants import TIME_BINS
-from mlab_api.rest_api import api
-from mlab_api.parsers import date_arguments, search_arguments, \
-    include_data_arguments, top_arguments
+from mlab_api.rest_api import API
+from mlab_api.parsers import DATE_ARGUMENTS, SEARCH_ARGUMENTS, \
+    INCLUDE_DATA_ARGUMENTS, TOP_ARGUMENTS
 
 from mlab_api.url_utils import get_time_window, get_filter, normalize_key
 
@@ -27,7 +27,7 @@ from mlab_api.models.client_models import CLIENT_SEARCH_MODEL, \
 from mlab_api.decorators import format_response
 
 
-CLIENT_ASN_NS = api.namespace('clients', description='Client ASN specific API')
+CLIENT_ASN_NS = API.namespace('clients', description='Client ASN specific API')
 
 @CLIENT_ASN_NS.route('/search')
 class ClientAsnSearch(Resource):
@@ -35,15 +35,15 @@ class ClientAsnSearch(Resource):
     Client Search
     '''
 
-    @api.expect(search_arguments)
+    @API.expect(SEARCH_ARGUMENTS)
     @format_response(client_search_to_csv)
-    @api.marshal_with(CLIENT_SEARCH_MODEL)
+    @API.marshal_with(CLIENT_SEARCH_MODEL)
     def get(self):
         """
         Search clients for a given query
         """
 
-        args = search_arguments.parse_args(request)
+        args = SEARCH_ARGUMENTS.parse_args(request)
         asn_query = normalize_key(args.get('q'))
         search_filter = get_filter(args)
         results = SEARCH.get_search_results('clients', asn_query, search_filter)
@@ -55,15 +55,15 @@ class ClientAsnTop(Resource):
     Provide Top Clients with given filters
     '''
 
-    @api.expect(top_arguments)
+    @API.expect(TOP_ARGUMENTS)
     @format_response(client_search_to_csv)
-    @api.marshal_with(CLIENT_SEARCH_MODEL)
+    @API.marshal_with(CLIENT_SEARCH_MODEL)
     def get(self):
         """
         Get Client Metrics Over Time
         """
 
-        args = top_arguments.parse_args(request)
+        args = TOP_ARGUMENTS.parse_args(request)
         search_filter = get_filter(args)
         results = SEARCH.get_top_results('clients', args.get('limit'),
                                          search_filter)
@@ -76,7 +76,7 @@ class ClientInfo(Resource):
     Client Info
     '''
     @format_response(client_info_to_csv)
-    @api.marshal_with(CLIENT_INFO_MODEL)
+    @API.marshal_with(CLIENT_INFO_MODEL)
     def get(self, client_id):
         """
         Get info for a Client
@@ -92,15 +92,15 @@ class ClientServers(Resource):
      Client servers List
     '''
 
-    @api.expect(include_data_arguments)
+    @API.expect(INCLUDE_DATA_ARGUMENTS)
     @format_response(client_server_list_to_csv)
-    @api.marshal_with(CLIENT_SERVER_LIST_MODEL)
+    @API.marshal_with(CLIENT_SERVER_LIST_MODEL)
     def get(self, client_id):
         """
         Get list of Servers related to this Client
         """
 
-        args = include_data_arguments.parse_args(request)
+        args = INCLUDE_DATA_ARGUMENTS.parse_args(request)
         results = DATA.get_client_servers(client_id, args.get('data'))
 
         return results
@@ -111,15 +111,15 @@ class ClientLocations(Resource):
      Client locations List
     '''
 
-    @api.expect(include_data_arguments)
+    @API.expect(INCLUDE_DATA_ARGUMENTS)
     @format_response(location_client_list_to_csv)
-    @api.marshal_with(LOCATION_CLIENT_LIST_MODEL)
+    @API.marshal_with(LOCATION_CLIENT_LIST_MODEL)
     def get(self, client_id):
         """
         Get list of Locations related to this Client
         """
 
-        args = include_data_arguments.parse_args(request)
+        args = INCLUDE_DATA_ARGUMENTS.parse_args(request)
         results = DATA.get_client_locations(client_id, args.get('data'))
 
         return results
@@ -130,15 +130,15 @@ class ClientAsnTimeMetric(Resource):
     Client Metrics
     '''
 
-    @api.expect(date_arguments)
+    @API.expect(DATE_ARGUMENTS)
     @format_response(client_metric_to_csv)
-    @api.marshal_with(CLIENT_METRIC_MODEL)
+    @API.marshal_with(CLIENT_METRIC_MODEL)
     def get(self, client_id):
         """
         Get time-based metrics for a particular Client.
         """
 
-        args = date_arguments.parse_args(request)
+        args = DATE_ARGUMENTS.parse_args(request)
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')
@@ -153,15 +153,15 @@ class ClientServerTimeMetric(Resource):
     Location + Server Time Metric Resource
     '''
 
-    @api.expect(date_arguments)
+    @API.expect(DATE_ARGUMENTS)
     @format_response(client_server_metric_to_csv)
-    @api.marshal_with(CLIENT_SERVER_METRIC_MODEL)
+    @API.marshal_with(CLIENT_SERVER_METRIC_MODEL)
     def get(self, client_id, server_id):
         """
         Get time-based metrics for a specific Client + Server
         """
 
-        args = date_arguments.parse_args(request)
+        args = DATE_ARGUMENTS.parse_args(request)
         (startdate, enddate) = get_time_window(args, TIME_BINS)
 
         timebin = args.get('timebin')

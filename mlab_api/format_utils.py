@@ -25,7 +25,7 @@ def format_marshaled_data(data, to_csv):
 
     if result_format == 'csv':
         if to_csv is None:
-            print("WARNING: no to_csv provided to encode with. Encoding as JSON.")
+            print "WARNING: no to_csv given to encode with. Encoding as JSON."
         else:
             # convert to CSV via the provided function
             return to_csv(data)
@@ -41,41 +41,43 @@ def convert_to_csv(rows, fieldnames):
 
     # write to a string
     output = cStringIO.StringIO()
-    csvWriter = csv.DictWriter(
+    csv_writer = csv.DictWriter(
         output,
         fieldnames=fieldnames)
 
     # add the CSV headers
-    csvWriter.writeheader()
+    csv_writer.writeheader()
 
     # for each row, write it as CSV
     for row in rows:
-        csvWriter.writerow(row)
+        csv_writer.writerow(row)
 
     return output.getvalue()
 
 
-def cleandict(d):
+def cleandict(dictionary):
     '''
-    Removes None values from the dictionary. Useful for not having `null` in the JSON
-    encoded values. Inspired by http://stackoverflow.com/a/4257279
+    Removes None values from the dictionary. Useful for not having `null` in
+    the JSON encoded values. Inspired by http://stackoverflow.com/a/4257279
     '''
 
     # if a list, clean each item in the list
-    if type(d) is list:
-        return [cleandict(item) for item in d]
+    if isinstance(dictionary, list):
+        return [cleandict(item) for item in dictionary]
 
     # if not a dictionary or a tuple, just return it
-    if not isinstance(d, dict):
-        return d
+    if not isinstance(dictionary, dict):
+        return dictionary
 
-    return dict((k, cleandict(v)) for k, v in d.iteritems() if v is not None)
+    return dict((key, cleandict(val))
+                for key, val in dictionary.iteritems() if val is not None)
 
 
 def convert_to_json(data):
     '''
-    Encode the data as JSON -- taken from flask_restplus.representations.output_json
-    -- updated to clean the dictionary of nulls.
+    Encode the data as JSON -- taken from
+    flask_restplus.representations.output_json -- updated to clean the
+    dictionary of nulls.
     '''
     settings = current_app.config.get('RESTPLUS_JSON', {})
 
@@ -101,13 +103,17 @@ def make_data_row(groups):
     `groups` is a list of (dict, fieldnames)
 
     Example usage:
-    make_data_row([(meta, ['client_city', 'client_country']), (row, ['count', 'rtt_avg'])])
+    make_data_row([(meta, ['client_city', 'client_country']),
+        (row, ['count', 'rtt_avg'])])
     '''
     row = {}
     for group in groups:
         (data, fieldnames) = group
         for fieldname in fieldnames:
-            row[fieldname] = data[fieldname] if data is not None and fieldname in data else None
+            if data is not None and fieldname in data:
+                row[fieldname] = data[fieldname]
+            else:
+                row[fieldname] = None
 
     return row
 
@@ -124,28 +130,32 @@ def meta_results_to_csv(data, meta_fields_dict, data_fields_dict):
     meta_fields = meta_fields_dict.keys()
     data_fields = data_fields_dict.keys()
 
-    rows = [make_data_row([(data['meta'] if 'meta' in data else None, meta_fields),
+    rows = [make_data_row([(data['meta'] if 'meta' in data else None,
+                            meta_fields),
                            (row, data_fields)]) for row in data['results']]
     return convert_to_csv(rows, meta_fields + data_fields)
 
 def meta_in_row_to_csv(data, meta_fields_dict):
     '''
-    Helper to create CSV from a set results in { results: [{ meta: {} }] } format.
-    Typically used in list results.
+    Helper to create CSV from a set results in { results: [{ meta: {} }] }
+    format. Typically used in list results.
 
     `data`: dictionary of marshaled data
     `meta_fields_dict`: model fields, use .keys() to get fieldnames
     '''
     meta_fields = meta_fields_dict.keys()
 
-    rows = [make_data_row([(row['meta'] if 'meta' in row else None, meta_fields)]) for row in data['results']]
+    rows = [make_data_row([(row['meta']
+                            if 'meta' in row else None, meta_fields)])
+            for row in data['results']]
     return convert_to_csv(rows, meta_fields)
 
 
 def meta_data_in_row_to_csv(data, meta_fields_dict, data_fields_dict):
     '''
-    Helper to create CSV from a set results in { results: [{ meta: {}, data: {} }] } format.
-    Typically used in search results.
+    Helper to create CSV from a set results in
+    { results: [{ meta: {}, data: {} }] } format. Typically used in search
+    results.
 
     `data`: dictionary of marshaled data
     `meta_fields_dict`: model fields, use .keys() to get fieldnames
@@ -154,8 +164,11 @@ def meta_data_in_row_to_csv(data, meta_fields_dict, data_fields_dict):
     meta_fields = meta_fields_dict.keys()
     data_fields = data_fields_dict.keys()
 
-    rows = [make_data_row([(row['meta'] if 'meta' in row else None, meta_fields),
-                           (row['data'] if 'data' in row else None, data_fields)]) for row in data['results']]
+    rows = [make_data_row([(row['meta']
+                            if 'meta' in row else None, meta_fields),
+                           (row['data']
+                            if 'data' in row else None, data_fields)])
+            for row in data['results']]
     return convert_to_csv(rows, meta_fields + data_fields)
 
 def meta_data_to_csv(data, meta_fields_dict, data_fields_dict):
@@ -174,6 +187,8 @@ def meta_data_to_csv(data, meta_fields_dict, data_fields_dict):
     if data_fields_dict:
         data_fields = data_fields_dict.keys()
 
-    rows = [make_data_row([(data['meta'] if 'meta' in data else None, meta_fields),
-                           (data['data'] if 'data' in data else None, data_fields)])]
+    rows = [make_data_row([(data['meta']
+                            if 'meta' in data else None, meta_fields),
+                           (data['data']
+                            if 'data' in data else None, data_fields)])]
     return convert_to_csv(rows, meta_fields + data_fields)

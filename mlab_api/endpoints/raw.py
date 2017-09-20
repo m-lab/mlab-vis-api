@@ -3,13 +3,13 @@
 '''
 Sample Raw Data
 '''
-from mlab_api.rest_api import api
+from mlab_api.rest_api import API
 from mlab_api.data.data import RAW_DATA as DATA
 
 from flask_restplus import Resource
 
 
-RAW_NS = api.namespace('raw', description='')
+RAW_NS = API.namespace('raw', description='')
 
 @RAW_NS.route('/tests')
 class RawTests(Resource):
