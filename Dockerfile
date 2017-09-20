@@ -1,5 +1,5 @@
 FROM gcr.io/google-appengine/python
-MAINTAINER Irene Ros <imirene@gmail.com>
+LABEL maintainer="Irene Ros <imirene@gmail.com>"
 
 LABEL python_version=python
 RUN virtualenv --no-download /env -p python
