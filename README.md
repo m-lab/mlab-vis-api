@@ -78,7 +78,8 @@ deployment. Currently, `gcloud app deploy` is used to deploy internally.
 Ensure you have this tool installed and configured properly.
 
 First, switch your selected `gcloud` project to the one that matches
-your credentials. It could be: `mlab-oti` or `mlab-staging` etc.
+your credentials. It could be: `mlab-oti` or `mlab-staging` etc. This will be
+used to ensure you can deploy to the appropriate project.
 
 To deploy to app engine, run this simple command:
 `KEY_FILE=<absolute path to your cred file> ./deploy.sh production|staging|sandbox`
