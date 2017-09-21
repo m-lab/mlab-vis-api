@@ -92,3 +92,6 @@ cp deploy-build/app.yaml app.yaml
 # Run deploy - You might need to approve this.
 gcloud app deploy
 
+# Remove cred file after deploy is done.
+rm cred.json
+
