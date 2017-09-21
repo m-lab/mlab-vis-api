@@ -80,6 +80,7 @@ cp templates/* deploy-build/
 # Build app.yaml template
 ./travis/substitute_values.sh deploy-build \
     GOOGLE_APPLICATION_CREDENTIALS cred.json \
+    KEY_FILE cred.json \
     API_MODE ${API_MODE} \
     PROJECT ${PROJECT} \
     BIGTABLE_INSTANCE ${BIGTABLE_INSTANCE} \

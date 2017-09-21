@@ -28,6 +28,7 @@ automatic_scaling:
 # Environment variables are set by the ./deploy.sh script
 env_variables:
     GOOGLE_APPLICATION_CREDENTIALS: "{{GOOGLE_APPLICATION_CREDENTIALS}}"
+    KEY_FILE: "{{KEY_FILE}}"
     API_MODE: "{{API_MODE}}"
     PROJECT: "{{PROJECT}}"
     BIGTABLE_INSTANCE: "{{BIGTABLE_INSTANCE}}"

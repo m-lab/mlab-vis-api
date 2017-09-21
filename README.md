@@ -74,13 +74,14 @@ be generic enough to match all environments.
 ## Deploy
 
 We use a flexible [App Engine](https://console.cloud.google.com/appengine)
-deployment.
+deployment. Currently, `gcloud app deploy` is used to deploy internally.
+Ensure you have this tool installed and configured properly.
+
+First, switch your selected `gcloud` project to the one that matches
+your credentials. It could be: `mlab-oti` or `mlab-staging` etc.
 
 To deploy to app engine, run this simple command:
 `KEY_FILE=<absolute path to your cred file> ./deploy.sh production|staging|sandbox`
-
-Currently, `gcloud app deploy` is used to deploy internally.
-Ensure you have this tool installed and configured properly.
 
 The app will be deployed and accessible from the service URL which depends on
 the environment. In production this URL is:

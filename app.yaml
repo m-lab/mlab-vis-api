@@ -11,7 +11,7 @@ runtime_config:
   python_version: 2
 
 resources:
-  cpu: 1.0
+  cpu: 2.0
   memory_gb: 2.3
   disk_size_gb: 10
 
@@ -28,6 +28,7 @@ automatic_scaling:
 # Environment variables are set by the ./deploy.sh script
 env_variables:
     GOOGLE_APPLICATION_CREDENTIALS: "cred.json"
+    KEY_FILE: "cred.json"
     API_MODE: "sandbox"
     PROJECT: "mlab-sandbox"
     BIGTABLE_INSTANCE: "mlab-data-viz"
