@@ -4,10 +4,7 @@ Data class for accessing data for raw data
 '''
 from mlab_api.data.table_config import get_table_config
 from mlab_api.data.base_data import Data
-from mlab_api.url_utils import normalize_key
-from mlab_api.sort_utils import sort_by_count
 import mlab_api.data.bigtable_utils as bt
-import mlab_api.data.data_utils as du
 
 
 class RawData(Data):

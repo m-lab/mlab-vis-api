@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 '''
 Module for handling table configuration objects
 '''
 from __future__ import print_function
-import json
 import glob
 import os
+from mlab_api.os_utils import read_json
 
 class TableConfig(object):
     '''
@@ -18,8 +19,9 @@ class TableConfig(object):
         self.config = config
 
         # store the key
-        self.key = make_config_key(config['frequency'] if 'frequency' in config else None,
-                                   config['key'])
+        self.key = make_config_key(
+            config['frequency'] if 'frequency' in config else None,
+            config['key'])
 
         # create the column configs object
         self.columns = get_column_configs(config)
@@ -63,7 +65,8 @@ def read_configs(config_directory):
     Read a set of bigtable config files from a directory
     '''
     configs = {}
-    config_filenames = glob.glob(os.path.join(os.getcwd(), config_directory, "*.json"))
+    config_filenames = glob.glob(os.path.join(os.getcwd(), config_directory,
+                                              "*.json"))
     print(os.path.join(os.getcwd(), config_directory, "*.json"))
     for config_filename in config_filenames:
         config = TableConfig(read_json(config_filename))
@@ -86,16 +89,6 @@ def make_config_key(time_aggregation, key_name):
         return time_aggregation + "-" + key_name
     else:
         return key_name
-
-def read_json(filename):
-    '''
-    Read a JSON file and return the dictionary representation of results
-    '''
-    data = {}
-    with open(filename) as data_file:
-        data = json.load(data_file)
-    return data
-
 
 def get_column_configs(config):
     '''

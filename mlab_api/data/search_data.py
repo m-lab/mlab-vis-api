@@ -2,7 +2,10 @@
 '''
 Data class for accessing data for search
 '''
-from gcloud.bigtable.row_filters import FamilyNameRegexFilter
+
+#pylint: disable=no-name-in-module, relative-import
+from google.cloud.bigtable.row_filters import FamilyNameRegexFilter
+
 from mlab_api.data.table_config import get_table_config
 from mlab_api.data.base_data import Data
 from mlab_api.url_utils import normalize_key
@@ -13,23 +16,31 @@ import mlab_api.data.data_utils as du
 SEARCH_KEYS = {
     'servers': ['server_asn_name'],
     'clients': ['client_asn_name'],
-    'locations': ['client_continent', 'client_country', 'client_region', 'client_city']
+    'locations': ['client_continent', 'client_country', 'client_region',
+                  'client_city']
 }
 
-DATA_VALUES = ['test_count', 'last_three_month_test_count', 'last_year_test_count']
+DATA_VALUES = ['test_count', 'last_three_month_test_count',
+               'last_year_test_count']
 
 
 class SearchData(Data):
+    '''
+    Handles search result retrieval
+    '''
 
-    def get_row_search_key(self, row, result_keys):
+    @classmethod
+    def get_row_search_key(cls, row, result_keys):
         '''
         Returns search key for provided row.
         Search key is based on provided result_keys array.
         '''
-        row_keys = [row['meta'][key] for key in result_keys if key in row['meta']]
+        row_keys = [
+            row['meta'][key] for key in result_keys if key in row['meta']]
         return normalize_key(''.join(row_keys))
 
-    def get_table_name(self, search_type, search_filter):
+    @classmethod
+    def get_table_name(cls, search_type, search_filter):
         '''
         Returns name of table for provided search type.
 
@@ -43,7 +54,8 @@ class SearchData(Data):
             # its a search table we want
             return du.search_table(search_type)
 
-    def merge_rows(self, row, prev_row):
+    @classmethod
+    def merge_rows(cls, row, prev_row):
         '''
         Takes 2 rows and merges values from DATA_VALUES
         '''
@@ -52,7 +64,8 @@ class SearchData(Data):
                 prev_row['meta'][key] += row['meta'][key]
         return prev_row
 
-    def filter_results(self, search_type, search_query, results):
+    @classmethod
+    def filter_results(cls, search_type, search_query, results):
         '''
         Given a list of results and a query, filter matching results.
 
@@ -68,18 +81,19 @@ class SearchData(Data):
         result_keys = SEARCH_KEYS[search_type]
         for row in results:
             # if result_keys is > 1, provides a merged string to search in
-            row_key = self.get_row_search_key(row, result_keys)
+            row_key = cls.get_row_search_key(row, result_keys)
             # only add if not already in the results.
-            if ((search_query is None) or (search_query in row_key)):
-                if (row_key not in merged_results):
+            if (search_query is None) or (search_query in row_key):
+                if row_key not in merged_results:
                     merged_results[row_key] = row
                 else:
                     # attempt to add count values togehter.
-                    new_row = self.merge_rows(row, merged_results[row_key])
+                    new_row = cls.merge_rows(row, merged_results[row_key])
                     merged_results[row_key] = new_row
         return merged_results.values()
 
-    def prepare_filtered_search_results(self, results):
+    @classmethod
+    def prepare_filtered_search_results(cls, results):
         '''
         Augment raw results to make them ready for output.
         '''
@@ -95,13 +109,17 @@ class SearchData(Data):
         return results
 
 
-    def get_filtered_search_results(self, search_type, search_query, search_filter, **kwargs):
+    def get_filtered_search_results(self, search_type, search_query,
+                                    search_filter, **kwargs):
         '''
         Filter search. Provides results for searches that are faceted.
 
         search_type = one of ['locations', 'servers', 'clients']
         search_query = input query from api
-        search_filter = {type: ['locations', 'servers', 'clients'], value:[id1, id2]}
+        search_filter = {
+            type: ['locations', 'servers', 'clients'],
+            value:[id1, id2]
+        }
         '''
         if not search_filter['type'] or search_filter['type'] == search_type:
             return []
@@ -116,9 +134,12 @@ class SearchData(Data):
             key_prefix += du.BIGTABLE_KEY_DELIM
             # filter only the `meta` column family - for speed.
             tablefilter = FamilyNameRegexFilter('meta')
-            all_results += bt.scan_table(table_config, self.get_pool(), prefix=key_prefix, filter=tablefilter, **kwargs)
+            all_results += bt.scan_table(
+                table_config, self.get_pool(), prefix=key_prefix,
+                filter=tablefilter, **kwargs)
 
-        filtered_results = self.filter_results(search_type, search_query, all_results)
+        filtered_results = self.filter_results(search_type, search_query,
+                                               all_results)
 
         return self.prepare_filtered_search_results(filtered_results)
 
@@ -131,14 +152,15 @@ class SearchData(Data):
         table_name = du.search_table(search_type)
         table_config = get_table_config(self.table_configs, None, table_name)
 
-        results = bt.scan_table(table_config, self.get_pool(), prefix=search_query)
+        results = bt.scan_table(table_config, self.get_pool(),
+                                prefix=search_query)
         return results
 
 
     def get_search_results(self, search_type, search_query, search_filter):
         '''
-        Root search method. calls into basic search or filtered search depending on
-        specific search parameters.
+        Root search method. calls into basic search or filtered search
+        depending on specific search parameters.
 
         search_type = type of search being performed.
         search_query = query key of search
@@ -146,12 +168,13 @@ class SearchData(Data):
         '''
         results = []
         if search_filter['type']:
-            results = self.get_filtered_search_results(search_type, search_query, search_filter)
+            results = self.get_filtered_search_results(
+                search_type, search_query, search_filter)
         else:
             results = self.get_basic_search_results(search_type, search_query)
 
         # sort based on test_count
-        if len(results) > 0 and 'meta' in results[0]:
+        if results and 'meta' in results[0]:
             sorted_results = sorted(results, key=sort_by_count, reverse=True)
             return {"results": sorted_results}
         else:
@@ -167,11 +190,12 @@ class SearchData(Data):
         '''
 
         # limit here to prevent bigtable queries from timing out.
-        results = self.get_filtered_search_results(search_type, None, search_filter, limit=300)
+        results = self.get_filtered_search_results(
+            search_type, None, search_filter, limit=300)
         if not top_n:
             top_n = -1
 
         sorted_results = []
-        if len(results) > 0 and 'meta' in results[0]:
+        if results and 'meta' in results[0]:
             sorted_results = sorted(results, key=sort_by_count, reverse=True)
         return {"results": sorted_results[0:top_n]}

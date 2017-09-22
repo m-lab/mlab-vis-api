@@ -2,87 +2,140 @@
 
 ## What
 
-Python Flask server connected to Bigtable to serve up data needed for MLab Visualization.
+Python Flask server connected to Bigtable to serve up data needed for MLab
+Visualization.
+This is a Python 2.* application.
+You can run this application locally with Docker.
 
 ## Install
 
-Required packages can be installed via:
+### Clone
+
+There are githooks and travis files setup in this repository. You can either
+clone this repo with the `--recursive` flag to fetch them like so:
+`git clone --recursive <...>` or you can run `git submodule update --init` after
+a basic clone.
+
+### Prepare Bigtable configuration files
+
+The bigtable configuration files that are used in the `mlab-vis-pipeline`.
+These file are used to create the bigtable tables AND determine the correct
+query format within this application. For that purpose, we copy them from that
+repo here. The make script assumes you have `mlab-vis-pipeline` checked out in
+the same parent folder.
+
+Run `make prepare` to copy over necessary files.
+
+### Bring over credential file
+
+In order to access the bigtable tables in the desired environment (staging,
+production or sandbox), you need to use a service account that you can
+authenticate with. You should recieve a credential json file from an m-lab team
+member or setup your own.
+Create a folder **outside** of the root of this repository where you will store
+these files.
+
+### Build docker image
+
+`docker build -t data-api .`
+
+### Run Docker Image
+
+You can run a local server like so:
 
 ```
-pip install -r requirements.txt
+docker run -p 8080:8080 \
+-e KEY_FILE=/keys/<keyname>.json \
+-v <local folder containing your secret keys>:/keys \
+-e API_MODE=production|staging|sandbox data-api
 ```
 
-_Suggestion:_ Have a conda environment active before installing packages.
-
-## Run
-
-Start Flask server via
+Note that you need to create a mapping to the folder containing your keys.
+For example, if my local keys live in `~/dev/mlab-keys` and the file name for the
+production environment is `production-key.json` this command would look like:
 
 ```
-python main.py
+docker run -p 8080:8080 \
+-e KEY_FILE=/keys/production-key.json \
+-v /Users/iros/dev/keys:/keys \
+-e API_MODE=production|staging|sandbox data-api
 ```
+
+The environment you choose to run in needs to have the appropriate
+service key available as a json file.
+
+Once the docker image is running, you should be able to access it at
+[http://localhost:8080](http://localhost:8080).
+
+The `API_MODE` flag will also choose one of the `environments/*` files to run.
+Check those vars to ensure they match your expected settings, but they should
+be generic enough to match all environments.
 
 ## Deploy
 
-We can deploy to flexibe [App Engine](https://console.cloud.google.com/appengine)!
-
-To deploy to app engine, run this simple command:
-
-```
-make deploy
-```
-
-Well, its not really that simple. For this to work, it requires a few things:
-
-1 - access to your Google Service Account JSON file. It currently looks for it in:
-
-```
-../mlab-keys/mlab-cred.json
-```
-
-So ensure that directory and file is present.
-
-2 - copies of the bigtable config files. It looks for them in:
-
-```
-../mlab-vis-pipeline/dataflow/data/bigtable/
-```
-
-You can use `make prepare` to copy the appropriate config files from the pipeline to the api.
-
-So make sure they are present and up-to-date
-
-3 - the `gcloud` command line tool.
-
-Currently, `gcloud app deploy` is used to deploy.
+We use a flexible [App Engine](https://console.cloud.google.com/appengine)
+deployment. Currently, `gcloud app deploy` is used to deploy internally.
 Ensure you have this tool installed and configured properly.
 
-The app will be deployed and accessible from:
+First, switch your selected `gcloud` project to the one that matches
+your credentials. It could be: `mlab-oti` or `mlab-staging` etc. This will be
+used to ensure you can deploy to the appropriate project.
 
-[http://mlab-api-dot-mlab-oti.appspot.com/](http://mlab-api-dot-mlab-oti.appspot.com/)
+To deploy to app engine, run this simple command:
+`KEY_FILE=<absolute path to your cred file> ./deploy.sh production|staging|sandbox`
+
+The app will be deployed and accessible from the service URL which depends on
+the environment. In production this URL is:
+
+[https://data-api.measurementlab.net/](https://data-api.measurementlab.net/)
 
 The API is documented at this url as well.
 
 ## Testing
 
-Test requirements are stored in a separate `requirements-test.txt` file.
+You can build a test docker container by calling:
 
-(So that the deploy code does not need to download these additional requirements).
+`docker build -f TestDockerFile -t data-api-test .`
 
-Install with:
+Note that you need to have built your `data-api` container at least once for
+this to work, since it uses it as a baseline.
 
-```
-pip install -r requirements-test.txt
-```
-
-Then run tests with:
+To run the container you can call:
 
 ```
-make test
+docker run \
+-e KEY_FILE=/keys/<keyname>.json \
+-v <local folder containing your secret keys>:/keys \
+-e API_MODE=production|staging|sandbox data-api-test
 ```
 
-## code
+Note this is a similar call except we don't pass in a port, since we aren't
+running a web server for testing purposes. You still need to pass in a key
+for the environment you're testing against, but the default tests have been
+written against production data (we should really refactor them.)
+
+Note, you should also lint your code before you consider PRing it.
+You can do so by calling `./lint.sh`.
+
+## Code
 
 This code depends heavily on the [Flask-RESTPlus](https://flask-restplus.readthedocs.io/en/stable/) package.
 
-It uses the [google api python client](http://google.github.io/google-api-python-client/docs/epy/index.html) for communicating with BigTable.
+It uses the [google api python client](http://google.github.io/google-api-python-client/docs/epy/index.html)
+for communicating with BigTable.
+
+## Troubleshooting
+
+If you are getting errors about your inability to authenticate with the Google
+Cloud Services such as:
+
+```
+ERROR: (gcloud.auth.activate-service-account) Invalid value for [ACCOUNT]: The
+given account name does not match the account name in the key file.  This
+argument can be omitted when using .json keys.
+```
+
+Try to authenticate the service account required. You can do this step after
+calling `make prepare`.
+
+`gcloud auth activate-service-account <service acccount email address> --key-file <cred file>.json`

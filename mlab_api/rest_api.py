@@ -10,9 +10,9 @@ from mlab_api.format_utils import convert_to_json
 
 # This is connected to the app in
 # main.py
-api = Api(version='0.1.0', doc='/', title='MLab API')
+API = Api(version='0.1.0', doc='/', title='MLab API')
 
-@api.errorhandler
+@API.errorhandler
 def server_error(err):
     """
     Handle error during request.
@@ -25,7 +25,7 @@ def server_error(err):
     """.format(err), 500
 
 
-@api.representation('text/csv')
+@API.representation('text/csv')
 def csv_mediatype_representation(data, code, headers):
     """
     Assume the data is already marshaled to CSV and just write it
@@ -34,7 +34,7 @@ def csv_mediatype_representation(data, code, headers):
     return raw_response(data, code, headers)
 
 
-@api.representation('application/json')
+@API.representation('application/json')
 def json_mediatype_representation(data, code, headers):
     """
     Assume the data is already marshaled to JSON and just write it
@@ -51,8 +51,8 @@ def raw_response(data, code, headers):
     Assume the data is already marshaled and just writes it to the response.
     """
     if not isinstance(data, basestring):
-        print('Expected string data, but received:')
-        print(data)
+        print 'Expected string data, but received:'
+        print data
         data = '"Error: Malformed response"'
 
     resp = make_response(data, code)

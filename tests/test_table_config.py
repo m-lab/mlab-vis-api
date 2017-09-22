@@ -6,7 +6,7 @@ from mlab_api.data.table_config import read_configs
 from mlab_api.data.table_config import make_config_key
 from mlab_api.data.table_config import get_column_configs
 
-from utils import read_json
+from mlab_api.os_utils import read_json
 
 
 def test_read_configs():

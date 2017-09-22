@@ -1,0 +1,7 @@
+[submodule "git-hooks"]
+	path = git-hooks
+	url = git@github.com:m-lab/git-hooks.git
+	branch = master
+[submodule "travis"]
+	path = travis
+	url = https://github.com/m-lab/travis.git

@@ -1,0 +1,7 @@
+FROM data-api
+
+RUN pip install -r requirements-test.txt
+RUN pip install -r git-hooks/requirements-python.txt
+RUN find . -name \*.pyc -type f -delete
+
+CMD ./test.sh $API_MODE

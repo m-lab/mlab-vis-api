@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=too-complex, too-many-locals
 '''
 Utilities to help with data transformations
 '''
@@ -6,8 +7,8 @@ Utilities to help with data transformations
 import struct
 import logging
 
-from mlab_api.constants import TABLE_KEYS
 from datetime import datetime
+from mlab_api.constants import TABLE_KEYS
 from dateutil.relativedelta import relativedelta
 
 TIME_FORMATS = {"day": "%Y-%m-%d",
@@ -19,7 +20,7 @@ RELATIVE_NAMES = {"day": "days", "month": "months", "year": "years"}
 URL_KEY_DELIM = "+"
 BIGTABLE_KEY_DELIM = "|"
 
-def list_table(target_id, scope_id = None):
+def list_table(target_id, scope_id=None):
     '''
     Return name of a list table given what entity you are targeting
     and what entity scopes / facets the target.
@@ -88,7 +89,8 @@ def get_time_key_fields(time_value, time_aggregation, table_config):
             times.append('0')
 
     for index, field_name in enumerate(field_names):
-        field_config = [x for x in table_config['row_keys'] if x['name'] == field_name][0]
+        field_config = [x for x in table_config['row_keys']
+                        if x['name'] == field_name][0]
         key_length = field_config['length']
         time_key_fields.append(times[index].ljust(key_length))
 
@@ -103,7 +105,8 @@ def get_full_time_keys(key_fields, timebin, starttime, endtime, table_config):
     starttime_fields = get_time_key_fields(starttime, timebin, table_config)
 
     inclusive_endtime = add_time(endtime, 1, timebin)
-    endtime_fields = get_time_key_fields(inclusive_endtime, timebin, table_config)
+    endtime_fields = get_time_key_fields(inclusive_endtime, timebin,
+                                         table_config)
 
     start_key = BIGTABLE_KEY_DELIM.join(key_fields + starttime_fields)
 
@@ -111,18 +114,21 @@ def get_full_time_keys(key_fields, timebin, starttime, endtime, table_config):
 
     return (start_key, end_key)
 
-
-def decode_value(value, col_type, options={}):
+def decode_value(value, col_type, options=None):
     '''
     Decode a given value, based on its given type
     '''
+
+    if options is None:
+        options = {}
+
     new_value = value
     if col_type == 'double':
-        shouldRound = True
+        should_round = True
         if 'round' in options:
-            shouldRound = options['round']
+            should_round = options['round']
         try:
-            if shouldRound:
+            if should_round:
                 new_value = round(struct.unpack('>d', value)[0], 3)
             else:
                 new_value = struct.unpack('>d', value)[0]
@@ -176,7 +182,7 @@ def parse_row(row, col_configs, keep_family=True):
         else:
             logging.warning('WARNING: missing in col configs: ' + name)
 
-        decoded_value = decode_value(value, col_type,  options)
+        decoded_value = decode_value(value, col_type, options)
         if keep_family:
             parsed[family][name] = decoded_value
         else:
@@ -225,31 +231,31 @@ def create_date_range(starttime, endtime, time_aggregation):
     Date range list is inclusive of start and end time.
     '''
 
-    def diff_day(d1, d2):
+    def diff_day(day1, day2):
         '''
-        Returns integer representing number of days between d1 and d2
+        Returns integer representing number of days between day1 and day2
         '''
-        return (d2 - d1).days + 1
+        return (day2 - day1).days + 1
 
-    def diff_month(d1, d2):
+    def diff_month(day1, day2):
         '''
-        Returns integer representing number of months between d1 and d2
+        Returns integer representing number of months between day1 and day2
         '''
-        return ((d2.year - d1.year) * 12 + d2.month - d1.month) + 1
+        return ((day2.year - day1.year) * 12 + day2.month - day1.month) + 1
 
-    def diff_year(d1, d2):
+    def diff_year(day1, day2):
         '''
-        Returns integer representing number of years between d1 and d2
+        Returns integer representing number of years between day1 and day2
         '''
-        return (d2.year - d1.year) + 1
+        return (day2.year - day1.year) + 1
 
     def create_hour_range():
         '''
         Returns an array of strings from '00' to '23'
         '''
         hours = []
-        for n in range(24):
-            hours.append(str(n).zfill(2))
+        for hour in range(24):
+            hours.append(str(hour).zfill(2))
         return hours
 
     # HACK some insider knowledge to know the
@@ -277,9 +283,9 @@ def create_date_range(starttime, endtime, time_aggregation):
 
     # HACK this should probably be a generator...
     dates = []
-    for n in range(diff_time):
+    for interval in range(diff_time):
         # use relativedelta to add appropriate amounts.
-        mid_date = start + relativedelta(**{relativename:n})
+        mid_date = start + relativedelta(**{relativename:interval})
         mid_date_str = mid_date.strftime(time_format)
 
         new_dates = []
@@ -342,7 +348,7 @@ def format_metric_data(raw_data, starttime, endtime, agg):
     results = {"results": [], "meta":{}}
     results["results"] = formated_metrics
 
-    if len(raw_data) > 0:
+    if raw_data:
         meta = raw_data[0]["meta"]
         meta.pop('date', None)
         meta.pop('hour', None)

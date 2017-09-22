@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=unused-argument
 '''
 Utilities to help with connecting and communicating with BigTable
 '''
 
 import logging
+import os
 
-from gcloud import bigtable
-from gcloud.bigtable import happybase
-from gcloud.bigtable.row_filters import FamilyNameRegexFilter
-from oauth2client.client import GoogleCredentials
+#pylint: disable=no-name-in-module, relative-import
+from google.cloud import bigtable
+from google.cloud import happybase
+from google.cloud.bigtable.row_filters import FamilyNameRegexFilter
+from google.oauth2 import service_account
 
 import mlab_api.data.data_utils as du
 from mlab_api.sort_utils import sort_by_count
 
-def init_pool(app_config):
+def init_pool():
     '''
     Setup Connection
     From the documentation:
@@ -22,21 +25,27 @@ def init_pool(app_config):
      share it among threads in your application.
     '''
 
-    credentials = GoogleCredentials.get_application_default()
-    connection_pool = None
+    credentials = service_account.Credentials.from_service_account_file(
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
 
-    if 'GOOGLE_PROJECT_ID' and 'BIGTABLE_INSTANCE' in app_config:
+    connection_pool = None
+    project_id = os.environ.get("PROJECT")
+    bigtable_instance = os.environ.get("BIGTABLE_INSTANCE")
+    bigtable_pool_size = os.environ.get("BIGTABLE_POOL_SIZE")
+
+    if project_id and bigtable_instance:
         try:
-            client = bigtable.Client(project=app_config['GOOGLE_PROJECT_ID'],
+            client = bigtable.Client(project=project_id,
                                      admin=True, credentials=credentials)
 
-            instance = client.instance(app_config['BIGTABLE_INSTANCE'])
+            instance = client.instance(bigtable_instance)
 
-            size = 10
-            if 'BIGTABLE_POOL_SIZE' in app_config:
-                size = app_config['BIGTABLE_POOL_SIZE']
+            size = int(bigtable_pool_size) if bigtable_pool_size else 10
 
-            connection_pool = happybase.pool.ConnectionPool(size, instance=instance)
+            connection_pool = happybase.pool.ConnectionPool(size,
+                                                            instance=instance)
+            logging.info("Connection made to %s for project %s",
+                         bigtable_instance, project_id)
         except Exception as err:  #pylint: disable=W0703
             logging.exception("ERROR: Could not make connection")
             logging.exception(err)
@@ -44,7 +53,8 @@ def init_pool(app_config):
         logging.warning('WARNING: no connection made')
     return connection_pool
 
-def scan_table(table_config, pool, prefix="", start_key="", end_key="", **kwargs):
+def scan_table(table_config, pool, prefix="", start_key="", end_key="",
+               **kwargs):
     '''
     Abstracts table scan - performing the connection to table via
     connection pool and automatic retry of failed scans.
@@ -53,8 +63,10 @@ def scan_table(table_config, pool, prefix="", start_key="", end_key="", **kwargs
     table_config = configuration object for a table to scan.
     pool = bigtable connection pool.
     prefix = prefix key scan with this value.
-    start_key = alternative to prefix, start_key & stop_key allow for scaning ranges.
-    stop_key = alternative to prefix, start_key & stop_key allow for scaning ranges.
+    start_key = alternative to prefix, start_key & stop_key allow for
+        scaning ranges.
+    stop_key = alternative to prefix, start_key & stop_key allow for
+        scaning ranges.
     kwargs = additional keyword arguments passed directly to the scan operation.
     '''
     table_id = table_config['bigtable_table_name']
@@ -63,10 +75,13 @@ def scan_table(table_config, pool, prefix="", start_key="", end_key="", **kwargs
     # if prefix is present, use that.
     # else, use start / end key
     params = {}
-    if len(prefix) > 0:
+    if prefix:
         params = {"row_prefix": prefix.encode('utf-8')}
-    elif len(start_key) > 0:
-        params = {"row_start": start_key.encode('utf-8'), "row_stop": end_key.encode('utf-8')}
+    elif start_key:
+        params = {
+            "row_start": start_key.encode('utf-8'),
+            "row_stop": end_key.encode('utf-8')
+        }
 
     params.update(kwargs)
 
@@ -132,7 +147,8 @@ def get_row(table_config, pool, row_key, **kwargs):
         row = {}
     return row
 
-def get_time_metric_results(key_fields, pool, timebin, starttime, endtime, table_config, metric_name):
+def get_time_metric_results(key_fields, pool, timebin, starttime, endtime,
+                            table_config, metric_name):
     '''
     Helper to query table and create results for time based metrics
 
@@ -143,24 +159,29 @@ def get_time_metric_results(key_fields, pool, timebin, starttime, endtime, table
     table_config = configuration file for table to query from.
     '''
     # get startkey and endkey prefixed with key_fields
-    start_key, end_key = du.get_full_time_keys(key_fields, timebin, starttime, endtime, table_config)
+    start_key, end_key = du.get_full_time_keys(key_fields, timebin, starttime,
+                                               endtime, table_config)
 
     # Prepare to query the table
     results = []
-    results = scan_table(table_config, pool, start_key=start_key, end_key=end_key)
+    results = scan_table(table_config, pool, start_key=start_key,
+                         end_key=end_key)
 
     formatted = {}
     # format output for API
-    formatted = du.format_metric_data(results, starttime=starttime, endtime=endtime, agg=timebin)
+    formatted = du.format_metric_data(results, starttime=starttime,
+                                      endtime=endtime, agg=timebin)
     return formatted
 
-def get_list_table_results(key_fields, pool, include_data, table_config, metric_name):
+def get_list_table_results(key_fields, pool, include_data, table_config,
+                           metric_name):
     '''
     Helper to query table and create results for list based results
 
     key_fields = array of key fields.
     pool = connection pool.
-    include_data = boolean indicating if data attributes should be included in results.
+    include_data = boolean indicating if data attributes should be
+        included in results.
     table_config = configuration file for table to query from.
     '''
 

@@ -1,11 +1,12 @@
+# -*- coding: utf-8 -*-
 '''
-Utilities for Testing
+OS (file-related) utils
 '''
 import json
 
 def read_json(filename):
     '''
-    read json
+    Read a JSON file and return the dictionary representation of results
     '''
     data = {}
     with open(filename) as data_file:

@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=no-self-use
 '''
 Potentially helpful debugging routes.
 '''
-from mlab_api.rest_api import api
+from mlab_api.rest_api import API
 from mlab_api.data.data import LOCATION_DATA as DATA
 
 from flask_restplus import Resource
 
 
-debug_ns = api.namespace('debug', description='Debug Help')
+DEBUG_NS = API.namespace('debug', description='Debug Help')
 
-@debug_ns.route('/connection')
+@DEBUG_NS.route('/connection')
 class Connection(Resource):
     '''
     Debug Connection Resource

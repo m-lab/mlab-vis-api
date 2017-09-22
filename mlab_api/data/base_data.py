@@ -37,7 +37,7 @@ class Data(object):
         entity_id = id of entity to look for
         entity_type = [locations, clients, servers]
         query_type = [locations, clients, servers]  - what we are faceting on
-        include_data = boolean to indicate if data should be queried and returned.
+        include_data = boolean indicates if data should be queried and returned.
         '''
 
         config_id = du.list_table(query_type, entity_type)
@@ -48,5 +48,7 @@ class Data(object):
 
         key_fields = du.get_key_fields([entity_id], table_config)
 
-        results = bt.get_list_table_results(key_fields, self.get_pool(), include_data, table_config, metric_name)
+        results = bt.get_list_table_results(
+            key_fields, self.get_pool(), include_data, table_config,
+            metric_name)
         return {"results": results}

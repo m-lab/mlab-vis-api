@@ -2,15 +2,13 @@
 Test Data Module
 '''
 import mlab_api.data.data_utils as du
-
-from tests.utils import read_json
-
+from mlab_api.os_utils import read_json
 
 URL_DELIM = "+"
 
 def test_location_key_fields():
     '''
-    test get_location_key_fields
+    Test get_location_key_fields
     '''
 
     config_filename = 'bigtable_configs/client_loc_by_day.json'
@@ -18,10 +16,9 @@ def test_location_key_fields():
     assert len(config) > 1
 
 
-    fields = du.get_location_key_fields(URL_DELIM.join(["NAUSKSKansasCity"]), config)
-
+    fields = du.get_location_key_fields(URL_DELIM.join(["NAUSKSKansasCity"]),
+                                        config)
     assert len(fields) == 1
-
     # TODO: get this value from config directly instead of hard coded.
     assert len(fields[0]) == 50
 
@@ -48,8 +45,17 @@ def test_parse_data():
     test parse_data
     '''
 
-    config = {'client_city': {'name':'client_city', 'type':'string'}, 'median_download': {'type':'double'}}
-    data = {'data:median_download': '@:\xADQ\x83\xBE\x02O', 'meta:client_city': b'New York'}
+    config = {
+        'client_city': {
+            'name':'client_city', 'type':'string'
+        },
+        'median_download': {'type':'double'}
+    }
+
+    data = {
+        'data:median_download': '@:\xADQ\x83\xBE\x02O',
+        'meta:client_city': b'New York'
+    }
 
     result = du.parse_row(data, config)
 
@@ -58,7 +64,6 @@ def test_parse_data():
     assert 'data' in result
     assert 'meta' in result
     assert 'median_download' in result['data']
-
     assert isinstance(result['data']['median_download'], float)
 
 
@@ -71,62 +76,62 @@ def test_date_range_generator():
     start = '2010-01-01'
     end = '2010-01-30'
     drange = du.create_date_range(start, end, 'day')
-    assert(len(drange) == 30)
+    assert len(drange) == 30
 
-    assert(drange[1] == '2010-01-02')
-    assert(drange[-1] == end)
+    assert drange[1] == '2010-01-02'
+    assert drange[-1] == end
 
     start = '2010-01-01'
     end = '2010-12-31'
     drange = du.create_date_range(start, end, 'day')
-    assert(len(drange) == 365)
+    assert len(drange) == 365
 
     start = '2015-06-05'
     end = '2015-06-10'
     drange = du.create_date_range(start, end, 'day')
-    assert(len(drange) == 6)
+    assert len(drange) == 6
 
     # MONTHS
     start = '2010-01'
     end = '2010-01'
     drange = du.create_date_range(start, end, 'month')
-    assert(len(drange) == 1)
+    assert len(drange) == 1
 
 
     start = '2010-01'
     end = '2010-12'
     drange = du.create_date_range(start, end, 'month')
-    assert(len(drange) == 12)
+    assert len(drange) == 12
 
-    assert(drange[1] == '2010-02')
-    assert(drange[-1] == end)
+    assert drange[1] == '2010-02'
+    assert drange[-1] == end
 
     start = '2000-01'
     end = '2016-12'
     drange = du.create_date_range(start, end, 'month')
-    assert(len(drange) == 204)
+    assert len(drange) == 204
 
-    assert(drange[1] == '2000-02')
-    assert(drange[-1] == end)
+    assert drange[1] == '2000-02'
+    assert drange[-1] == end
 
     # YEARS
     start = '2010'
     end = '2015'
     drange = du.create_date_range(start, end, 'year')
-    assert(len(drange) == 6)
+    assert len(drange) == 6
 
     start = '1910'
     end = '2015'
     drange = du.create_date_range(start, end, 'year')
-    assert(len(drange) == 106)
-    assert(drange[-1] == end)
+    assert len(drange) == 106
+    assert drange[-1] == end
 
     # day_hour
     start = '2010-01-01'
     end = '2010-01-30'
     drange = du.create_date_range(start, end, 'day_hour')
-    assert(len(drange) == 30 * 24)
-    assert(drange[-1] == end + '+23')
+    assert len(drange) == 30 * 24
+    assert drange[-1] == end + '+23'
 
 def test_add_time():
     '''
@@ -134,13 +139,13 @@ def test_add_time():
     '''
 
     result = du.add_time('2010', 3, 'year')
-    assert(result == '2013')
+    assert result == '2013'
 
     result = du.add_time('2010-01', 3, 'month')
-    assert(result == '2010-04')
+    assert result == '2010-04'
 
-    result = du.add_time('2010-01-30', 3,  'day')
-    assert(result == '2010-02-02')
+    result = du.add_time('2010-01-30', 3, 'day')
+    assert result == '2010-02-02'
 
 def test_search_table():
     '''
@@ -148,7 +153,7 @@ def test_search_table():
     '''
 
     result = du.search_table('locations')
-    assert(result == 'client_loc_search')
+    assert result == 'client_loc_search'
 
 def test_list_table():
     '''
@@ -156,7 +161,7 @@ def test_list_table():
     '''
 
     result = du.list_table('locations')
-    assert(result == 'client_loc_list')
+    assert result == 'client_loc_list'
 
     result = du.list_table('locations', 'clients')
-    assert(result == 'client_asn_client_loc_list')
+    assert result == 'client_asn_client_loc_list'

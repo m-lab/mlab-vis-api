@@ -3,6 +3,7 @@
 App Entry Point
 '''
 from __future__ import print_function
+import os
 import logging
 
 from flask_restplus import cors
@@ -11,42 +12,42 @@ from flask_restplus import cors
 from mlab_api.app import app
 
 # Import namespaces
-from mlab_api.endpoints.locations import locations_ns
-from mlab_api.endpoints.debug import debug_ns
-from mlab_api.endpoints.clients import client_asn_ns
-from mlab_api.endpoints.servers import server_asn_ns
-from mlab_api.endpoints.raw import raw_ns
-
+from mlab_api.endpoints.locations import LOCATIONS_NS
+from mlab_api.endpoints.debug import DEBUG_NS
+from mlab_api.endpoints.clients import CLIENT_ASN_NS
+from mlab_api.endpoints.servers import SERVER_ASN_NS
+from mlab_api.endpoints.raw import RAW_NS
 from mlab_api.decorators import format_from_url_decorator, download_decorator
 
-
 # API is defined here
-from mlab_api.rest_api import api
+from mlab_api.rest_api import API
 
-root = logging.getLogger()
-root.setLevel(logging.DEBUG)
+ROOT = logging.getLogger()
+ROOT.setLevel(logging.DEBUG)
 
-# This provides CORS for all API Requests and adds in our media type coercing based on `format`
-api.decorators = [cors.crossdomain(origin='*'), format_from_url_decorator, download_decorator]
+# This provides CORS for all API Requests and adds in our media type coercing
+# based on `format`
+API.decorators = [cors.crossdomain(origin='*'), format_from_url_decorator,
+                  download_decorator]
 
 # Add namespaces defined in endpoints module
-api.add_namespace(locations_ns)
-api.add_namespace(client_asn_ns)
-api.add_namespace(server_asn_ns)
-api.add_namespace(raw_ns)
+API.add_namespace(LOCATIONS_NS)
+API.add_namespace(CLIENT_ASN_NS)
+API.add_namespace(SERVER_ASN_NS)
+API.add_namespace(RAW_NS)
 
-# init api with Flask App
-api.init_app(app)
+# init API with Flask App
+API.init_app(app)
 
-debug_flag = False
+DEBUG_FLAG = False
+API_MODE = os.environ.get("API_MODE")
+print(API_MODE)
 
-if app.config['API_MODE'] == 'DEV':
-    print('DEV MODE')
-    debug_flag = True
-    api.add_namespace(debug_ns)
+if API_MODE == 'staging' or API_MODE == 'sandbox':
+    DEBUG_FLAG = True
+    API.add_namespace(DEBUG_NS)
 else:
-    print('PRODUCTION MODE')
-    debug_flag = False
+    DEBUG_FLAG = False
 
 if __name__ == '__main__':
-    app.run(port=8080, debug=debug_flag)
+    app.run(port=8080, debug=DEBUG_FLAG)
