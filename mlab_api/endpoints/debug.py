@@ -3,6 +3,7 @@
 '''
 Potentially helpful debugging routes.
 '''
+import os
 from mlab_api.rest_api import API
 from mlab_api.data.data import LOCATION_DATA as DATA
 
@@ -26,6 +27,11 @@ class Connection(Resource):
 
         if pool:
             with pool.connection() as connection:
-                return {"message": "Connection", "tables": connection.tables()}
+                return {
+                    "message": "Connection",
+                    "project": os.environ.get("PROJECT"),
+                    "instance": os.environ.get("BIGTABLE_INSTANCE"),
+                    "tables": connection.tables()
+                }
         else:
             return {"error":'No Connection', "tables": []}
