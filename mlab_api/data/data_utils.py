@@ -25,7 +25,7 @@ def list_table(target_id, scope_id=None):
     Return name of a list table given what entity you are targeting
     and what entity scopes / facets the target.
 
-    target_id = [locations, servers, clients]
+    target_id = [locations, servers, clients, asn_number]
     scope_id = [locations, servers, clients]
     '''
     names = [TABLE_KEYS[tid] for tid in [scope_id, target_id] if tid]
@@ -35,7 +35,7 @@ def search_table(target_id):
     '''
     Return name of table for searching target.
 
-    target_id = [locations, servers, clients]
+    target_id = [locations, servers, clients, asn_number]
     '''
     return TABLE_KEYS[target_id] + "_search"
 
