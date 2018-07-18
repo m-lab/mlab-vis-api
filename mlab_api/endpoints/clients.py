@@ -40,14 +40,18 @@ class ClientAsnSearch(Resource):
     @API.marshal_with(CLIENT_SEARCH_MODEL)
     def get(self):
         """
-        Search clients for a given query
+        Search clients for a given query (ASN Name or ASN Number)
         """
 
         args = SEARCH_ARGUMENTS.parse_args(request)
         asn_query = normalize_key(args.get('q'))
         search_filter = get_filter(args)
-        results = SEARCH.get_search_results('clients', asn_query, search_filter)
-        return results
+        results_by_name = SEARCH.get_search_results('clients', asn_query, search_filter)
+        results_by_number = SEARCH.get_search_results('asn_numbers', asn_query, search_filter)
+
+        merged = results_by_name.copy()
+        merged['results'] += results_by_number['results']
+        return merged
 
 @CLIENT_ASN_NS.route('/top')
 class ClientAsnTop(Resource):

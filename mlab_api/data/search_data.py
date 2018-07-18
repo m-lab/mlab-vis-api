@@ -17,7 +17,8 @@ SEARCH_KEYS = {
     'servers': ['server_asn_name'],
     'clients': ['client_asn_name'],
     'locations': ['client_continent', 'client_country', 'client_region',
-                  'client_city']
+                  'client_city'],
+    'asn_numbers': ['client_asn_number']
 }
 
 DATA_VALUES = ['test_count', 'last_three_month_test_count',
@@ -69,7 +70,7 @@ class SearchData(Data):
         '''
         Given a list of results and a query, filter matching results.
 
-        search_type: one of ['locations', 'servers', 'clients']
+        search_type: one of ['locations', 'servers', 'clients', 'asn_numbers']
         search_query: input query from api
         results: raw unfiltered results
         included_keys: list of existing keys already in the total results.
@@ -114,10 +115,10 @@ class SearchData(Data):
         '''
         Filter search. Provides results for searches that are faceted.
 
-        search_type = one of ['locations', 'servers', 'clients']
+        search_type = one of ['locations', 'servers', 'clients', 'asn_numbers']
         search_query = input query from api
         search_filter = {
-            type: ['locations', 'servers', 'clients'],
+            type: ['locations', 'servers', 'clients', 'asn_numbers'],
             value:[id1, id2]
         }
         '''
