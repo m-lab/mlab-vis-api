@@ -18,6 +18,7 @@ WORKDIR /mlab-vis-api
 # Copy the application's requirements.txt and run pip to install all
 # dependencies into the virtualenv.
 ADD requirements.txt /mlab-vis-api/requirements.txt
+RUN pip install --upgrade pip
 RUN pip install -r /mlab-vis-api/requirements.txt
 
 CMD ./run.sh $API_MODE
