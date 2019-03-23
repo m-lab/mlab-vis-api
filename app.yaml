@@ -29,8 +29,8 @@ automatic_scaling:
 env_variables:
     GOOGLE_APPLICATION_CREDENTIALS: "cred.json"
     KEY_FILE: "cred.json"
-    API_MODE: "sandbox"
-    PROJECT: "mlab-sandbox"
-    BIGTABLE_INSTANCE: "viz-pipeline"
+    API_MODE: "staging"
+    PROJECT: "mlab-staging"
+    BIGTABLE_INSTANCE: "viz-pipeline-staging"
     BIGTABLE_CONFIG_DIR: "bigtable_configs"
     BIGTABLE_POOL_SIZE: "10"
