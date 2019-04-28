@@ -31,6 +31,6 @@ env_variables:
     KEY_FILE: "cred.json"
     API_MODE: "production"
     PROJECT: "mlab-oti"
-    BIGTABLE_INSTANCE: "viz-pipeline"
+    BIGTABLE_INSTANCE: "viz-pipeline-2019"
     BIGTABLE_CONFIG_DIR: "bigtable_configs"
     BIGTABLE_POOL_SIZE: "40"
