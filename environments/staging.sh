@@ -5,6 +5,6 @@
 ###
 
 PROJECT=mlab-staging
-BIGTABLE_INSTANCE=viz-pipeline
+BIGTABLE_INSTANCE=viz-pipeline-staging
 API_MODE=staging
 BIGTABLE_POOL_SIZE=10
